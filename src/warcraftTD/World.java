@@ -1,5 +1,6 @@
 package warcraftTD;
 
+import java.awt.*;
 import java.util.List;
 import java.util.LinkedList;
 
@@ -9,7 +10,13 @@ import java.util.Iterator;
 public class World {
 	// l'ensemble des monstres, pour gerer (notamment) l'affichage
 	List<Monster> monsters = new ArrayList<Monster>();
-	
+
+	// l'ensemble des cases du chemin
+	List<Position> paths = new ArrayList<Position>();
+
+	// L'interface du jeu
+	Interface HUD = new Interface();
+
 	// Position par laquelle les monstres vont venir
 	Position spawn;
 	
@@ -49,6 +56,40 @@ public class World {
 		spawn = new Position(startSquareX * squareWidth + squareWidth / 2, startSquareY * squareHeight + squareHeight / 2);
 		StdDraw.setCanvasSize(width, height);
 		StdDraw.enableDoubleBuffering();
+
+		// Chemin temporaire
+		paths.add(new Position(1,10));
+		paths.add(new Position(1,9));
+		paths.add(new Position(1,8));
+		paths.add(new Position(1,7));
+		paths.add(new Position(1,6));
+		paths.add(new Position(1,5));
+		paths.add(new Position(1,4));
+		paths.add(new Position(1,3));
+		paths.add(new Position(1,2));
+		paths.add(new Position(2,2));
+		paths.add(new Position(3,2));
+		paths.add(new Position(4,2));
+		paths.add(new Position(4,3));
+		paths.add(new Position(4,4));
+		paths.add(new Position(4,5));
+		paths.add(new Position(4,6));
+		paths.add(new Position(4,7));
+		paths.add(new Position(4,8));
+		paths.add(new Position(4,9));
+		paths.add(new Position(5,9));
+		paths.add(new Position(6,9));
+		paths.add(new Position(7,9));
+		paths.add(new Position(8,9));
+		paths.add(new Position(8,8));
+		paths.add(new Position(8,7));
+		paths.add(new Position(8,6));
+		paths.add(new Position(8,5));
+		paths.add(new Position(8,4));
+		paths.add(new Position(8,3));
+		paths.add(new Position(8,2));
+		paths.add(new Position(8,1));
+		paths.add(new Position(8,0));
 	}
 	
 	/**
@@ -58,24 +99,31 @@ public class World {
 		 StdDraw.setPenColor(StdDraw.LIGHT_GREEN);
 		 for (int i = 0; i < nbSquareX; i++)
 			 for (int j = 0; j < nbSquareY; j++)
-				 StdDraw.filledRectangle(i * squareWidth + squareWidth / 2, j * squareHeight + squareHeight / 2, squareWidth , squareHeight);
-				 //StdDraw.picture(i * squareWidth + squareWidth / 2, j * squareHeight + squareHeight / 2, "images/grass.jpg", squareWidth, squareHeight);
+				 //StdDraw.filledRectangle(i * squareWidth + squareWidth / 2, j * squareHeight + squareHeight / 2, squareWidth , squareHeight);
+				 StdDraw.picture(i * squareWidth + squareWidth / 2, j * squareHeight + squareHeight / 2, "images/grass.jpg", squareWidth, squareHeight);
 	 }
 	 
 	 /**
 	  * Initialise le chemin sur la position du point de départ des monstres. Cette fonction permet d'afficher une route qui sera différente du décors.
 	  */
 	 public void drawPath() {
-		 Position p = new Position(spawn);
-		 StdDraw.setPenColor(StdDraw.YELLOW);
-		 StdDraw.filledRectangle(p.x, p.y, squareWidth / 2, squareHeight / 2);
+		 Iterator<Position> i = paths.iterator();
+		 Position p;
+		 while (i.hasNext()) {
+		 	p = i.next();
+			 StdDraw.setPenColor(StdDraw.YELLOW);
+			 double coorX = p.x / nbSquareX + (squareWidth/2);
+			 double coorY = p.y / nbSquareY + (squareHeight/2);
+			 //StdDraw.filledRectangle(coorX, coorY, squareWidth / 2, squareHeight / 2);
+			 StdDraw.picture(coorX, coorY, "images/sand.jpg", squareWidth, squareHeight);
+		 }
 	 }
 	 
 	 /**
 	  * Affiche certaines informations sur l'écran telles que les points de vie du joueur ou son or
 	  */
 	 public void drawInfos() {
-		 StdDraw.setPenColor(StdDraw.BLACK);
+		 HUD.UpdateInterface(StdDraw.mouseX(), StdDraw.mouseY());
 	 }
 	 
 	 /**
@@ -203,12 +251,12 @@ public class World {
 			
 			if (StdDraw.isMousePressed()) {
 				mouseClick(StdDraw.mouseX(), StdDraw.mouseY());
-				StdDraw.pause(50);
+				//StdDraw.pause(50);
 			}
 			
 			update();
 			StdDraw.show();
-			StdDraw.pause(20);			
+			StdDraw.pause(20);
 		}
 	}
 }
