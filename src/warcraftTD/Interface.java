@@ -12,6 +12,7 @@ public class Interface {
     private ButtonHUD shop_btn;
     private ProgressBar waveEnnemyBar;
     private TextHUD waveNameHUD;
+    private HorizontalGroupBox shopBox;
 
     public Interface(){
         this.list_HUD_Elements = new ArrayList<HUD_Element>();
@@ -21,6 +22,10 @@ public class Interface {
         this.list_HUD_Elements.add(waveEnnemyBar);
         waveNameHUD = new TextHUD(new Position(0.5,0.95), 0.0,0.0,new Font("Arial", Font.BOLD, 50),this, "Wave 1");
         this.list_HUD_Elements.add(waveNameHUD);
+        shopBox = new HorizontalGroupBox(new Position(0.5,0.1),0.75,0.15,this, "images/background_hor_box.jpg");
+        this.list_HUD_Elements.add(shopBox);
+        ButtonHUD closeshop_btn = new ButtonHUD(new Position(0.97,0.85),0.03, 0.03, "images/close_btn.jpg", "images/close_btn_hover.jpg", "ClosingBox",this);
+        this.shopBox.addHUDElement(closeshop_btn);
     }
 
     public void UpdateInterface(double MouseX, double MouseY){
@@ -35,7 +40,12 @@ public class Interface {
     public void makeAction(String action){
         switch (action) {
             case "Shopping" :
-                // TODO Action quand on clique sur le bouton shop
+                shopBox.ShowBox(0.3,0.0);
+                shop_btn.visible = false;
+                break;
+            case "ClosingBox" :
+                shopBox.HideBox();
+                shop_btn.visible = true;
                 break;
             case "autres" :
                 // TODO Ajouter d'autres actions
@@ -43,7 +53,20 @@ public class Interface {
         }
     }
 
+    public void onClick(double MouseX, double MouseY){
+        Iterator<HUD_Element> i = list_HUD_Elements.iterator();
+        HUD_Element el;
+        while (i.hasNext()) {
+            el = i.next();
+            el.onClick(MouseX, MouseY);
+        }
+    }
+
     public void setWaveEnemyProgress(double ProgressPercent){
         this.waveEnnemyBar.setProgressPercent(ProgressPercent);
+    }
+
+    public void setWaveName(String name){
+        waveNameHUD.setText(name);
     }
 }

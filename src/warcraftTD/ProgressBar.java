@@ -34,4 +34,11 @@ public class ProgressBar extends HUD_Element {
         StdDraw.picture(position.x, position.y, sprite, width, height);
         StdDraw.picture(position.x - (width/2) + (progressPercent/100)*(width/2), position.y, sprite_fill, (progressPercent/100)*width, height);
     }
+
+    @Override
+    public void onClick(double MouseX, double MouseY) {
+
+    }
+
+
 }

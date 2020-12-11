@@ -212,6 +212,7 @@ public class World {
 		double normalizedX = (int)(x / squareWidth) * squareWidth + squareWidth / 2;
 		double normalizedY = (int)(y / squareHeight) * squareHeight + squareHeight / 2;
 		Position p = new Position(normalizedX, normalizedY);
+		HUD.onClick(x,y);
 		switch (key) {
 		case 'a':
 			System.out.println("il faut ajouter une tour d'archers si l'utilisateur à de l'or !!");

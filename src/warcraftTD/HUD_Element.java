@@ -14,6 +14,10 @@ abstract public class HUD_Element {
         this.height = height;
     }
 
+    public void setPosition(Position position) {
+        this.position = position;
+    }
+
     public boolean isVisible() {
         return this.visible;
     }
@@ -23,4 +27,6 @@ abstract public class HUD_Element {
     }
 
     abstract public void Update(double MouseX, double MouseY);
+
+    abstract public void onClick(double MouseX, double MouseY);
 }

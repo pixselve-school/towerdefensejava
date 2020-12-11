@@ -27,5 +27,10 @@ public class TextHUD extends HUD_Element {
         StdDraw.text(position.x, position.y, text);
     }
 
+    @Override
+    public void onClick(double MouseX, double MouseY) {
+
+    }
+
 
 }
