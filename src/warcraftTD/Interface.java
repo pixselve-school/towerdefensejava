@@ -13,6 +13,7 @@ public class Interface {
     private ProgressBar waveEnnemyBar;
     private TextHUD waveNameHUD;
     private HorizontalGroupBox shopBox;
+    private TextHUD fps_text;
 
     public Interface(){
         this.list_HUD_Elements = new ArrayList<HUD_Element>();
@@ -20,21 +21,24 @@ public class Interface {
         this.list_HUD_Elements.add(shop_btn);
         waveEnnemyBar = new ProgressBar(new Position(0.5,0.9),0.25,0.05,"images/bar.jpg","images/bar_fill.png",this);
         this.list_HUD_Elements.add(waveEnnemyBar);
-        waveNameHUD = new TextHUD(new Position(0.5,0.95), 0.0,0.0,new Font("Arial", Font.BOLD, 50),this, "Wave 1");
+        waveNameHUD = new TextHUD(new Position(0.5,0.95), 0.0,0.0, new Font("Arial", Font.BOLD, 50),this, "Wave 1");
         this.list_HUD_Elements.add(waveNameHUD);
         shopBox = new HorizontalGroupBox(new Position(0.5,0.1),0.75,0.15,this, "images/background_hor_box.jpg");
         this.list_HUD_Elements.add(shopBox);
         ButtonHUD closeshop_btn = new ButtonHUD(new Position(0.97,0.85),0.03, 0.03, "images/close_btn.jpg", "images/close_btn_hover.jpg", "ClosingBox",this);
         this.shopBox.addHUDElement(closeshop_btn);
+        fps_text = new TextHUD(new Position(0.08,0.95),0.0,0.0, new Font("Arial", Font.BOLD, 40), this, "FPS : 50");
     }
 
-    public void UpdateInterface(double MouseX, double MouseY){
+    public void UpdateInterface(double MouseX, double MouseY, double delta_time){
         Iterator<HUD_Element> i = list_HUD_Elements.iterator();
         HUD_Element el;
         while (i.hasNext()) {
             el = i.next();
-            el.Update(MouseX, MouseY);
+            el.Update(MouseX, MouseY, delta_time);
         }
+        fps_text.setText("FPS : "+(int)(1/delta_time));
+        fps_text.Update(MouseX, MouseY, delta_time);
     }
 
     public void makeAction(String action){

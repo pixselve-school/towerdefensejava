@@ -26,7 +26,7 @@ abstract public class HUD_Element {
         this.visible = visible;
     }
 
-    abstract public void Update(double MouseX, double MouseY);
+    abstract public void Update(double MouseX, double MouseY, double delta_time);
 
     abstract public void onClick(double MouseX, double MouseY);
 }

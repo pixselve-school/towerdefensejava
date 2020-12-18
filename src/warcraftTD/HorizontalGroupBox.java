@@ -36,7 +36,7 @@ public class HorizontalGroupBox extends HUD_Element {
         this.initialPos = position;
         this.deltax = 0.0;
         this.deltay = 0.0;
-        this.speed = 0.02;
+        this.speed = 0.5;
         this.background = background;
         this.visible = false;
     }
@@ -49,11 +49,11 @@ public class HorizontalGroupBox extends HUD_Element {
     }
 
     @Override
-    public void Update(double MouseX, double MouseY) {
+    public void Update(double MouseX, double MouseY, double delta_time) {
         if(this.visible){
 
-            if(deltay>0.0) deltay-=speed;
-            if(deltax>0.0) deltax-=speed;
+            if(deltay>0.0) deltay-=speed*delta_time;
+            if(deltax>0.0) deltax-=speed*delta_time;
 
             this.position = new Position(initialPos.x-deltax, initialPos.y-deltay);
 
@@ -66,7 +66,7 @@ public class HorizontalGroupBox extends HUD_Element {
             while (i.hasNext()) {
                 el = i.next();
                 el.element.setPosition(new Position((this.position.x-(width/2)+el.relativepos.x*width), (this.position.y-(height/2)+el.relativepos.y*height)));
-                el.element.Update(MouseX, MouseY);
+                el.element.Update(MouseX, MouseY,delta_time);
             }
         }
     }

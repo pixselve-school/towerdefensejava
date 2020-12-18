@@ -35,7 +35,7 @@ public class ButtonHUD extends HUD_Element{
     }
 
     @Override
-    public void Update(double MouseX, double MouseY) {
+    public void Update(double MouseX, double MouseY, double delta_time) {
         if(visible){
             if(MouseX>minX && MouseX<maxX && MouseY>minY && MouseY<maxY){
                 StdDraw.picture(position.x, position.y, sprite_hover, width, height);

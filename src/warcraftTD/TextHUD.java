@@ -20,8 +20,14 @@ public class TextHUD extends HUD_Element {
         this.text = text;
     }
 
+    public TextHUD(Position position, double width, double height, Interface parent, String text) {
+        super(position, width, height, parent);
+        this.font = new Font("Arial", Font.BOLD, 50);
+        this.text = text;
+    }
+
     @Override
-    public void Update(double MouseX, double MouseY) {
+    public void Update(double MouseX, double MouseY, double delta_time) {
         StdDraw.setPenColor(StdDraw.BLACK);
         StdDraw.setFont(font);
         StdDraw.text(position.x, position.y, text);

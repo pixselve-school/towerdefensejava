@@ -17,6 +17,9 @@ public class World {
 	// L'interface du jeu
 	Interface HUD = new Interface();
 
+	// représente le temps pour chaque tick en s
+	double delta_time;
+
 	// Position par laquelle les monstres vont venir
 	Position spawn;
 	
@@ -56,6 +59,7 @@ public class World {
 		spawn = new Position(startSquareX * squareWidth + squareWidth / 2, startSquareY * squareHeight + squareHeight / 2);
 		StdDraw.setCanvasSize(width, height);
 		StdDraw.enableDoubleBuffering();
+		delta_time = 0.0;
 
 		// Chemin temporaire
 		paths.add(new Position(1,10));
@@ -123,7 +127,7 @@ public class World {
 	  * Affiche certaines informations sur l'écran telles que les points de vie du joueur ou son or
 	  */
 	 public void drawInfos() {
-		 HUD.UpdateInterface(StdDraw.mouseX(), StdDraw.mouseY());
+		 HUD.UpdateInterface(StdDraw.mouseX(), StdDraw.mouseY(), delta_time);
 	 }
 	 
 	 /**
@@ -170,8 +174,8 @@ public class World {
 	 public int update() {
 		drawBackground();
 		drawPath();
-		drawInfos();
 		updateMonsters();
+		drawInfos();
 		drawMouse();
 		return life;
 	 }
@@ -244,7 +248,8 @@ public class World {
 	public void run() {
 		printCommands();
 		while(!end) {
-			
+			long time_nano = System.nanoTime();
+
 			StdDraw.clear();
 			if (StdDraw.hasNextKeyTyped()) {
 				keyPress(StdDraw.nextKeyTyped());
@@ -257,7 +262,12 @@ public class World {
 			
 			update();
 			StdDraw.show();
-			StdDraw.pause(20);
+			//StdDraw.pause(20);
+
+			int ms = (int)(System.nanoTime() - time_nano) / 1000000;
+			int fps = 1000 / ms;
+			delta_time = 1.0 / fps;
+			System.out.println(delta_time);
 		}
 	}
 }
