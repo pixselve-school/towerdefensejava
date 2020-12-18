@@ -6,12 +6,15 @@ abstract public class HUD_Element {
     protected double width;
     protected double height;
     protected Interface parent;
+    protected boolean enabled;
 
     public HUD_Element(Position position, double width, double height, Interface parent){
         this.parent = parent;
         this.position = position;
         this.width = width;
         this.height = height;
+
+        this.enabled = true;
     }
 
     public void setPosition(Position position) {

@@ -73,11 +73,13 @@ public class HorizontalGroupBox extends HUD_Element {
 
     @Override
     public void onClick(double MouseX, double MouseY) {
-        Iterator<RelativeHUD_Element> i = list_HUD_Elements.iterator();
-        RelativeHUD_Element el;
-        while (i.hasNext()) {
-            el = i.next();
-            el.element.onClick(MouseX, MouseY);
+        if(visible){
+            Iterator<RelativeHUD_Element> i = list_HUD_Elements.iterator();
+            RelativeHUD_Element el;
+            while (i.hasNext()) {
+                el = i.next();
+                el.element.onClick(MouseX, MouseY);
+            }
         }
     }
 
