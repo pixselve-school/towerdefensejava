@@ -1,8 +1,6 @@
 package warcraftTD;
 
-import java.awt.*;
 import java.util.List;
-import java.util.LinkedList;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,7 +13,10 @@ public class World {
 	List<Position> paths = new ArrayList<Position>();
 
 	// L'interface du jeu
-	Interface HUD = new Interface();
+	Interface HUD;
+
+	// le porte monnaie du joueur
+	Wallet player_wallet;
 
 	// représente le temps pour chaque tick en s
 	double delta_time;
@@ -60,6 +61,10 @@ public class World {
 		StdDraw.setCanvasSize(width, height);
 		StdDraw.enableDoubleBuffering();
 		delta_time = 0.0;
+
+		this.player_wallet = new Wallet();
+		this.HUD = new Interface(player_wallet);
+
 
 		// Chemin temporaire
 		paths.add(new Position(1,10));
@@ -138,6 +143,8 @@ public class World {
 		double normalizedX = (int)(StdDraw.mouseX() / squareWidth) * squareWidth + squareWidth / 2;
 		double normalizedY = (int)(StdDraw.mouseY() / squareHeight) * squareHeight + squareHeight / 2;
 		String image = null;
+		//StdDraw.picture(normalizedX, normalizedY, "images/Select_tile.png", squareWidth, squareHeight);
+
 		switch (key) {
 		case 'a' : 
 			 // TODO Ajouter une image pour représenter une tour d'archers
@@ -148,6 +155,7 @@ public class World {
 		}
 		 if (image != null)
 			 StdDraw.picture(normalizedX, normalizedY, image, squareWidth, squareHeight);
+
 	 }
 		 
 	 /**
@@ -175,8 +183,8 @@ public class World {
 		drawBackground();
 		drawPath();
 		updateMonsters();
-		drawInfos();
 		drawMouse();
+		drawInfos();
 		return life;
 	 }
 	 
@@ -241,7 +249,9 @@ public class World {
 		System.out.println("Click on the grass to build it.");
 		System.out.println("Press S to start.");
 	}
-	
+
+
+
 	/**
 	 * Récupère la touche entrée au clavier ainsi que la position de la souris et met à jour le plateau en fonction de ces interractions
 	 */
@@ -251,9 +261,9 @@ public class World {
 			long time_nano = System.nanoTime();
 
 			StdDraw.clear();
-			if (StdDraw.hasNextKeyTyped()) {
+			/*if (StdDraw.hasNextKeyTyped()) {
 				keyPress(StdDraw.nextKeyTyped());
-			}
+			}*/
 			
 			if (StdDraw.isMousePressed()) {
 				mouseClick(StdDraw.mouseX(), StdDraw.mouseY());
@@ -267,7 +277,6 @@ public class World {
 			int ms = (int)(System.nanoTime() - time_nano) / 1000000;
 			int fps = 1000 / ms;
 			delta_time = 1.0 / fps;
-			System.out.println(delta_time);
 		}
 	}
 }

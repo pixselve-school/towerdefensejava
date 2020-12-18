@@ -15,9 +15,12 @@ public class Interface {
     private HorizontalGroupBox shopBox;
     private TextHUD fps_text;
 
+    private Wallet player_wallet;
+    private TextHUD walletHUD;
+
     private HUD_Element current_Disabled;
 
-    public Interface(){
+    public Interface(Wallet wallet){
         this.list_HUD_Elements = new ArrayList<HUD_Element>();
         shop_btn = new ButtonHUD(new Position(0.9,0.1),0.1, 0.1, "images/button_shop.jpg", "images/button_shop_hover.jpg", "Shopping",this);
         this.list_HUD_Elements.add(shop_btn);
@@ -40,17 +43,22 @@ public class Interface {
         this.shopBox.addHUDElement(turret_poison);
 
         fps_text = new TextHUD(new Position(0.08,0.95),0.0,0.0, new Font("Arial", Font.BOLD, 40), this, "FPS : 50");
+        this.list_HUD_Elements.add(fps_text);
+        this.player_wallet = wallet;
+        walletHUD = new TextHUD(new Position(0.88,0.95),0.0,0.0, new Font("Arial", Font.BOLD, 40), this, "Money : 0");
+        this.list_HUD_Elements.add(walletHUD);
     }
 
     public void UpdateInterface(double MouseX, double MouseY, double delta_time){
+        fps_text.setText("FPS : "+(int)(1/delta_time));
+        walletHUD.setText("Money : "+player_wallet.getMoney());
+
         Iterator<HUD_Element> i = list_HUD_Elements.iterator();
         HUD_Element el;
         while (i.hasNext()) {
             el = i.next();
             el.Update(MouseX, MouseY, delta_time);
         }
-        fps_text.setText("FPS : "+(int)(1/delta_time));
-        fps_text.Update(MouseX, MouseY, delta_time);
     }
 
     public void makeAction(String action, HUD_Element from){
@@ -64,7 +72,7 @@ public class Interface {
                 shop_btn.visible = true;
                 if(current_Disabled!=null && current_Disabled!=from) current_Disabled.enabled = true;
                 break;
-            case "turret_arrow" :
+            case "turret_arrow":
                 from.enabled = false;
                 if(current_Disabled!=null && current_Disabled!=from) current_Disabled.enabled = true;
                 current_Disabled = from;

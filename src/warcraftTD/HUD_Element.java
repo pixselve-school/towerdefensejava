@@ -2,7 +2,7 @@ package warcraftTD;
 
 abstract public class HUD_Element {
     protected Position position;
-    protected boolean visible = true;
+    protected boolean visible;
     protected double width;
     protected double height;
     protected Interface parent;
@@ -15,6 +15,7 @@ abstract public class HUD_Element {
         this.height = height;
 
         this.enabled = true;
+        this.visible = true;
     }
 
     public void setPosition(Position position) {
