@@ -104,19 +104,21 @@ public class World {
 	/**
 	 * Définit le décors du plateau de jeu.
 	 */
-	 public void drawBackground() {	
-		 StdDraw.setPenColor(StdDraw.LIGHT_GREEN);
-		 for (int i = 0; i < nbSquareX; i++)
-			 for (int j = 0; j < nbSquareY; j++)
+	 public void drawBackground() {
+		 //StdDraw.setPenColor(StdDraw.LIGHT_GREEN);
+		 StdDraw.picture(0.5, 0.5, "images/fondtest_complet.jpg", 1.0, 1.0);
+
+		 //for (int i = 0; i < nbSquareX; i++)
+			 //for (int j = 0; j < nbSquareY; j++)
 				 //StdDraw.filledRectangle(i * squareWidth + squareWidth / 2, j * squareHeight + squareHeight / 2, squareWidth , squareHeight);
-				 StdDraw.picture(i * squareWidth + squareWidth / 2, j * squareHeight + squareHeight / 2, "images/grass.jpg", squareWidth, squareHeight);
+				 //StdDraw.picture(i * squareWidth + squareWidth / 2, j * squareHeight + squareHeight / 2, "images/grass.jpg", squareWidth, squareHeight);
 	 }
 	 
 	 /**
 	  * Initialise le chemin sur la position du point de départ des monstres. Cette fonction permet d'afficher une route qui sera différente du décors.
 	  */
 	 public void drawPath() {
-		 Iterator<Position> i = paths.iterator();
+		 /*Iterator<Position> i = paths.iterator();
 		 Position p;
 		 while (i.hasNext()) {
 		 	p = i.next();
@@ -125,7 +127,7 @@ public class World {
 			 double coorY = p.y / nbSquareY + (squareHeight/2);
 			 //StdDraw.filledRectangle(coorX, coorY, squareWidth / 2, squareHeight / 2);
 			 StdDraw.picture(coorX, coorY, "images/sand.jpg", squareWidth, squareHeight);
-		 }
+		 }*/
 	 }
 	 
 	 /**
