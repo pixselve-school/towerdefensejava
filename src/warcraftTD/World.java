@@ -123,26 +123,34 @@ public class World {
     //StdDraw.setPenColor(StdDraw.LIGHT_GREEN);
     StdDraw.picture(0.5, 0.5, "images/fondtest_complet.jpg", 1.0, 1.0);
 
-    //for (int i = 0; i < nbSquareX; i++)
-    //for (int j = 0; j < nbSquareY; j++)
-    //StdDraw.filledRectangle(i * squareWidth + squareWidth / 2, j * squareHeight + squareHeight / 2, squareWidth , squareHeight);
-    //StdDraw.picture(i * squareWidth + squareWidth / 2, j * squareHeight + squareHeight / 2, "images/grass.jpg", squareWidth, squareHeight);
+//    for (int i = 0; i < nbSquareX; i++) {
+//      for (int j = 0; j < nbSquareY; j++) {
+//        StdDraw.filledRectangle(i * squareWidth + squareWidth / 2, j * squareHeight + squareHeight / 2, squareWidth , squareHeight);
+//        StdDraw.picture(i * squareWidth + squareWidth / 2, j * squareHeight + squareHeight / 2, "images/grass.jpg", squareWidth, squareHeight);
+//      }
+//    }
+
+
   }
 
   /**
    * Initialise le chemin sur la position du point de départ des monstres. Cette fonction permet d'afficher une route qui sera différente du décors.
    */
   public void drawPath() {
-		 /*Iterator<Position> i = paths.iterator();
-		 Position p;
-		 while (i.hasNext()) {
-		 	p = i.next();
-			 StdDraw.setPenColor(StdDraw.YELLOW);
-			 double coorX = p.x / nbSquareX + (squareWidth/2);
-			 double coorY = p.y / nbSquareY + (squareHeight/2);
-			 //StdDraw.filledRectangle(coorX, coorY, squareWidth / 2, squareHeight / 2);
-			 StdDraw.picture(coorX, coorY, "images/sand.jpg", squareWidth, squareHeight);
-		 }*/
+
+
+
+//		 Iterator<Position> i = paths.iterator();
+//		 Position p;
+//		 while (i.hasNext()) {
+//		 	p = i.next();
+//			 StdDraw.setPenColor(StdDraw.YELLOW);
+//			 double coorX = p.x / nbSquareX + (squareWidth/2);
+//			 double coorY = p.y / nbSquareY + (squareHeight/2);
+//			 //StdDraw.filledRectangle(coorX, coorY, squareWidth / 2, squareHeight / 2);
+//			 StdDraw.picture(coorX, coorY, "images/sand.jpg", squareWidth, squareHeight);
+//		 }
+
   }
 
   /**
@@ -179,7 +187,7 @@ public class World {
     Monster m;
     while (i.hasNext()) {
       m = i.next();
-      m.update();
+      m.update(this.delta_time);
       if (m.p.y < 0) {
         m.p.y = 1;
       }
@@ -197,6 +205,7 @@ public class World {
 		this.updateMonsters();
 		this.drawMouse();
 		this.drawInfos();
+
     return this.life;
   }
 
