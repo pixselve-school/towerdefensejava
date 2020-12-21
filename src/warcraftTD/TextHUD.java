@@ -28,9 +28,11 @@ public class TextHUD extends HUD_Element {
 
   @Override
   public void Update(double MouseX, double MouseY, double delta_time) {
-    StdDraw.setPenColor(StdDraw.BLACK);
-    StdDraw.setFont(this.font);
-    StdDraw.text(this.position.x, this.position.y, this.text);
+    if(visible){
+      StdDraw.setPenColor(StdDraw.BLACK);
+      StdDraw.setFont(this.font);
+      StdDraw.text(this.position.x, this.position.y, this.text);
+    }
   }
 
   @Override

@@ -633,6 +633,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
   private static boolean isMousePressed = false;
   private static double mouseX = 0;
   private static double mouseY = 0;
+  private static int mouseButtonPressed = 0;
 
   // queue of typed key characters
   private static final LinkedList<Character> keysTyped = new LinkedList<Character>();
@@ -1740,6 +1741,12 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
     }
   }
 
+  public static int mouseButtonPressed(){
+    synchronized (mouseLock) {
+      return mouseButtonPressed;
+    }
+  }
+
 
   /**
    * This method cannot be called directly.
@@ -1774,6 +1781,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
       mouseX = StdDraw.userX(e.getX());
       mouseY = StdDraw.userY(e.getY());
       isMousePressed = true;
+      mouseButtonPressed = e.getButton();
     }
   }
 

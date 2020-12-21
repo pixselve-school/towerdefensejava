@@ -1,14 +1,14 @@
 package warcraftTD;
 
 public class ButtonHUD extends HUD_Element {
-  private double minX;
-  private double minY;
-  private double maxX;
-  private double maxY;
-  private final String sprite;
-  private final String sprite_hover;
+  protected double minX;
+  protected double minY;
+  protected double maxX;
+  protected double maxY;
+  protected final String sprite;
+  protected final String sprite_hover;
   private final String action;
-  private final boolean canClick;
+  protected final boolean canClick;
 
 
   public ButtonHUD(Position pos, double width, double height, String sprite, String sprite_hover, String action, Interface Parent) {
@@ -51,7 +51,7 @@ public class ButtonHUD extends HUD_Element {
 
   @Override
   public void onClick(double MouseX, double MouseY) {
-    if (this.visible && this.canClick && MouseX > this.minX && MouseX < this.maxX && MouseY > this.minY && MouseY < this.maxY) {
+    if (this.visible && this.enabled && this.canClick && MouseX > this.minX && MouseX < this.maxX && MouseY > this.minY && MouseY < this.maxY) {
       this.parent.makeAction(this.action, this);
     }
   }

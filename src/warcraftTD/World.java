@@ -1,9 +1,6 @@
 package warcraftTD;
 
-import java.util.List;
-
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 
 public class World {
   // l'ensemble des monstres, pour gerer (notamment) l'affichage
@@ -17,6 +14,13 @@ public class World {
 
   // le porte monnaie du joueur
   Wallet player_wallet;
+
+  Hashtable<Class, Integer> price_tower;
+
+  TreeMap<Position, Tower> list_tower;
+
+  // le nom de la tour en construction
+  Class building_class = null;
 
   // représente le temps pour chaque tick en s
   double delta_time;
@@ -64,8 +68,18 @@ public class World {
 		this.delta_time = 0.0;
 
     this.player_wallet = new Wallet();
-    this.HUD = new Interface(this.player_wallet);
+    this.HUD = new Interface(this.player_wallet, this);
 
+    // Tour temporaire
+      this.list_tower = new TreeMap<>();
+      this.list_tower.put(new Position(1.0,1.0), new ArrowTower());
+      this.list_tower.put(new Position(2.0,1.0), new ArrowTower());
+
+      price_tower = new Hashtable<>();
+      price_tower.put(ArrowTower.class, 50);
+      price_tower.put(BombTower.class, 60);
+      price_tower.put(IceTower.class, 70);
+      price_tower.put(PoisonTower.class, 80);
 
     // Chemin temporaire
 		this.paths.add(new Position(1, 10));
@@ -145,20 +159,14 @@ public class World {
   public void drawMouse() {
     double normalizedX = (int) (StdDraw.mouseX() / this.squareWidth) * this.squareWidth + this.squareWidth / 2;
     double normalizedY = (int) (StdDraw.mouseY() / this.squareHeight) * this.squareHeight + this.squareHeight / 2;
-    String image = null;
-    //StdDraw.picture(normalizedX, normalizedY, "images/Select_tile.png", squareWidth, squareHeight);
-
-    switch (this.key) {
-      case 'a':
-        // TODO Ajouter une image pour représenter une tour d'archers
-        break;
-      case 'b':
-        // TODO Ajouter une image pour représenter une tour à canon
-        break;
-    }
-    if (image != null)
-      StdDraw.picture(normalizedX, normalizedY, image, this.squareWidth, this.squareHeight);
-
+      if(building_class!=null){
+          Position mousep = new Position((int)((normalizedX * nbSquareX)), (int)((normalizedY * nbSquareY)));
+          if(paths.contains(mousep) || list_tower.containsKey(mousep)){
+              StdDraw.picture(normalizedX, normalizedY, "images/Select_tile_unavailable.png", squareWidth, squareHeight);
+          } else {
+              StdDraw.picture(normalizedX, normalizedY, "images/Select_tile.png", squareWidth, squareHeight);
+          }
+      }
   }
 
   /**
@@ -226,21 +234,19 @@ public class World {
    * @param x
    * @param y
    */
-  public void mouseClick(double x, double y) {
+  public void mouseClick(double x, double y, int mouseButton) {
     double normalizedX = (int) (x / this.squareWidth) * this.squareWidth + this.squareWidth / 2;
     double normalizedY = (int) (y / this.squareHeight) * this.squareHeight + this.squareHeight / 2;
     Position p = new Position(normalizedX, normalizedY);
-		this.HUD.onClick(x, y);
-    switch (this.key) {
-      case 'a':
-        System.out.println("il faut ajouter une tour d'archers si l'utilisateur à de l'or !!");
-        break;
-      case 'b':
-        System.out.println("Ici il faut ajouter une tour de bombes");
-        break;
-      case 'e':
-        System.out.println("Ici il est possible de faire évolué une des tours");
-        break;
+    Position mousep = new Position((int)((normalizedX * nbSquareX)), (int)((normalizedY * nbSquareY)));
+
+    this.HUD.onClick(x, y, mouseButton);
+
+    if(building_class != null){
+        if(!(paths.contains(mousep) || list_tower.containsKey(mousep))){
+            System.out.print(building_class);
+            System.out.println(price_tower.get(building_class));
+        }
     }
   }
 
@@ -256,12 +262,19 @@ public class World {
     System.out.println("Press S to start.");
   }
 
+  public void startBuilding(Class c){
+      this.building_class = c;
+  }
+
+    public void stopBuilding(){
+        this.building_class = null;
+    }
 
   /**
    * Récupère la touche entrée au clavier ainsi que la position de la souris et met à jour le plateau en fonction de ces interractions
    */
   public void run() {
-		this.printCommands();
+      this.printCommands();
     while (!this.end) {
       long time_nano = System.nanoTime();
 
@@ -271,7 +284,7 @@ public class World {
 			}*/
 
       if (StdDraw.isMousePressed()) {
-				this.mouseClick(StdDraw.mouseX(), StdDraw.mouseY());
+				this.mouseClick(StdDraw.mouseX(), StdDraw.mouseY(), StdDraw.mouseButtonPressed());
         //StdDraw.pause(50);
       }
 

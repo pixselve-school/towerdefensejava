@@ -1,6 +1,6 @@
 package warcraftTD;
 
-public class Position {
+public class Position implements Comparable<Position>{
   double x;
   double y;
 
@@ -39,5 +39,26 @@ public class Position {
    */
   public String toString() {
     return "(" + this.x + "," + this.y + ")";
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if(o == this) return true;
+    if(!(o instanceof Position)) return false;
+    Position p = (Position)o;
+    return (p.x == this.x && p.y == this.y);
+  }
+
+  @Override
+  public int compareTo(Position p) {
+    if(this.x<p.x) return -1;
+    else if(this.x>p.x) return 1;
+    else {
+      if(this.y<p.y) return -1;
+      else if(this.y>p.y) return 1;
+      else {
+        return 0;
+      }
+    }
   }
 }
