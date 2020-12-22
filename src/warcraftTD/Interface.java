@@ -14,6 +14,7 @@ public class Interface {
   private final HorizontalGroupBox shopBox;
   private final TextHUD fps_text;
   private final TextHUD building_text;
+  private final List<HUD_Element> garbage;
 
   public World getWorld() {
     return world;
@@ -29,6 +30,7 @@ public class Interface {
   public Interface(Wallet wallet, World parent) {
     this.world = parent;
     this.list_HUD_Elements = new ArrayList<HUD_Element>();
+    this.garbage = new ArrayList<HUD_Element>();
     this.shop_btn = new ButtonHUD(new Position(0.9, 0.1), 0.1, 0.1, "images/button_shop.jpg", "images/button_shop_hover.jpg", "Shopping", this);
     this.list_HUD_Elements.add(this.shop_btn);
     this.waveEnnemyBar = new ProgressBar(new Position(0.5, 0.9), 0.25, 0.05, "images/bar.jpg", "images/bar_fill.png", this);
@@ -68,6 +70,11 @@ public class Interface {
     while (i.hasNext()) {
       el = i.next();
       el.Update(MouseX, MouseY, delta_time);
+    }
+    i = this.garbage.iterator();
+    while (i.hasNext()) {
+      el = i.next();
+      this.list_HUD_Elements.remove(el);
     }
   }
 
@@ -117,5 +124,15 @@ public class Interface {
 
   public void setWaveName(String name) {
     this.waveNameHUD.setText(name);
+  }
+
+  public void addNotifText(Position p, Font font, double deltay, String text) {
+    NotifTextHUD notif = new NotifTextHUD(p, 0.0, 0.0, font, this, text,deltay);
+    list_HUD_Elements.add(notif);
+  }
+
+  public void removeNotif(NotifTextHUD text){
+    garbage.add(text);
+    //list_HUD_Elements.remove(text);
   }
 }

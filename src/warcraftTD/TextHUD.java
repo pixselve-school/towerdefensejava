@@ -3,8 +3,8 @@ package warcraftTD;
 import java.awt.*;
 
 public class TextHUD extends HUD_Element {
-  private String text;
-  private final Font font;
+  protected String text;
+  protected final Font font;
 
   public String getText() {
     return this.text;

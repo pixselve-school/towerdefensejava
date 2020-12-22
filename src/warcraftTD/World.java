@@ -1,6 +1,10 @@
 package warcraftTD;
 
+import java.awt.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.List;
 
 public class World {
   // l'ensemble des monstres, pour gerer (notamment) l'affichage
@@ -18,6 +22,8 @@ public class World {
   Hashtable<Class, Integer> price_tower;
 
   TreeMap<Position, Tower> list_tower;
+
+  boolean needReleaseMouse = false;
 
   // le nom de la tour en construction
   Class building_class = null;
@@ -67,13 +73,12 @@ public class World {
     StdDraw.enableDoubleBuffering();
 		this.delta_time = 0.0;
 
-    this.player_wallet = new Wallet();
+    this.player_wallet = new Wallet(this);
+    this.player_wallet.addMoney(5000);
     this.HUD = new Interface(this.player_wallet, this);
 
     // Tour temporaire
       this.list_tower = new TreeMap<>();
-      this.list_tower.put(new Position(1.0,1.0), new ArrowTower());
-      this.list_tower.put(new Position(2.0,1.0), new ArrowTower());
 
       price_tower = new Hashtable<>();
       price_tower.put(ArrowTower.class, 50);
@@ -194,6 +199,19 @@ public class World {
     }
   }
 
+  public void updateTowers(){
+      double normalizedX = (int) (StdDraw.mouseX() / this.squareWidth) * this.squareWidth + this.squareWidth / 2;
+      double normalizedY = (int) (StdDraw.mouseY() / this.squareHeight) * this.squareHeight + this.squareHeight / 2;
+      Position mousep = new Position((int)((normalizedX * nbSquareX)), (int)((normalizedY * nbSquareY)));
+      Tower towerUnderMouse = list_tower.get(mousep);
+      for(Map.Entry<Position,Tower> entry : list_tower.entrySet()) {
+          boolean hover = false;
+          Tower value = entry.getValue();
+          if(building_class==null) hover = value==towerUnderMouse;
+          value.Update(this.delta_time, hover);
+      }
+  }
+
   /**
    * Met à jour toutes les informations du plateau de jeu ainsi que les déplacements des monstres et les attaques des tours.
    *
@@ -203,6 +221,7 @@ public class World {
 		this.drawBackground();
 		this.drawPath();
 		this.updateMonsters();
+		this.updateTowers();
 		this.drawMouse();
 		this.drawInfos();
 
@@ -251,10 +270,24 @@ public class World {
 
     this.HUD.onClick(x, y, mouseButton);
 
-    if(building_class != null){
+    if(building_class != null && !this.needReleaseMouse){
         if(!(paths.contains(mousep) || list_tower.containsKey(mousep))){
-            System.out.print(building_class);
-            System.out.println(price_tower.get(building_class));
+            int price = this.price_tower.get(building_class);
+            if(this.player_wallet.pay(price)){
+                try {
+                    Constructor cons = building_class.getConstructor( Position.class , double.class, double.class);
+                    Tower t = (Tower)cons.newInstance(new Position(normalizedX, normalizedY), this.squareWidth, this.squareHeight);
+                    list_tower.put(new Position((int)((normalizedX * nbSquareX)), (int)((normalizedY * nbSquareY))),t);
+                } catch (NoSuchMethodException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
   }
@@ -273,6 +306,7 @@ public class World {
 
   public void startBuilding(Class c){
       this.building_class = c;
+      this.needReleaseMouse = true;
   }
 
     public void stopBuilding(){
@@ -293,11 +327,14 @@ public class World {
 			}*/
 
       if (StdDraw.isMousePressed()) {
-				this.mouseClick(StdDraw.mouseX(), StdDraw.mouseY(), StdDraw.mouseButtonPressed());
-        //StdDraw.pause(50);
+          if(!this.needReleaseMouse){
+              this.mouseClick(StdDraw.mouseX(), StdDraw.mouseY(), StdDraw.mouseButtonPressed());
+          }
+      } else if(this.needReleaseMouse){
+          this.needReleaseMouse = false;
       }
 
-			this.update();
+      this.update();
       StdDraw.show();
       //StdDraw.pause(20);
 
