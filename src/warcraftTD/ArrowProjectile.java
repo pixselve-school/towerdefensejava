@@ -6,7 +6,8 @@ public class ArrowProjectile extends Projectile {
         this.sprite = "images/arrow.png";
         this.rotating = true;
         this.hitrange = 0.05;
-        this.size = 0.05;
+        this.width = 0.02;
+        this.height = 0.04;
         this.speed = 0.8;
     }
 }

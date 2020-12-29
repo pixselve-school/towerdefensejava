@@ -74,8 +74,9 @@ public class World {
 		this.delta_time = 0.0;
 
     this.player_wallet = new Wallet(this);
-    this.player_wallet.addMoney(5000);
+    this.player_wallet.addMoney(500);
     this.HUD = new Interface(this.player_wallet, this);
+
 
     // Tour temporaire
       this.list_tower = new TreeMap<>();

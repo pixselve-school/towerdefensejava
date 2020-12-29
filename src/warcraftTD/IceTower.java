@@ -3,9 +3,9 @@ package warcraftTD;
 public class IceTower extends Tower {
     public IceTower(Position p, double width, double height, World world) {
         super(p, width, height, world);
-        this.sprite = "images/TowerIce.png";
-        this.sprite_hover = "images/TowerIce_Hover.png";
-        this.range = 0.25;
+        this.sprite = "images/ice_tower.png";
+        this.sprite_hover = "images/ice_tower_hover.png";
+        this.range = 0.15;
         this.attackspeed = 2.5;
     }
 

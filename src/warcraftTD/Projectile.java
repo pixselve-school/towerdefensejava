@@ -10,7 +10,8 @@ public class Projectile {
     protected String sprite;
     protected boolean rotating;
     protected double hitrange;
-    protected double size;
+    protected double width;
+    protected double height;
 
     public Projectile(Position initialPosition, Vector direction) {
         this.position = new Position(initialPosition);
@@ -26,9 +27,9 @@ public class Projectile {
             double angle = 0.0;
             if(this.direction.getX()<0.0) angle = Math.acos(this.direction.getY())/Math.PI*180;
             else angle = 360 - Math.acos(this.direction.getY())/Math.PI*180;
-            StdDraw.picture(this.position.x, this.position.y, sprite, this.size , this.size, angle);
+            StdDraw.picture(this.position.x, this.position.y, sprite, this.width , this.height, angle);
         } else {
-            StdDraw.picture(this.position.x, this.position.y, sprite, this.size , this.size);
+            StdDraw.picture(this.position.x, this.position.y, sprite, this.width , this.height);
         }
         return true;
     }

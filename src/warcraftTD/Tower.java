@@ -34,7 +34,7 @@ abstract public class Tower {
 
     public void Update(double delta_time, boolean hovered){
         if(animationy>0.0){
-            StdDraw.picture(this.position.x, this.position.y, "images/black_hover.png", this.width/(1.3+this.animationy*(1/this.animationymax)), this.height/(1.3+this.animationy*(1/this.animationymax)));
+            StdDraw.picture(this.position.x, this.position.y, "images/black_hover.png", this.width/(3+this.animationy*(1/this.animationymax)), this.height/(1.3+this.animationy*(1/this.animationymax)));
             StdDraw.picture(this.position.x, this.position.y+this.animationy, this.sprite, this.width, this.height);
             this.animationy -= 0.8*delta_time;
         } else {
@@ -44,9 +44,10 @@ abstract public class Tower {
                 StdDraw.picture(this.position.x, this.position.y, this.sprite_hover, this.width, this.height);
             }
             else StdDraw.picture(this.position.x, this.position.y, this.sprite, this.width, this.height);
+
+            ProjectilesManagement(delta_time);
+            AttackManagement(delta_time);
         }
-        ProjectilesManagement(delta_time);
-        AttackManagement(delta_time);
     }
 
     public void AttackManagement(double delta_time){

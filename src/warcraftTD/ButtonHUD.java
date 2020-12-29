@@ -44,7 +44,7 @@ public class ButtonHUD extends HUD_Element {
         StdDraw.picture(this.position.x, this.position.y, this.sprite_hover, this.width, this.height);
       } else {
         StdDraw.picture(this.position.x, this.position.y, this.sprite, this.width, this.height);
-        if (!this.enabled) StdDraw.picture(this.position.x, this.position.y, "images/black_hover.png", this.width, this.height);
+        if (!this.enabled) StdDraw.picture(this.position.x, this.position.y, "images/disable_buttonshop.png", this.width, this.height);
       }
     }
   }
