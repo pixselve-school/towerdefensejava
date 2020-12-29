@@ -275,8 +275,8 @@ public class World {
             int price = this.price_tower.get(building_class);
             if(this.player_wallet.pay(price)){
                 try {
-                    Constructor cons = building_class.getConstructor( Position.class , double.class, double.class);
-                    Tower t = (Tower)cons.newInstance(new Position(normalizedX, normalizedY), this.squareWidth, this.squareHeight);
+                    Constructor cons = building_class.getConstructor( Position.class , double.class, double.class, World.class);
+                    Tower t = (Tower)cons.newInstance(new Position(normalizedX, normalizedY), this.squareWidth, this.squareHeight, this);
                     list_tower.put(new Position((int)((normalizedX * nbSquareX)), (int)((normalizedY * nbSquareY))),t);
                 } catch (NoSuchMethodException e) {
                     e.printStackTrace();
