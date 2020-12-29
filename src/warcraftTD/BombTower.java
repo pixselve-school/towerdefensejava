@@ -5,5 +5,6 @@ public class BombTower extends Tower{
         super(p, width, height);
         this.sprite = "images/TowerBomb.png";
         this.sprite_hover = "images/TowerBomb_Hover.png";
+        this.range = 0.2;
     }
 }

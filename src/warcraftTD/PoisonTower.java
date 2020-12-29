@@ -5,5 +5,6 @@ public class PoisonTower extends Tower{
         super(p, width, height);
         this.sprite = "images/TowerPoison.png";
         this.sprite_hover = "images/TowerPoison_Hover.png";
+        this.range = 0.25;
     }
 }

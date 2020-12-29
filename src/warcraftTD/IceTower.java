@@ -5,5 +5,6 @@ public class IceTower extends Tower {
         super(p, width, height);
         this.sprite = "images/TowerIce.png";
         this.sprite_hover = "images/TowerIce_Hover.png";
+        this.range = 0.25;
     }
 }

@@ -6,5 +6,6 @@ public class ArrowTower extends Tower {
         super(p, width, height);
         this.sprite = "images/TowerArrow.png";
         this.sprite_hover = "images/TowerArrow_Hover.png";
+        this.range = 0.3;
     }
 }

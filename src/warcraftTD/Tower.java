@@ -1,5 +1,7 @@
 package warcraftTD;
 
+import java.awt.*;
+
 abstract public class Tower {
     protected String sprite;
     protected String sprite_hover;
@@ -8,6 +10,7 @@ abstract public class Tower {
     protected double height;
     protected double animationy;
     protected double animationymax;
+    protected double range;
 
     public Tower(Position p, double width, double height){
         this.position = p;
@@ -23,7 +26,11 @@ abstract public class Tower {
             StdDraw.picture(this.position.x, this.position.y+this.animationy, this.sprite, this.width, this.height);
             this.animationy -= 0.8*delta_time;
         } else {
-            if(hovered) StdDraw.picture(this.position.x, this.position.y, this.sprite_hover, this.width, this.height);
+            if(hovered) {
+                StdDraw.setPenColor(new Color(0,161,255,90));
+                StdDraw.filledCircle(this.position.x, this.position.y,this.range);
+                StdDraw.picture(this.position.x, this.position.y, this.sprite_hover, this.width, this.height);
+            }
             else StdDraw.picture(this.position.x, this.position.y, this.sprite, this.width, this.height);
         }
     }
