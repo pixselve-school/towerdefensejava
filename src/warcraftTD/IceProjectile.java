@@ -1,7 +1,7 @@
 package warcraftTD;
 
 public class IceProjectile extends Projectile {
-    double duration;
+    int duration;
     int iceSlow;
 
     public IceProjectile(Position initialPosition, Vector direction, World world, int damage, int iceSlow) {

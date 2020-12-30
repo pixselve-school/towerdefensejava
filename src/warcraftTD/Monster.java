@@ -1,9 +1,13 @@
 package warcraftTD;
 
 import java.awt.*;
-import java.util.LinkedList;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.swing.Timer;
 
 public abstract class Monster {
   // Position du monstre à l'instant t
@@ -14,8 +18,6 @@ public abstract class Monster {
   boolean reached;
   // Compteur de déplacement pour savoir si le monstre à atteint le chateau du joueur
   int checkpoint = 0;
-  // Position du monstre à l'instant t+1
-  private Position nextP;
 
   Vector vector;
 
@@ -23,14 +25,21 @@ public abstract class Monster {
 
   List<Position> path;
 
+  private int health;
 
-  public Monster(Position p, List<Position> path, int nbSquareX, int nbSquareY, double squareWidth, double squareHeight) {
+
+  Map<String, Effect> undergoingEffects;
+
+
+  public Monster(Position p, List<Position> path, int nbSquareX, int nbSquareY, double squareWidth, double squareHeight, int health) {
     this.p = p;
-    this.nextP = new Position(0.5, 0.5);
     this.path = new LinkedList<>(path);
     this.path = this.path.stream().map(position -> new Position(position.x / nbSquareX + (squareWidth / 2), position.y / nbSquareY + (squareHeight / 2))).collect(Collectors.toList());
     this.vector = new Vector(this.p, this.path.get(0));
     this.previousLength = this.vector.length();
+    this.health = health;
+    this.speed = 0.1;
+    this.undergoingEffects = new HashMap<>();
 
   }
 
@@ -38,16 +47,20 @@ public abstract class Monster {
    * Déplace le monstre en fonction de sa vitesse sur l'axe des x et des y et de sa prochaine position.
    */
   public void move(double delta_time) {
-    Position newPosition = new Position(this.p.x + this.speed * delta_time* this.vector.normal().getX(), this.p.y + this.speed * delta_time * this.vector.normal().getY());
+    double speedModifier = 1.0;
+    for (Effect effect : this.undergoingEffects.values()) {
+      speedModifier *= effect.getSpeedMultiplier();
+    }
+
+
+    Position newPosition = new Position(this.p.x + this.speed * speedModifier * delta_time * this.vector.normal().getX(), this.p.y + this.speed * speedModifier * delta_time * this.vector.normal().getY());
 
     if (this.path.size() > 0) {
       if (this.previousLength > new Vector(newPosition, this.path.get(0)).length()) {
         this.p = newPosition;
         this.previousLength = new Vector(newPosition, this.path.get(0)).length();
       } else {
-        this.p = this.path.get(0);
         this.path.remove(0);
-        System.out.println("heure");
         if (this.path.size() > 0) {
           this.vector = new Vector(this.p, this.path.get(0));
           this.previousLength = this.vector.length();
@@ -55,9 +68,12 @@ public abstract class Monster {
 
       }
     }
-
-
   }
+
+  public boolean hasFinishedPath() {
+    return this.path.size() == 0;
+  }
+
 
   /**
    * Debug only
@@ -69,24 +85,47 @@ public abstract class Monster {
     }
   }
 
-  public void update(double delta_time) {
-    this.move(delta_time);
+  public void update(double deltaTime) {
+    this.updateEffectsDuration(deltaTime);
+    this.move(deltaTime);
     this.draw();
 
     this.checkpoint++;
   }
 
-  public void takeDamage(int damage, World world){
-    world.HUD.addNotifText(this.p, new Font("Arial", Font.BOLD, 20), -0.1, damage+"");
-    // à compléter merci merci ;)
+
+  /**
+   * Update all the undergoing effects durations
+   *
+   * @param deltaTime World delta time
+   */
+  private void updateEffectsDuration(double deltaTime) {
+    Iterator<Map.Entry<String, Effect>> entryIterator = this.undergoingEffects.entrySet().iterator();
+    while (entryIterator.hasNext()) {
+      Map.Entry<String, Effect> effectEntry = entryIterator.next();
+      effectEntry.getValue().setDuration(effectEntry.getValue().getDuration() - deltaTime);
+      if (effectEntry.getValue().getDuration() <= 0) {
+        entryIterator.remove();
+      }
+    }
+
   }
 
-  public void applyPoisonEffect(double duration, int damage){
-    // damage toutes les demis secondes pendant duration secondes stp ;)
+  public void takeDamage(int damage, World world) {
+    world.HUD.addNotifText(this.p, new Font("Arial", Font.BOLD, 20), -0.1, "-" + damage);
+    this.health -= damage;
   }
 
-  public void applySlowEffect(double duration, int slowPercent){
-    // slow de slowPercent % pendant duration secondes ;)
+  public boolean isDead() {
+    return this.health <= 0;
+  }
+
+  public void applyPoisonEffect(int duration, int damage) {
+    this.undergoingEffects.computeIfAbsent("poison", (s) -> new Effect(duration, 1.0, damage, 1.0)).setDurationIfGreater(duration);
+  }
+
+  public void applySlowEffect(int duration, int slowPercent) {
+    this.undergoingEffects.computeIfAbsent("slow", (s) -> new Effect(duration, 1.0, 0, 1.0 / slowPercent)).setDurationIfGreater(duration);
   }
 
   /**

@@ -1,7 +1,7 @@
 package warcraftTD;
 
 public class PoisonProjectile extends Projectile {
-    double duration;
+    int duration;
     int poisondamage;
 
     public PoisonProjectile(Position initialPosition, Vector direction, World world, int damage, int poisondamage) {

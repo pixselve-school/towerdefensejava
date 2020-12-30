@@ -4,8 +4,8 @@ import java.util.List;
 
 public class BaseMonster extends Monster {
 
-  public BaseMonster(Position p, List<Position> path, int nbSquareX, int nbSquareY, double squareWidth, double squareHeight) {
-    super(p, path, nbSquareX, nbSquareY, squareWidth, squareHeight);
+  public BaseMonster(Position p, List<Position> path, int nbSquareX, int nbSquareY, double squareWidth, double squareHeight, int health) {
+    super(p, path, nbSquareX, nbSquareY, squareWidth, squareHeight, health);
   }
 
   /**
