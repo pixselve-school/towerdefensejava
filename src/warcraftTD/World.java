@@ -267,7 +267,6 @@ public class World {
     Position p = new Position(normalizedX, normalizedY);
     Position mousep = new Position((int)((normalizedX * nbSquareX)), (int)((normalizedY * nbSquareY)));
 
-
     this.HUD.onClick(x, y, mouseButton);
 
     if(building_class != null && !this.needReleaseMouse){

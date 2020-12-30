@@ -243,6 +243,7 @@ public class Interface {
     if(this.upgradingTower!=tower){
       if(shopBox.isVisible()) shopBox.HideBox();
       this.upgradingTower = tower;
+      this.world.needReleaseMouse = true;
       this.upgradeBox.ShowBox(0.3,0.0);
       this.shop_btn.setVisible(false);
 
