@@ -11,7 +11,7 @@ public class IceTower extends Tower {
 
     @Override
     public void shootProjectile(Vector Direction) {
-        IceProjectile pr = new IceProjectile(this.position, Direction);
+        IceProjectile pr = new IceProjectile(this.position, Direction, this.world);
         list_projectile.add(pr);
     }
 }

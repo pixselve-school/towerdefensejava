@@ -312,6 +312,7 @@ public class World {
 
     public void stopBuilding(){
         this.building_class = null;
+        this.needReleaseMouse = true;
     }
 
   /**

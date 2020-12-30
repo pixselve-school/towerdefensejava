@@ -11,7 +11,7 @@ public class BombTower extends Tower{
 
     @Override
     public void shootProjectile(Vector Direction) {
-        BombProjectile pr = new BombProjectile(this.position, Direction);
+        BombProjectile pr = new BombProjectile(this.position, Direction, this.world);
         list_projectile.add(pr);
     }
 }

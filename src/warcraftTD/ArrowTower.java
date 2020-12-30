@@ -12,7 +12,7 @@ public class ArrowTower extends Tower {
 
     @Override
     public void shootProjectile(Vector Direction) {
-        ArrowProjectile pr = new ArrowProjectile(this.position, Direction);
+        ArrowProjectile pr = new ArrowProjectile(this.position, Direction, this.world);
         list_projectile.add(pr);
     }
 }

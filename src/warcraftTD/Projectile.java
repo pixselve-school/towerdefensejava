@@ -2,9 +2,9 @@ package warcraftTD;
 
 import java.awt.*;
 
-public class Projectile {
+public abstract class Projectile {
     private Vector direction;
-    private Position position;
+    protected Position position;
     protected double speed;
     protected int damage;
     protected String sprite;
@@ -12,10 +12,12 @@ public class Projectile {
     protected double hitrange;
     protected double width;
     protected double height;
+    protected World world;
 
-    public Projectile(Position initialPosition, Vector direction) {
+    public Projectile(Position initialPosition, Vector direction, World world) {
         this.position = new Position(initialPosition);
         this.direction = direction;
+        this.world = world;
     }
 
     public boolean Update(double delta_time){
@@ -31,8 +33,13 @@ public class Projectile {
         } else {
             StdDraw.picture(this.position.x, this.position.y, sprite, this.width , this.height);
         }
+
+        for (Monster m:this.world.monsters) {
+            if(m.p.dist(this.position)<hitrange) return onCollideMonster(m);
+        }
+
         return true;
     }
 
-
+    public abstract boolean onCollideMonster(Monster m);
 }

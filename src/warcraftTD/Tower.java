@@ -16,7 +16,7 @@ abstract public class Tower {
     protected double attackspeed; // nombre de tirs par secondes
     protected boolean canAttack;
     protected double delayAttack;
-    private World world;
+    protected World world;
     Monster targetMonster;
     ArrayList<Projectile> list_projectile;
 

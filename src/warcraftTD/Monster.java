@@ -1,5 +1,6 @@
 package warcraftTD;
 
+import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -73,6 +74,19 @@ public abstract class Monster {
     this.draw();
 
     this.checkpoint++;
+  }
+
+  public void takeDamage(int damage, World world){
+    world.HUD.addNotifText(this.p, new Font("Arial", Font.BOLD, 20), -0.1, damage+"");
+    // à compléter merci merci ;)
+  }
+
+  public void applyPoisonEffect(double duration, int damage){
+    // damage toutes les demis secondes pendant duration secondes stp ;)
+  }
+
+  public void applySlowEffect(double duration, int slowPercent){
+    // slow de slowPercent % pendant duration secondes ;)
   }
 
   /**

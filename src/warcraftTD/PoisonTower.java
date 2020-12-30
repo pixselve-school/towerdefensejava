@@ -11,7 +11,7 @@ public class PoisonTower extends Tower{
 
     @Override
     public void shootProjectile(Vector Direction) {
-        PoisonProjectile pr = new PoisonProjectile(this.position, Direction);
+        PoisonProjectile pr = new PoisonProjectile(this.position, Direction, this.world);
         list_projectile.add(pr);
     }
 }
