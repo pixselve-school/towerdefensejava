@@ -1,9 +1,11 @@
 package warcraftTD;
 
+import java.util.concurrent.TimeUnit;
+
 public class Main {
 
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws InterruptedException {
     int width = 1200;
     int height = 800;
     int nbSquareX = 11;
@@ -15,7 +17,6 @@ public class Main {
 
     // Ajout d'un monstre "à la main" pour afficher comment un monstre se déplaçe. Vous ne devez pas faire pareil, mais ajouter une vague comportant plusieurs monstres
     Monster monster = new BaseMonster(new Position(startX * w.squareWidth + w.squareWidth / 2, startY * w.squareHeight + w.squareHeight / 2), w.paths, nbSquareX, nbSquareY, (double) 1 / nbSquareX, (double) 1 / nbSquareY);
-
     monster.speed = 0.1;
     w.monsters.add(monster);
 

@@ -36,8 +36,8 @@ public class TextHUD extends HUD_Element {
   }
 
   @Override
-  public void onClick(double MouseX, double MouseY) {
-
+  public String onClick(double MouseX, double MouseY) {
+    return "";
   }
 
 

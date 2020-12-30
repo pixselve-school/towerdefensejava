@@ -14,10 +14,11 @@ public abstract class Projectile {
     protected double height;
     protected World world;
 
-    public Projectile(Position initialPosition, Vector direction, World world) {
+    public Projectile(Position initialPosition, Vector direction, World world, int damage) {
         this.position = new Position(initialPosition);
         this.direction = direction;
         this.world = world;
+        this.damage = damage;
     }
 
     public boolean Update(double delta_time){

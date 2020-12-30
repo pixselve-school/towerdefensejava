@@ -4,17 +4,16 @@ public class PoisonProjectile extends Projectile {
     double duration;
     int poisondamage;
 
-    public PoisonProjectile(Position initialPosition, Vector direction, World world) {
-        super(initialPosition, direction, world);
+    public PoisonProjectile(Position initialPosition, Vector direction, World world, int damage, int poisondamage) {
+        super(initialPosition, direction, world, damage);
         this.sprite = "images/poison.png";
         this.rotating = true;
         this.hitrange = 0.02;
         this.width = 0.025;
         this.height = 0.025;
         this.speed = 0.7;
-        this.damage = 6;
         this.duration = 3;
-        this.poisondamage = 2;
+        this.poisondamage = poisondamage;
     }
 
     @Override

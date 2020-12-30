@@ -74,11 +74,9 @@ public class World {
 		this.delta_time = 0.0;
 
     this.player_wallet = new Wallet(this);
-    this.player_wallet.addMoney(500);
-    this.HUD = new Interface(this.player_wallet, this);
+    this.player_wallet.addMoney(9999);
+    this.HUD = new Interface(this);
 
-
-    // Tour temporaire
       this.list_tower = new TreeMap<>();
 
       price_tower = new Hashtable<>();
@@ -269,6 +267,7 @@ public class World {
     Position p = new Position(normalizedX, normalizedY);
     Position mousep = new Position((int)((normalizedX * nbSquareX)), (int)((normalizedY * nbSquareY)));
 
+
     this.HUD.onClick(x, y, mouseButton);
 
     if(building_class != null && !this.needReleaseMouse){
@@ -289,6 +288,11 @@ public class World {
                     e.printStackTrace();
                 }
             }
+        }
+    } else if(!this.needReleaseMouse){
+        Tower towerUnderMouse = list_tower.get(mousep);
+        if(towerUnderMouse!=null){
+            this.HUD.showUpgradeTowerBox(towerUnderMouse);
         }
     }
   }

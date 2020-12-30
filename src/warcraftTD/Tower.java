@@ -7,6 +7,7 @@ import java.util.Iterator;
 abstract public class Tower {
     protected String sprite;
     protected String sprite_hover;
+    protected String sprite_HUD_special;
     protected Position position;
     protected double width;
     protected double height;
@@ -17,8 +18,13 @@ abstract public class Tower {
     protected boolean canAttack;
     protected double delayAttack;
     protected World world;
-    Monster targetMonster;
-    ArrayList<Projectile> list_projectile;
+    private Monster targetMonster;
+    protected ArrayList<Projectile> list_projectile;
+
+    protected StatUpgrade damage_u;
+    protected StatUpgrade range_u;
+    protected StatUpgrade attackspeed_u;
+    protected StatUpgrade special_u;
 
     public Tower(Position p, double width, double height, World world){
         this.position = p;
@@ -91,6 +97,27 @@ abstract public class Tower {
             list_projectile.remove(p);
         }
     }
+
+    public void upgradeDamage(){
+        this.damage_u.setLevel(this.damage_u.getLevel()+1);
+    }
+
+    public void upgradeAttackSpeed(){
+        this.attackspeed_u.setLevel(this.attackspeed_u.getLevel()+1);
+        this.attackspeed = this.attackspeed_u.getLevel_stat()[this.attackspeed_u.getLevel()-1];
+    }
+
+    public void upgradeRange(){
+        this.range_u.setLevel(this.range_u.getLevel()+1);
+        this.range = this.range_u.getLevel_stat()[this.range_u.getLevel()-1];
+    }
+
+    public void upgradeSpecial(){
+        this.special_u.setLevel(this.special_u.getLevel()+1);
+        this.refreshSpecialUpgrade();
+    }
+
+    public abstract void refreshSpecialUpgrade();
 
     public abstract void shootProjectile(Vector Direction);
 }

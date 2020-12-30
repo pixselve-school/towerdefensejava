@@ -3,6 +3,10 @@ package warcraftTD;
 public class ImageHUD extends HUD_Element {
     private String sprite;
 
+    public void setSprite(String sprite) {
+        this.sprite = sprite;
+    }
+
     public ImageHUD(Position position, double width, double height, Interface parent, String sprite) {
         super(position, width, height, parent);
         this.sprite = sprite;
@@ -14,7 +18,7 @@ public class ImageHUD extends HUD_Element {
     }
 
     @Override
-    public void onClick(double MouseX, double MouseY) {
-
+    public String onClick(double MouseX, double MouseY) {
+        return "";
     }
 }

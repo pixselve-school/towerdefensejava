@@ -3,16 +3,15 @@ package warcraftTD;
 public class BombProjectile extends Projectile{
     double rangeExplosion;
 
-    public BombProjectile(Position initialPosition, Vector direction, World world) {
-        super(initialPosition, direction, world);
+    public BombProjectile(Position initialPosition, Vector direction, World world, int damage, double rangeExplosion) {
+        super(initialPosition, direction, world, damage);
         this.sprite = "images/bomb.png";
         this.rotating = false;
         this.hitrange = 0.02;
         this.width = 0.02;
         this.height = 0.02;
         this.speed = 0.4;
-        this.damage = 8;
-        this.rangeExplosion = 0.0;
+        this.rangeExplosion = rangeExplosion;
     }
 
     @Override

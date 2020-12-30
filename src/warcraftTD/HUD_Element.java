@@ -32,5 +32,5 @@ abstract public class HUD_Element {
 
   abstract public void Update(double MouseX, double MouseY, double delta_time);
 
-  abstract public void onClick(double MouseX, double MouseY);
+  abstract public String onClick(double MouseX, double MouseY);
 }

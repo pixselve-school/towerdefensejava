@@ -50,9 +50,11 @@ public class ButtonHUD extends HUD_Element {
   }
 
   @Override
-  public void onClick(double MouseX, double MouseY) {
+  public String onClick(double MouseX, double MouseY) {
     if (this.visible && this.enabled && this.canClick && MouseX > this.minX && MouseX < this.maxX && MouseY > this.minY && MouseY < this.maxY) {
-      this.parent.makeAction(this.action, this);
+      return this.action;
+    } else {
+      return "";
     }
   }
 }

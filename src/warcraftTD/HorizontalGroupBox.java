@@ -69,15 +69,19 @@ public class HorizontalGroupBox extends HUD_Element {
   }
 
   @Override
-  public void onClick(double MouseX, double MouseY) {
+  public String onClick(double MouseX, double MouseY) {
     if (this.visible) {
       Iterator<RelativeHUD_Element> i = this.list_HUD_Elements.iterator();
       RelativeHUD_Element el;
+      String action = "";
       while (i.hasNext()) {
         el = i.next();
-        el.element.onClick(MouseX, MouseY);
+        action = el.element.onClick(MouseX, MouseY);
+        if(!action.equals("")) break;
       }
+      return action;
     }
+    return "";
   }
 
   public void ShowBox(double fromy, double fromx) {

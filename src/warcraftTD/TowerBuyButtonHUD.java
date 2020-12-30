@@ -20,9 +20,11 @@ public class TowerBuyButtonHUD extends ButtonHUD {
     }
 
     @Override
-    public void onClick(double MouseX, double MouseY) {
+    public String onClick(double MouseX, double MouseY) {
         if (this.visible && this.enabled && this.canClick && MouseX > this.minX && MouseX < this.maxX && MouseY > this.minY && MouseY < this.maxY) {
             parent.startBuilding(towerClass);
+            return "cancel";
         }
+        return "";
     }
 }
