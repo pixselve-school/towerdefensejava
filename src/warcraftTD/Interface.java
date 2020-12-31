@@ -101,11 +101,13 @@ public class Interface {
     this.list_HUD_Elements.add(imageMoney);
     this.walletHUD = new TextHUD(new Position(0.94, 0.947), 0.0, 0.0, new Font("Arial", Font.BOLD, 40), this, "0");
     this.list_HUD_Elements.add(this.walletHUD);
+    this.walletHUD.setColor(new Color(255,246,51));
 
     ImageHUD imageLife = new ImageHUD(new Position(0.08, 0.95), 0.15, 0.08, this, "images/lifebar.png");
     this.list_HUD_Elements.add(imageLife);
     this.life_text = new TextHUD(new Position(0.1, 0.947), 0.0, 0.0, new Font("Arial", Font.BOLD, 40), this, "0");
     this.list_HUD_Elements.add(this.life_text);
+    this.life_text.setColor(new Color(194,4,105));
 
     this.building_text = new TextHUD(new Position(0.5, 0.07), 0.0, 0.0, new Font("Arial", Font.BOLD, 40), this, "Right click to cancel !");
     this.building_text.setVisible(false);
