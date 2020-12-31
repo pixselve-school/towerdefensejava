@@ -59,7 +59,7 @@ abstract public class Tower {
     public void AttackManagement(double delta_time){
         if(canAttack){
             if(targetMonster!=null){
-                if(targetMonster.p.dist(this.position)<=this.range){
+                if(!targetMonster.isDead() && targetMonster.p.dist(this.position)<=this.range){
                     shootTargetMonster();
                     return;
                 }

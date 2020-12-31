@@ -381,7 +381,7 @@ public class World {
       this.update();
       StdDraw.show();
       //StdDraw.pause(20);
-
+      System.out.println(monsters.size());
       int ms = (int) (System.nanoTime() - time_nano) / 1000000;
       int fps = 1000 / ms;
       this.delta_time = 1.0 / fps;
