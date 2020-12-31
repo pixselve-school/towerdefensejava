@@ -239,8 +239,8 @@ public class Interface {
     return this.waveEnnemyBar.getProgressPercent();
   }
 
-  public void addNotifText(Position p, Font font, double deltay, String text) {
-    NotifTextHUD notif = new NotifTextHUD(p, 0.0, 0.0, font, this, text, deltay);
+  public void addNotifText(Position p, Font font, double deltay, String text, Color color) {
+    NotifTextHUD notif = new NotifTextHUD(p, 0.0, 0.0, font, this, text, deltay, color);
     list_HUD_Elements.add(notif);
   }
 

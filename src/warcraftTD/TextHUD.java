@@ -5,7 +5,7 @@ import java.awt.*;
 public class TextHUD extends HUD_Element {
   protected String text;
   protected final Font font;
-  private Color color;
+  protected Color color;
 
   public void setColor(Color color) {
     this.color = color;

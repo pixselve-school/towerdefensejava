@@ -13,6 +13,7 @@ public abstract class Projectile {
     protected double width;
     protected double height;
     protected World world;
+    protected Color colordamage;
 
     public Projectile(Position initialPosition, Vector direction, World world, int damage) {
         this.position = new Position(initialPosition);

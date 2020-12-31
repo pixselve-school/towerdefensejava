@@ -1,5 +1,7 @@
 package warcraftTD;
 
+import java.awt.*;
+
 public class IceProjectile extends Projectile {
     int duration;
     int iceSlow;
@@ -14,11 +16,12 @@ public class IceProjectile extends Projectile {
         this.speed = 0.6;
         this.duration = 5;
         this.iceSlow = iceSlow;
+        this.colordamage = new Color(135,253,255);
     }
 
     @Override
     public boolean onCollideMonster(Monster m) {
-        m.takeDamage(this.damage, this.world);
+        m.takeDamage(this.damage, this.world, this.colordamage);
         m.applySlowEffect(duration, iceSlow);
         return false;
     }

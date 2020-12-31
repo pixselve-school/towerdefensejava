@@ -1,5 +1,7 @@
 package warcraftTD;
 
+import java.awt.*;
+
 public class BombProjectile extends Projectile{
     double rangeExplosion;
 
@@ -12,13 +14,14 @@ public class BombProjectile extends Projectile{
         this.height = 0.02;
         this.speed = 0.4;
         this.rangeExplosion = rangeExplosion;
+        this.colordamage = new Color(0,0,0);
     }
 
     @Override
     public boolean onCollideMonster(Monster m) {
-        m.takeDamage(this.damage, this.world);
+        m.takeDamage(this.damage, this.world, this.colordamage);
         for (Monster mo:this.world.monsters) {
-            if(mo!=m && mo.p.dist(this.position)<rangeExplosion) mo.takeDamage(damage/2, this.world);
+            if(mo!=m && mo.p.dist(this.position)<rangeExplosion) mo.takeDamage(damage/2, this.world, this.colordamage);
         }
         return false;
     }

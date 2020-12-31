@@ -1,5 +1,6 @@
 package warcraftTD;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class ArrowProjectile extends Projectile {
@@ -18,12 +19,13 @@ public class ArrowProjectile extends Projectile {
         this.percent_count = percent_count;
         this.touched = false;
         this.list_collid_monsters = new ArrayList<>();
+        this.colordamage = new Color(99,99,99);
     }
 
     @Override
     public boolean onCollideMonster(Monster m) {
         if(!this.list_collid_monsters.contains(m)){
-            m.takeDamage((touched ? this.damage/2 : this.damage), this.world);
+            m.takeDamage((touched ? this.damage/2 : this.damage), this.world, this.colordamage);
             if(percent_count==0) return false;
             percent_count--;
             list_collid_monsters.add(m);

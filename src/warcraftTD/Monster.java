@@ -111,8 +111,8 @@ public abstract class Monster {
 
   }
 
-  public void takeDamage(int damage, World world) {
-    world.HUD.addNotifText(this.p, new Font("Arial", Font.BOLD, 20), -0.1, "" + damage);
+  public void takeDamage(int damage, World world, Color colordamage) {
+    world.HUD.addNotifText(this.p, new Font("Arial", Font.BOLD, 20), -0.1, "" + damage, colordamage);
     this.health -= damage;
   }
 

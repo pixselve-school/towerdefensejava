@@ -1,5 +1,7 @@
 package warcraftTD;
 
+import java.awt.*;
+
 public class PoisonProjectile extends Projectile {
     int duration;
     int poisondamage;
@@ -14,11 +16,12 @@ public class PoisonProjectile extends Projectile {
         this.speed = 0.7;
         this.duration = 3;
         this.poisondamage = poisondamage;
+        this.colordamage = new Color(0,105,30);
     }
 
     @Override
     public boolean onCollideMonster(Monster m) {
-        m.takeDamage(this.damage, this.world);
+        m.takeDamage(this.damage, this.world, this.colordamage);
         m.applyPoisonEffect(duration, poisondamage);
         return false;
     }
