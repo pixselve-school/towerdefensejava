@@ -786,19 +786,19 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
   }
 
   // helper functions that scale from user coordinates to screen coordinates and back
-  private static double scaleX(double x) {
+  static double scaleX(double x) {
     return width * (x - xmin) / (xmax - xmin);
   }
 
-  private static double scaleY(double y) {
+  static double scaleY(double y) {
     return height * (ymax - y) / (ymax - ymin);
   }
 
-  private static double factorX(double w) {
+  static double factorX(double w) {
     return w * width / Math.abs(xmax - xmin);
   }
 
-  private static double factorY(double h) {
+  static double factorY(double h) {
     return h * height / Math.abs(ymax - ymin);
   }
 
@@ -1252,7 +1252,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
    *  Drawing images.
    ***************************************************************************/
   // get an image from the given filename
-  private static Image getImage(String filename) {
+  static Image getImage(String filename) {
     if (filename == null) throw new IllegalArgumentException();
 
     // to read from file
