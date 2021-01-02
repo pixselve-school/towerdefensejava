@@ -1,6 +1,8 @@
-package warcraftTD;
+package warcraftTD.hud;
 
-abstract public class HUD_Element {
+import warcraftTD.utils.Position;
+
+abstract public class Element {
   protected Position position;
   protected boolean visible;
   protected double width;
@@ -8,7 +10,7 @@ abstract public class HUD_Element {
   protected Interface parent;
   protected boolean enabled;
 
-  public HUD_Element(Position position, double width, double height, Interface parent) {
+  public Element(Position position, double width, double height, Interface parent) {
     this.parent = parent;
     this.position = position;
     this.width = width;

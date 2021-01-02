@@ -1,10 +1,9 @@
-package warcraftTD;
+package warcraftTD.monsters;
 
 public class Effect {
   private double healthMultiplier;
   private double healthAdd;
   private double speedMultiplier;
-
   private double duration;
 
   public Effect(double duration, double healthMultiplier, double healthAdd, double speedMultiplier) {

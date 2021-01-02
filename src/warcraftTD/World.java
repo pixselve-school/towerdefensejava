@@ -1,49 +1,53 @@
 package warcraftTD;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import warcraftTD.hud.Interface;
+import warcraftTD.libs.StdDraw;
+import warcraftTD.monsters.BaseMonster;
+import warcraftTD.monsters.Monster;
+import warcraftTD.towers.*;
+import warcraftTD.utils.Position;
+import warcraftTD.utils.Wallet;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.List;
 
 public class World {
   // l'ensemble des monstres, pour gerer (notamment) l'affichage
-  List<Monster> monsters = new ArrayList<Monster>();
+  private List<Monster> monsters = new ArrayList<Monster>();
   private int totalMonsterAmount;
 
   // l'ensemble des cases du chemin
-  List<Position> paths = new ArrayList<Position>();
+  private List<Position> paths = new ArrayList<Position>();
 
   // L'interface du jeu
-  Interface HUD;
+  private Interface HUD;
 
   // le porte monnaie du joueur
-  Wallet player_wallet;
+  private Wallet player_wallet;
 
-  Hashtable<Class, Integer> price_tower;
+  private Hashtable<Class, Integer> price_tower;
 
-  TreeMap<Position, Tower> list_tower;
+  private TreeMap<Position, Tower> list_tower;
 
-  boolean needReleaseMouse = false;
+  private boolean needReleaseMouse = false;
 
   // le nom de la tour en construction
-  Class building_class = null;
+  private Class building_class = null;
 
   // représente le temps pour chaque tick en s
-  double delta_time;
+  private double delta_time;
 
   // Position par laquelle les monstres vont venir
-  Position spawn;
+  private Position spawn;
 
   // Information sur la taille du plateau de jeu
-  int width;
-  int height;
-  int nbSquareX;
-  int nbSquareY;
-  double squareWidth;
-  double squareHeight;
+  private int width;
+  private int height;
+  private int nbSquareX;
+  private int nbSquareY;
+  private double squareWidth;
+  private double squareHeight;
 
   // Nombre de points de vie du joueur
   int life = 20;
@@ -84,11 +88,11 @@ public class World {
 
     this.list_tower = new TreeMap<>();
 
-    price_tower = new Hashtable<>();
-    price_tower.put(ArrowTower.class, 50);
-    price_tower.put(BombTower.class, 60);
-    price_tower.put(IceTower.class, 70);
-    price_tower.put(PoisonTower.class, 80);
+    this.price_tower = new Hashtable<>();
+    this.price_tower.put(Arrow.class, 50);
+    this.price_tower.put(Bomb.class, 60);
+    this.price_tower.put(Ice.class, 70);
+    this.price_tower.put(Poison.class, 80);
 
     // Chemin temporaire
     this.paths.add(new Position(1, 10));
@@ -175,12 +179,12 @@ public class World {
   public void drawMouse() {
     double normalizedX = (int) (StdDraw.mouseX() / this.squareWidth) * this.squareWidth + this.squareWidth / 2;
     double normalizedY = (int) (StdDraw.mouseY() / this.squareHeight) * this.squareHeight + this.squareHeight / 2;
-    if (building_class != null) {
-      Position mousep = new Position((int) ((normalizedX * nbSquareX)), (int) ((normalizedY * nbSquareY)));
-      if (paths.contains(mousep) || list_tower.containsKey(mousep)) {
-        StdDraw.picture(normalizedX, normalizedY, "images/Select_tile_unavailable.png", squareWidth, squareHeight);
+    if (this.building_class != null) {
+      Position mousep = new Position((int) ((normalizedX * this.nbSquareX)), (int) ((normalizedY * this.nbSquareY)));
+      if (this.paths.contains(mousep) || this.list_tower.containsKey(mousep)) {
+        StdDraw.picture(normalizedX, normalizedY, "images/Select_tile_unavailable.png", this.squareWidth, this.squareHeight);
       } else {
-        StdDraw.picture(normalizedX, normalizedY, "images/Select_tile.png", squareWidth, squareHeight);
+        StdDraw.picture(normalizedX, normalizedY, "images/Select_tile.png", this.squareWidth, this.squareHeight);
       }
     }
   }
@@ -213,7 +217,7 @@ public class World {
           new java.util.TimerTask() {
             @Override
             public void run() {
-              initWave(totalMonsterAmount + 1);
+              World.this.initWave(World.this.totalMonsterAmount + 1);
             }
           },
           5000
@@ -228,8 +232,8 @@ public class World {
     this.totalMonsterAmount = monsterAmount;
     this.monsters = new ArrayList<>();
     for (int i = 0; i < monsterAmount; i++) {
-      Position startingPosition = new Position(this.paths.get(0).x * this.squareWidth + this.squareWidth / 2, this.paths.get(0).y * this.squareHeight + this.squareHeight / 2 + 0.04 * i);
-      this.monsters.add(new BaseMonster(startingPosition, this.paths, this.nbSquareX, this.nbSquareY, (double) 1 / this.nbSquareX, (double) 1 / this.nbSquareY, 20));
+      Position startingPosition = new Position(this.paths.get(0).getX() * this.squareWidth + this.squareWidth / 2, this.paths.get(0).getY() * this.squareHeight + this.squareHeight / 2 + 0.04 * i);
+      this.monsters.add(new BaseMonster(startingPosition, this.paths, this.nbSquareX, this.nbSquareY, (double) 1 / this.nbSquareX, (double) 1 / this.nbSquareY, 200));
     }
     this.isMonsterActing = true;
   }
@@ -237,12 +241,12 @@ public class World {
   public void updateTowers() {
     double normalizedX = (int) (StdDraw.mouseX() / this.squareWidth) * this.squareWidth + this.squareWidth / 2;
     double normalizedY = (int) (StdDraw.mouseY() / this.squareHeight) * this.squareHeight + this.squareHeight / 2;
-    Position mousep = new Position((int) ((normalizedX * nbSquareX)), (int) ((normalizedY * nbSquareY)));
-    Tower towerUnderMouse = list_tower.get(mousep);
-    for (Map.Entry<Position, Tower> entry : list_tower.entrySet()) {
+    Position mousep = new Position((int) ((normalizedX * this.nbSquareX)), (int) ((normalizedY * this.nbSquareY)));
+    Tower towerUnderMouse = this.list_tower.get(mousep);
+    for (Map.Entry<Position, Tower> entry : this.list_tower.entrySet()) {
       boolean hover = false;
       Tower value = entry.getValue();
-      if (building_class == null) hover = value == towerUnderMouse;
+      if (this.building_class == null) hover = value == towerUnderMouse;
       value.Update(this.delta_time, hover);
     }
   }
@@ -304,18 +308,18 @@ public class World {
     double normalizedX = (int) (x / this.squareWidth) * this.squareWidth + this.squareWidth / 2;
     double normalizedY = (int) (y / this.squareHeight) * this.squareHeight + this.squareHeight / 2;
     Position p = new Position(normalizedX, normalizedY);
-    Position mousep = new Position((int) ((normalizedX * nbSquareX)), (int) ((normalizedY * nbSquareY)));
+    Position mousep = new Position((int) ((normalizedX * this.nbSquareX)), (int) ((normalizedY * this.nbSquareY)));
 
     this.HUD.onClick(x, y, mouseButton);
 
-    if (building_class != null && !this.needReleaseMouse) {
-      if (!(paths.contains(mousep) || list_tower.containsKey(mousep))) {
-        int price = this.price_tower.get(building_class);
+    if (this.building_class != null && !this.needReleaseMouse) {
+      if (!(this.paths.contains(mousep) || this.list_tower.containsKey(mousep))) {
+        int price = this.price_tower.get(this.building_class);
         if (this.player_wallet.pay(price)) {
           try {
-            Constructor cons = building_class.getConstructor(Position.class, double.class, double.class, World.class);
+            Constructor cons = this.building_class.getConstructor(Position.class, double.class, double.class, World.class);
             Tower t = (Tower) cons.newInstance(new Position(normalizedX, normalizedY), this.squareWidth, this.squareHeight, this);
-            list_tower.put(new Position((int) ((normalizedX * nbSquareX)), (int) ((normalizedY * nbSquareY))), t);
+            this.list_tower.put(new Position((int) ((normalizedX * this.nbSquareX)), (int) ((normalizedY * this.nbSquareY))), t);
           } catch (NoSuchMethodException e) {
             e.printStackTrace();
           } catch (IllegalAccessException e) {
@@ -328,7 +332,7 @@ public class World {
         }
       }
     } else if (!this.needReleaseMouse) {
-      Tower towerUnderMouse = list_tower.get(mousep);
+      Tower towerUnderMouse = this.list_tower.get(mousep);
       if (towerUnderMouse != null) {
         this.HUD.showUpgradeTowerBox(towerUnderMouse);
       }
@@ -381,7 +385,7 @@ public class World {
       this.update();
       StdDraw.show();
       //StdDraw.pause(20);
-      System.out.println(monsters.size());
+      System.out.println(this.monsters.size());
       int ms = (int) (System.nanoTime() - time_nano) / 1000000;
       int fps = 1000 / ms;
       this.delta_time = 1.0 / fps;
@@ -393,5 +397,181 @@ public class World {
       }
 
     }
+  }
+
+  public List<Monster> getMonsters() {
+    return this.monsters;
+  }
+
+  public void setMonsters(List<Monster> monsters) {
+    this.monsters = monsters;
+  }
+
+  public int getTotalMonsterAmount() {
+    return this.totalMonsterAmount;
+  }
+
+  public void setTotalMonsterAmount(int totalMonsterAmount) {
+    this.totalMonsterAmount = totalMonsterAmount;
+  }
+
+  public List<Position> getPaths() {
+    return this.paths;
+  }
+
+  public void setPaths(List<Position> paths) {
+    this.paths = paths;
+  }
+
+  public Interface getHUD() {
+    return this.HUD;
+  }
+
+  public void setHUD(Interface HUD) {
+    this.HUD = HUD;
+  }
+
+  public Wallet getPlayer_wallet() {
+    return this.player_wallet;
+  }
+
+  public void setPlayer_wallet(Wallet player_wallet) {
+    this.player_wallet = player_wallet;
+  }
+
+  public Hashtable<Class, Integer> getPrice_tower() {
+    return this.price_tower;
+  }
+
+  public void setPrice_tower(Hashtable<Class, Integer> price_tower) {
+    this.price_tower = price_tower;
+  }
+
+  public TreeMap<Position, Tower> getList_tower() {
+    return this.list_tower;
+  }
+
+  public void setList_tower(TreeMap<Position, Tower> list_tower) {
+    this.list_tower = list_tower;
+  }
+
+  public boolean isNeedReleaseMouse() {
+    return this.needReleaseMouse;
+  }
+
+  public void setNeedReleaseMouse(boolean needReleaseMouse) {
+    this.needReleaseMouse = needReleaseMouse;
+  }
+
+  public Class getBuilding_class() {
+    return this.building_class;
+  }
+
+  public void setBuilding_class(Class building_class) {
+    this.building_class = building_class;
+  }
+
+  public double getDelta_time() {
+    return this.delta_time;
+  }
+
+  public void setDelta_time(double delta_time) {
+    this.delta_time = delta_time;
+  }
+
+  public Position getSpawn() {
+    return this.spawn;
+  }
+
+  public void setSpawn(Position spawn) {
+    this.spawn = spawn;
+  }
+
+  public int getWidth() {
+    return this.width;
+  }
+
+  public void setWidth(int width) {
+    this.width = width;
+  }
+
+  public int getHeight() {
+    return this.height;
+  }
+
+  public void setHeight(int height) {
+    this.height = height;
+  }
+
+  public int getNbSquareX() {
+    return this.nbSquareX;
+  }
+
+  public void setNbSquareX(int nbSquareX) {
+    this.nbSquareX = nbSquareX;
+  }
+
+  public int getNbSquareY() {
+    return this.nbSquareY;
+  }
+
+  public void setNbSquareY(int nbSquareY) {
+    this.nbSquareY = nbSquareY;
+  }
+
+  public double getSquareWidth() {
+    return this.squareWidth;
+  }
+
+  public void setSquareWidth(double squareWidth) {
+    this.squareWidth = squareWidth;
+  }
+
+  public double getSquareHeight() {
+    return this.squareHeight;
+  }
+
+  public void setSquareHeight(double squareHeight) {
+    this.squareHeight = squareHeight;
+  }
+
+  public int getLife() {
+    return this.life;
+  }
+
+  public void setLife(int life) {
+    this.life = life;
+  }
+
+  public char getKey() {
+    return this.key;
+  }
+
+  public void setKey(char key) {
+    this.key = key;
+  }
+
+  public boolean isEnd() {
+    return this.end;
+  }
+
+  public void setEnd(boolean end) {
+    this.end = end;
+  }
+
+  public boolean isMonsterActing() {
+    return this.isMonsterActing;
+  }
+
+  public void setMonsterActing(boolean monsterActing) {
+    this.isMonsterActing = monsterActing;
+  }
+
+  public double getSecondCounter() {
+    return this.secondCounter;
+  }
+
+  public void setSecondCounter(double secondCounter) {
+    this.secondCounter = secondCounter;
   }
 }

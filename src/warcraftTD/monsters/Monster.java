@@ -1,41 +1,40 @@
-package warcraftTD;
+package warcraftTD.monsters;
+
+import warcraftTD.World;
+import warcraftTD.libs.StdDraw;
+import warcraftTD.utils.Position;
+import warcraftTD.utils.Vector;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
-
-import javax.swing.Timer;
 
 public abstract class Monster {
   // Position du monstre à l'instant t
-  Position p;
+  private Position position;
   // Vitesse du monstre: point / s
-  double speed;
-  // Boolean pour savoir si le monstre à atteint le chateau du joueur
-  boolean reached;
+  private double speed;
+
   // Compteur de déplacement pour savoir si le monstre à atteint le chateau du joueur
-  int checkpoint = 0;
+  private int checkpoint = 0;
 
-  Vector vector;
+  private Vector vector;
 
-  double previousLength;
+  private double previousLength;
 
-  List<Position> path;
+  private List<Position> path;
 
   private int health;
 
-
-  Map<String, Effect> undergoingEffects;
+  private Map<String, Effect> undergoingEffects;
 
 
   public Monster(Position p, List<Position> path, int nbSquareX, int nbSquareY, double squareWidth, double squareHeight, int health) {
-    this.p = p;
+    this.position = p;
     this.path = new LinkedList<>(path);
-    this.path = this.path.stream().map(position -> new Position(position.x / nbSquareX + (squareWidth / 2), position.y / nbSquareY + (squareHeight / 2))).collect(Collectors.toList());
-    this.vector = new Vector(this.p, this.path.get(0));
+    this.path = this.path.stream().map(position -> new Position(position.getX() / nbSquareX + (squareWidth / 2), position.getY() / nbSquareY + (squareHeight / 2))).collect(Collectors.toList());
+    this.vector = new Vector(this.position, this.path.get(0));
     this.previousLength = this.vector.length();
     this.health = health;
     this.speed = 0.1;
@@ -53,16 +52,16 @@ public abstract class Monster {
     }
 
 
-    Position newPosition = new Position(this.p.x + this.speed * speedModifier * delta_time * this.vector.normal().getX(), this.p.y + this.speed * speedModifier * delta_time * this.vector.normal().getY());
+    Position newPosition = new Position(this.position.getX() + this.speed * speedModifier * delta_time * this.vector.normal().getX(), this.position.getY() + this.speed * speedModifier * delta_time * this.vector.normal().getY());
 
     if (this.path.size() > 0) {
       if (this.previousLength > new Vector(newPosition, this.path.get(0)).length()) {
-        this.p = newPosition;
+        this.position = newPosition;
         this.previousLength = new Vector(newPosition, this.path.get(0)).length();
       } else {
         this.path.remove(0);
         if (this.path.size() > 0) {
-          this.vector = new Vector(this.p, this.path.get(0));
+          this.vector = new Vector(this.position, this.path.get(0));
           this.previousLength = this.vector.length();
         }
 
@@ -81,7 +80,7 @@ public abstract class Monster {
   private void debug() {
     if (this.path.size() > 0) {
       StdDraw.setPenColor(StdDraw.RED);
-      StdDraw.filledCircle(this.path.get(0).x, this.path.get(0).y, 0.01);
+      StdDraw.filledCircle(this.path.get(0).getX(), this.path.get(0).getY(), 0.01);
     }
   }
 
@@ -112,7 +111,7 @@ public abstract class Monster {
   }
 
   public void takeDamage(int damage, World world, Color colordamage) {
-    world.HUD.addNotifText(this.p, new Font("Arial", Font.BOLD, 20), -0.1, "" + damage, colordamage);
+    world.getHUD().addNotifText(this.position, new Font("Arial", Font.BOLD, 20), -0.1, "" + damage, colordamage);
     this.health -= damage;
   }
 
@@ -125,11 +124,75 @@ public abstract class Monster {
   }
 
   public void applySlowEffect(int duration, int slowPercent) {
-    this.undergoingEffects.computeIfAbsent("slow", (s) -> new Effect(duration, 1.0, 0, 1.0 / slowPercent)).setDurationIfGreater(duration);
+    this.undergoingEffects.computeIfAbsent("slow", (s) -> new Effect(duration, 1.0, 0, slowPercent / 100.0)).setDurationIfGreater(duration);
   }
 
   /**
    * Fonction abstraite qui sera instanciée dans les classes filles pour afficher le monstre sur le plateau de jeu.
    */
   public abstract void draw();
+
+  public Position getPosition() {
+    return this.position;
+  }
+
+  public void setPosition(Position position) {
+    this.position = position;
+  }
+
+  public double getSpeed() {
+    return this.speed;
+  }
+
+  public void setSpeed(double speed) {
+    this.speed = speed;
+  }
+
+  public int getCheckpoint() {
+    return this.checkpoint;
+  }
+
+  public void setCheckpoint(int checkpoint) {
+    this.checkpoint = checkpoint;
+  }
+
+  public Vector getVector() {
+    return this.vector;
+  }
+
+  public void setVector(Vector vector) {
+    this.vector = vector;
+  }
+
+  public double getPreviousLength() {
+    return this.previousLength;
+  }
+
+  public void setPreviousLength(double previousLength) {
+    this.previousLength = previousLength;
+  }
+
+  public List<Position> getPath() {
+    return this.path;
+  }
+
+  public void setPath(List<Position> path) {
+    this.path = path;
+  }
+
+  public int getHealth() {
+    return this.health;
+  }
+
+  public void setHealth(int health) {
+    this.health = health;
+  }
+
+  public Map<String, Effect> getUndergoingEffects() {
+    return this.undergoingEffects;
+  }
+
+  public void setUndergoingEffects(Map<String, Effect> undergoingEffects) {
+    this.undergoingEffects = undergoingEffects;
+  }
 }

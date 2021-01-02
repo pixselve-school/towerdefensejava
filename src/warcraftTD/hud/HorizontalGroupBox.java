@@ -1,10 +1,13 @@
-package warcraftTD;
+package warcraftTD.hud;
+
+import warcraftTD.libs.StdDraw;
+import warcraftTD.utils.Position;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class HorizontalGroupBox extends HUD_Element {
+public class HorizontalGroupBox extends Element {
   private final List<RelativeHUD_Element> list_HUD_Elements = new ArrayList<RelativeHUD_Element>();
   private double deltax;
   private double deltay;
@@ -18,10 +21,10 @@ public class HorizontalGroupBox extends HUD_Element {
 
 
   class RelativeHUD_Element {
-    HUD_Element element;
+    Element element;
     Position relativepos;
 
-    public RelativeHUD_Element(HUD_Element element, Position relativepos) {
+    public RelativeHUD_Element(Element element, Position relativepos) {
       this.element = element;
       this.relativepos = relativepos;
     }
@@ -37,7 +40,7 @@ public class HorizontalGroupBox extends HUD_Element {
     this.visible = false;
   }
 
-  public void addHUDElement(HUD_Element element) {
+  public void addHUDElement(Element element) {
     if (!this.list_HUD_Elements.contains(element)) {
       RelativeHUD_Element el = new RelativeHUD_Element(element, element.position);
       this.list_HUD_Elements.add(el);
@@ -51,18 +54,19 @@ public class HorizontalGroupBox extends HUD_Element {
       if (this.deltay > 0.0) this.deltay -= this.speed * delta_time;
       if (this.deltax > 0.0) this.deltax -= this.speed * delta_time;
 
-      if (this.forward_anim) this.position = new Position(this.initialPos.x - this.deltax, this.initialPos.y - this.deltay);
+      if (this.forward_anim)
+        this.position = new Position(this.initialPos.getX() - this.deltax, this.initialPos.getY() - this.deltay);
       else {
-        this.position = new Position(this.initialPos.x - (this.fromx - this.deltax), this.initialPos.y - (this.fromy - this.deltay));
+        this.position = new Position(this.initialPos.getX() - (this.fromx - this.deltax), this.initialPos.getY() - (this.fromy - this.deltay));
         if (this.deltax <= 0.0 && this.deltay <= 0.0) this.visible = false;
       }
-      StdDraw.picture(this.position.x, this.position.y, this.background, this.width, this.height);
+      StdDraw.picture(this.position.getX(), this.position.getY(), this.background, this.width, this.height);
 
       Iterator<RelativeHUD_Element> i = this.list_HUD_Elements.iterator();
       RelativeHUD_Element el;
       while (i.hasNext()) {
         el = i.next();
-        el.element.setPosition(new Position((this.position.x - (this.width / 2) + el.relativepos.x * this.width), (this.position.y - (this.height / 2) + el.relativepos.y * this.height)));
+        el.element.setPosition(new Position((this.position.getX() - (this.width / 2) + el.relativepos.getX() * this.width), (this.position.getY() - (this.height / 2) + el.relativepos.getY() * this.height)));
         el.element.Update(MouseX, MouseY, delta_time);
       }
     }
@@ -77,7 +81,7 @@ public class HorizontalGroupBox extends HUD_Element {
       while (i.hasNext()) {
         el = i.next();
         action = el.element.onClick(MouseX, MouseY);
-        if(!action.equals("")) break;
+        if (!action.equals("")) break;
       }
       return action;
     }

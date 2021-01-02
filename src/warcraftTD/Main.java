@@ -1,11 +1,8 @@
 package warcraftTD;
 
-import java.util.concurrent.TimeUnit;
-
 public class Main {
 
-
-  public static void main(String[] args) throws InterruptedException {
+  public static void main(String[] args) {
     int width = 1200;
     int height = 800;
     int nbSquareX = 11;
@@ -15,9 +12,7 @@ public class Main {
 
     World w = new World(width, height, nbSquareX, nbSquareY, startX, startY);
 
-
-    w.initWave(1);
-
+    w.initWave(100);
 
     // Lancement de la boucle principale du jeu
     w.run();

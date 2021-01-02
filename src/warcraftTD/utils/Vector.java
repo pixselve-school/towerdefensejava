@@ -1,8 +1,8 @@
-package warcraftTD;
+package warcraftTD.utils;
 
 public class Vector {
-  private double x;
-  private double y;
+  private final double x;
+  private final double y;
 
   public Vector(double x, double y) {
     this.x = x;
@@ -10,8 +10,8 @@ public class Vector {
   }
 
   public Vector(Position start, Position finish) {
-    this.x = finish.x - start.x;
-    this.y = finish.y - start.y;
+    this.x = finish.getX() - start.getX();
+    this.y = finish.getY() - start.getY();
   }
 
   public double length() {

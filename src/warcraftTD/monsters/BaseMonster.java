@@ -1,4 +1,7 @@
-package warcraftTD;
+package warcraftTD.monsters;
+
+import warcraftTD.libs.StdDraw;
+import warcraftTD.utils.Position;
 
 import java.util.List;
 
@@ -14,6 +17,6 @@ public class BaseMonster extends Monster {
    */
   public void draw() {
     StdDraw.setPenColor(StdDraw.BLUE);
-    StdDraw.filledCircle(this.p.x, this.p.y, 0.01);
+    StdDraw.filledCircle(this.getPosition().getX(), this.getPosition().getY(), 0.01);
   }
 }

@@ -1,10 +1,13 @@
-package warcraftTD;
+package warcraftTD.hud;
 
-public class ProgressBar extends HUD_Element {
+import warcraftTD.libs.StdDraw;
+import warcraftTD.utils.Position;
+
+public class ProgressBar extends Element {
   private double progressPercent;
   private final String sprite;
   private final String sprite_fill;
-  private double shiftx;
+  private final double shiftx;
 
   public ProgressBar(Position position, double width, double height, String sprite_bar, String sprite_fill, Interface parent) {
     super(position, width, height, parent);
@@ -40,8 +43,8 @@ public class ProgressBar extends HUD_Element {
 
   @Override
   public void Update(double MouseX, double MouseY, double delta_time) {
-    StdDraw.picture(this.position.x, this.position.y, this.sprite, this.width, this.height);
-    StdDraw.picture(shiftx-shiftx*this.progressPercent/100+this.position.x - (this.width / 2) + (this.progressPercent / 100) * (this.width / 2), this.position.y, this.sprite_fill, (this.progressPercent / 100) * this.width, this.height);
+    StdDraw.picture(this.position.getX(), this.position.getY(), this.sprite, this.width, this.height);
+    StdDraw.picture(this.shiftx - this.shiftx * this.progressPercent / 100 + this.position.getX() - (this.width / 2) + (this.progressPercent / 100) * (this.width / 2), this.position.getY(), this.sprite_fill, (this.progressPercent / 100) * this.width, this.height);
   }
 
   @Override

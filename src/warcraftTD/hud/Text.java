@@ -1,8 +1,11 @@
-package warcraftTD;
+package warcraftTD.hud;
+
+import warcraftTD.libs.StdDraw;
+import warcraftTD.utils.Position;
 
 import java.awt.*;
 
-public class TextHUD extends HUD_Element {
+public class Text extends Element {
   protected String text;
   protected final Font font;
   protected Color color;
@@ -19,26 +22,26 @@ public class TextHUD extends HUD_Element {
     this.text = text;
   }
 
-  public TextHUD(Position position, double width, double height, Font font, Interface parent, String text) {
+  public Text(Position position, double width, double height, Font font, Interface parent, String text) {
     super(position, width, height, parent);
     this.font = font;
     this.text = text;
-    this.color = new Color(0,0,0);
+    this.color = new Color(0, 0, 0);
   }
 
-  public TextHUD(Position position, double width, double height, Interface parent, String text) {
+  public Text(Position position, double width, double height, Interface parent, String text) {
     super(position, width, height, parent);
     this.font = new Font("Arial", Font.BOLD, 50);
     this.text = text;
-    this.color = new Color(0,0,0);
+    this.color = new Color(0, 0, 0);
   }
 
   @Override
   public void Update(double MouseX, double MouseY, double delta_time) {
-    if(visible){
-      StdDraw.setPenColor(color);
+    if (this.visible) {
+      StdDraw.setPenColor(this.color);
       StdDraw.setFont(this.font);
-      StdDraw.text(this.position.x, this.position.y, this.text);
+      StdDraw.text(this.position.getX(), this.position.getY(), this.text);
     }
   }
 

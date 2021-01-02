@@ -1,8 +1,25 @@
-package warcraftTD;
+package warcraftTD.utils;
 
-public class Position implements Comparable<Position>{
-  double x;
-  double y;
+public class Position implements Comparable<Position> {
+  private double x;
+  private double y;
+
+  public double getX() {
+    return this.x;
+  }
+
+  public void setX(double x) {
+    this.x = x;
+  }
+
+  public double getY() {
+    return this.y;
+  }
+
+  public void setY(double y) {
+    this.y = y;
+  }
+
 
   /**
    * Classe qui permet d'avoir la position sur l'axe des x et des y des monstres et des tours
@@ -43,19 +60,19 @@ public class Position implements Comparable<Position>{
 
   @Override
   public boolean equals(Object o) {
-    if(o == this) return true;
-    if(!(o instanceof Position)) return false;
-    Position p = (Position)o;
+    if (o == this) return true;
+    if (!(o instanceof Position)) return false;
+    Position p = (Position) o;
     return (p.x == this.x && p.y == this.y);
   }
 
   @Override
   public int compareTo(Position p) {
-    if(this.x<p.x) return -1;
-    else if(this.x>p.x) return 1;
+    if (this.x < p.x) return -1;
+    else if (this.x > p.x) return 1;
     else {
-      if(this.y<p.y) return -1;
-      else if(this.y>p.y) return 1;
+      if (this.y < p.y) return -1;
+      else if (this.y > p.y) return 1;
       else {
         return 0;
       }
