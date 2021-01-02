@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class HorizontalGroupBox extends Element {
+public class HorizontalGroupBox extends ClickableElement {
   private final List<RelativeHUD_Element> list_HUD_Elements = new ArrayList<RelativeHUD_Element>();
   private double deltax;
   private double deltay;
@@ -21,8 +21,24 @@ public class HorizontalGroupBox extends Element {
 
 
   class RelativeHUD_Element {
-    Element element;
-    Position relativepos;
+    private Element element;
+    private Position relativepos;
+
+    public Element getElement() {
+      return this.element;
+    }
+
+    public void setElement(Element element) {
+      this.element = element;
+    }
+
+    public Position getRelativepos() {
+      return this.relativepos;
+    }
+
+    public void setRelativepos(Position relativepos) {
+      this.relativepos = relativepos;
+    }
 
     public RelativeHUD_Element(Element element, Position relativepos) {
       this.element = element;
@@ -37,51 +53,54 @@ public class HorizontalGroupBox extends Element {
     this.deltay = 0.0;
     this.speed = 0.5;
     this.background = background;
-    this.visible = false;
+    this.setVisible(false);
   }
 
   public void addHUDElement(Element element) {
     if (!this.list_HUD_Elements.contains(element)) {
-      RelativeHUD_Element el = new RelativeHUD_Element(element, element.position);
+      RelativeHUD_Element el = new RelativeHUD_Element(element, element.getPosition());
       this.list_HUD_Elements.add(el);
     }
   }
 
   @Override
-  public void Update(double MouseX, double MouseY, double delta_time) {
-    if (this.visible) {
+  public void update(double MouseX, double MouseY, double delta_time) {
+    if (this.isVisible()) {
 
       if (this.deltay > 0.0) this.deltay -= this.speed * delta_time;
       if (this.deltax > 0.0) this.deltax -= this.speed * delta_time;
 
       if (this.forward_anim)
-        this.position = new Position(this.initialPos.getX() - this.deltax, this.initialPos.getY() - this.deltay);
+        this.setPosition(new Position(this.initialPos.getX() - this.deltax, this.initialPos.getY() - this.deltay));
       else {
-        this.position = new Position(this.initialPos.getX() - (this.fromx - this.deltax), this.initialPos.getY() - (this.fromy - this.deltay));
-        if (this.deltax <= 0.0 && this.deltay <= 0.0) this.visible = false;
+        this.setPosition(new Position(this.initialPos.getX() - (this.fromx - this.deltax), this.initialPos.getY() - (this.fromy - this.deltay)));
+        if (this.deltax <= 0.0 && this.deltay <= 0.0) this.setVisible(false);
       }
-      StdDraw.picture(this.position.getX(), this.position.getY(), this.background, this.width, this.height);
+      StdDraw.picture(this.getPosition().getX(), this.getPosition().getY(), this.background, this.getWidth(), this.getHeight());
 
       Iterator<RelativeHUD_Element> i = this.list_HUD_Elements.iterator();
       RelativeHUD_Element el;
       while (i.hasNext()) {
         el = i.next();
-        el.element.setPosition(new Position((this.position.getX() - (this.width / 2) + el.relativepos.getX() * this.width), (this.position.getY() - (this.height / 2) + el.relativepos.getY() * this.height)));
-        el.element.Update(MouseX, MouseY, delta_time);
+        if(this.deltay > 0.0 || this.deltax > 0.0) el.element.setPosition(new Position((this.getPosition().getX() - (this.getWidth() / 2) + el.relativepos.getX() * this.getWidth()), (this.getPosition().getY() - (this.getHeight() / 2) + el.relativepos.getY() * this.getHeight())));
+        el.element.update(MouseX, MouseY, delta_time);
       }
     }
   }
 
   @Override
   public String onClick(double MouseX, double MouseY) {
-    if (this.visible) {
+    if (this.isVisible()) {
       Iterator<RelativeHUD_Element> i = this.list_HUD_Elements.iterator();
       RelativeHUD_Element el;
       String action = "";
       while (i.hasNext()) {
         el = i.next();
-        action = el.element.onClick(MouseX, MouseY);
+        if(el.getElement() instanceof ClickableElement) action = ((ClickableElement) el.getElement()).onClick(MouseX, MouseY);
         if (!action.equals("")) break;
+      }
+      if(action.equals("")){
+        return (this.getHitBox().isHit(MouseX, MouseY) ? "cancel" : "");
       }
       return action;
     }
@@ -93,7 +112,7 @@ public class HorizontalGroupBox extends Element {
     this.deltay = fromy;
     this.fromy = fromy;
     this.fromx = fromx;
-    this.visible = true;
+    this.setVisible(true);
     this.forward_anim = true;
   }
 
@@ -101,6 +120,5 @@ public class HorizontalGroupBox extends Element {
     this.forward_anim = false;
     this.deltax = this.fromx;
     this.deltay = this.fromy;
-    //this.visible = false;
   }
 }

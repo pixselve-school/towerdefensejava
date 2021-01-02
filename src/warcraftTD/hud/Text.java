@@ -6,9 +6,17 @@ import warcraftTD.utils.Position;
 import java.awt.*;
 
 public class Text extends Element {
-  protected String text;
-  protected final Font font;
-  protected Color color;
+  private String text;
+  private final Font font;
+  private Color color;
+
+  public Font getFont() {
+    return this.font;
+  }
+
+  public Color getColor() {
+    return this.color;
+  }
 
   public void setColor(Color color) {
     this.color = color;
@@ -37,18 +45,12 @@ public class Text extends Element {
   }
 
   @Override
-  public void Update(double MouseX, double MouseY, double delta_time) {
-    if (this.visible) {
+  public void update(double MouseX, double MouseY, double delta_time) {
+    if (this.isVisible()) {
       StdDraw.setPenColor(this.color);
       StdDraw.setFont(this.font);
-      StdDraw.text(this.position.getX(), this.position.getY(), this.text);
+      StdDraw.text(this.getPosition().getX(), this.getPosition().getY(), this.text);
     }
   }
-
-  @Override
-  public String onClick(double MouseX, double MouseY) {
-    return "";
-  }
-
 
 }
