@@ -14,7 +14,11 @@ public class Animation {
   private int currentFrame;
   private final boolean isLoop;
 
-  private final InterestingEvent callback;
+  public void setCallback(MonsterDieCallback callback) {
+    this.callback = callback;
+  }
+
+  private MonsterDieCallback callback;
 
   public Animation(String[] imagesPaths, double scaledHeight, double scaledWidth, Position position, int fps, boolean isLoop) {
     this.imagesPaths = imagesPaths;
@@ -28,7 +32,7 @@ public class Animation {
     this.callback = null;
   }
 
-  public Animation(String[] imagesPaths, double scaledHeight, double scaledWidth, Position position, int fps, InterestingEvent callback) {
+  public Animation(String[] imagesPaths, double scaledHeight, double scaledWidth, Position position, int fps, MonsterDieCallback callback) {
     this.imagesPaths = imagesPaths;
     this.scaledHeight = scaledHeight;
     this.scaledWidth = scaledWidth;
@@ -50,7 +54,7 @@ public class Animation {
           this.currentFrame = 0;
         } else {
           assert this.callback != null;
-          this.callback.interestingEvent();
+          this.callback.die();
           return;
         }
       }
