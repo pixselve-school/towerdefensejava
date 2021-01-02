@@ -11,11 +11,13 @@ import warcraftTD.utils.Wallet;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class World {
   // l'ensemble des monstres, pour gerer (notamment) l'affichage
   private List<Monster> monsters = new ArrayList<Monster>();
   private int totalMonsterAmount;
+  private int monsterAmount;
 
   // l'ensemble des cases du chemin
   private List<Position> paths = new ArrayList<Position>();
@@ -206,8 +208,11 @@ public class World {
         this.life -= 1;
       }
       if (m.isDead()) {
+        this.HUD.setWaveEnemyProgress(((100 * this.amountAliveMonsters()) / (double) this.totalMonsterAmount));
+      }
+      if (m.isReadyToBeRemoved()) {
         i.remove();
-        this.HUD.setWaveEnemyProgress(((100 * this.monsters.size()) / (double) this.totalMonsterAmount));
+
       }
     }
 
@@ -226,14 +231,19 @@ public class World {
 
   }
 
+  private int amountAliveMonsters() {
+    return this.monsters.stream().filter(monster -> !monster.isDead()).collect(Collectors.toCollection(ArrayList::new)).size();
+  }
+
 
   public void initWave(int monsterAmount) {
     this.HUD.setWaveEnemyProgress(100);
     this.totalMonsterAmount = monsterAmount;
+    this.monsterAmount = monsterAmount;
     this.monsters = new ArrayList<>();
     for (int i = 0; i < monsterAmount; i++) {
       Position startingPosition = new Position(this.paths.get(0).getX() * this.squareWidth + this.squareWidth / 2, this.paths.get(0).getY() * this.squareHeight + this.squareHeight / 2 + 0.04 * i);
-      this.monsters.add(new BaseMonster(startingPosition, this.paths, this.nbSquareX, this.nbSquareY, (double) 1 / this.nbSquareX, (double) 1 / this.nbSquareY, 200));
+      this.monsters.add(new BaseMonster(startingPosition, this.paths, this.nbSquareX, this.nbSquareY, (double) 1 / this.nbSquareX, (double) 1 / this.nbSquareY, 20));
     }
     this.isMonsterActing = true;
   }
@@ -384,8 +394,8 @@ public class World {
 
       this.update();
       StdDraw.show();
-      //StdDraw.pause(20);
-      System.out.println(this.monsters.size());
+
+
       int ms = (int) (System.nanoTime() - time_nano) / 1000000;
       int fps = 1000 / ms;
       this.delta_time = 1.0 / fps;
