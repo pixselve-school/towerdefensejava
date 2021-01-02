@@ -4,10 +4,14 @@ import warcraftTD.World;
 import warcraftTD.utils.Position;
 import warcraftTD.utils.Vector;
 
+import javax.sound.sampled.*;
+import java.io.File;
+import java.io.IOException;
+
 public class Arrow extends Tower {
 
-  public Arrow(Position p, double width, double height, World world) {
-    super(p, width, height, world);
+  public Arrow(Position p, double width, double height, World world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    super(p, width, height, world, "music/arrow.wav");
 
     this.setSprite("images/tower_arrow.png");
     this.setSprite_hover("images/tower_arrow_hover.png");
@@ -29,5 +33,11 @@ public class Arrow extends Tower {
   public void shootProjectile(Vector Direction) {
     warcraftTD.towers.projectiles.Arrow pr = new warcraftTD.towers.projectiles.Arrow(this.getPosition(), Direction, this.getWorld(), (int) this.getDamage_u().getLevel_stat()[this.getDamage_u().getLevel() - 1], (int) this.getSpecial_u().getLevel_stat()[this.getSpecial_u().getLevel() - 1]);
     this.getList_projectile().add(pr);
+    try {
+      this.getShootingSound().play(0.15);
+    } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
+      e.printStackTrace();
+    }
+
   }
 }

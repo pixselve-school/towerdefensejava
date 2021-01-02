@@ -4,9 +4,13 @@ import warcraftTD.World;
 import warcraftTD.utils.Position;
 import warcraftTD.utils.Vector;
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.IOException;
+
 public class Ice extends Tower {
-  public Ice(Position p, double width, double height, World world) {
-    super(p, width, height, world);
+  public Ice(Position p, double width, double height, World world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    super(p, width, height, world, "music/snow.wav");
     this.setSprite("images/ice_tower.png");
     this.setSprite_hover("images/ice_tower_hover.png");
     this.setSprite_HUD_special("images/ice_upgrade.png");
@@ -27,5 +31,10 @@ public class Ice extends Tower {
   public void shootProjectile(Vector Direction) {
     warcraftTD.towers.projectiles.Ice pr = new warcraftTD.towers.projectiles.Ice(this.getPosition(), Direction, this.getWorld(), (int) this.getDamage_u().getLevel_stat()[this.getDamage_u().getLevel() - 1], (int) this.getSpecial_u().getLevel_stat()[this.getSpecial_u().getLevel() - 1]);
     this.getList_projectile().add(pr);
+    try {
+      this.getShootingSound().play(0.15);
+    } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
+      e.printStackTrace();
+    }
   }
 }

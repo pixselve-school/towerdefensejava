@@ -4,9 +4,13 @@ import warcraftTD.World;
 import warcraftTD.utils.Position;
 import warcraftTD.utils.Vector;
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.IOException;
+
 public class Bomb extends Tower {
-  public Bomb(Position p, double width, double height, World world) {
-    super(p, width, height, world);
+  public Bomb(Position p, double width, double height, World world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    super(p, width, height, world, "music/bomb.wav");
     this.setSprite("images/bomb_tower.png");
     this.setSprite_hover("images/bomb_tower_hover.png");
     this.setSprite_HUD_special("images/bomb_upgrade.png");
@@ -27,5 +31,10 @@ public class Bomb extends Tower {
   public void shootProjectile(Vector Direction) {
     warcraftTD.towers.projectiles.Bomb pr = new warcraftTD.towers.projectiles.Bomb(this.getPosition(), Direction, this.getWorld(), (int) this.getDamage_u().getLevel_stat()[this.getDamage_u().getLevel() - 1], this.getSpecial_u().getLevel_stat()[this.getSpecial_u().getLevel() - 1]);
     this.getList_projectile().add(pr);
+    try {
+      this.getShootingSound().play(0.15);
+    } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
+      e.printStackTrace();
+    }
   }
 }
