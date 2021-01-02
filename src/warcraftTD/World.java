@@ -1,6 +1,6 @@
 package warcraftTD;
 
-import warcraftTD.hud.Interface;
+import warcraftTD.hud.InterfaceJeu;
 import warcraftTD.libs.StdDraw;
 import warcraftTD.monsters.BaseMonster;
 import warcraftTD.monsters.Monster;
@@ -21,7 +21,7 @@ public class World {
   private List<Position> paths = new ArrayList<Position>();
 
   // L'interface du jeu
-  private Interface HUD;
+  private InterfaceJeu HUD;
 
   // le porte monnaie du joueur
   private Wallet player_wallet;
@@ -84,7 +84,7 @@ public class World {
 
     this.player_wallet = new Wallet(this);
     this.player_wallet.addMoney(9999);
-    this.HUD = new Interface(this);
+    this.HUD = new InterfaceJeu(this);
 
     this.list_tower = new TreeMap<>();
 
@@ -169,7 +169,7 @@ public class World {
    * Affiche certaines informations sur l'écran telles que les points de vie du joueur ou son or
    */
   public void drawInfos() {
-    this.HUD.UpdateInterface(StdDraw.mouseX(), StdDraw.mouseY(), this.delta_time);
+    this.HUD.updateInterface(StdDraw.mouseX(), StdDraw.mouseY(), this.delta_time);
   }
 
   /**
@@ -310,7 +310,7 @@ public class World {
     Position p = new Position(normalizedX, normalizedY);
     Position mousep = new Position((int) ((normalizedX * this.nbSquareX)), (int) ((normalizedY * this.nbSquareY)));
 
-    this.HUD.onClick(x, y, mouseButton);
+    if(this.HUD.onClick(x, y, mouseButton)) return;
 
     if (this.building_class != null && !this.needReleaseMouse) {
       if (!(this.paths.contains(mousep) || this.list_tower.containsKey(mousep))) {
@@ -423,11 +423,11 @@ public class World {
     this.paths = paths;
   }
 
-  public Interface getHUD() {
+  public InterfaceJeu getHUD() {
     return this.HUD;
   }
 
-  public void setHUD(Interface HUD) {
+  public void setHUD(InterfaceJeu HUD) {
     this.HUD = HUD;
   }
 

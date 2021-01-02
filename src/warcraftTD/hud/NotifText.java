@@ -24,18 +24,18 @@ public class NotifText extends Text {
       this.maxdeltay = this.deltay;
       this.UpDirection = false;
     }
-    this.color = color;
+    this.setColor(color);
   }
 
   @Override
-  public void Update(double MouseX, double MouseY, double delta_time) {
-    if (this.visible) {
+  public void update(double MouseX, double MouseY, double delta_time) {
+    if (this.isVisible()) {
       if (this.deltay > 0.0) this.deltay -= this.speed * delta_time;
-      else this.parent.removeNotif(this);
+      else this.getParent().removeNotif(this);
 
-      StdDraw.setPenColor(this.color);
-      StdDraw.setFont(this.font);
-      StdDraw.text(this.position.getX(), (this.UpDirection ? this.initpos.getY() + this.deltay : this.initpos.getY() + (this.maxdeltay - this.deltay)), this.text);
+      StdDraw.setPenColor(this.getColor());
+      StdDraw.setFont(this.getFont());
+      StdDraw.text(this.getPosition().getX(), (this.UpDirection ? this.initpos.getY() + this.deltay : this.initpos.getY() + (this.maxdeltay - this.deltay)), this.getText());
     }
   }
 

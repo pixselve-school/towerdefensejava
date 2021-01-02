@@ -16,12 +16,7 @@ public class Image extends Element {
   }
 
   @Override
-  public void Update(double MouseX, double MouseY, double delta_time) {
-    StdDraw.picture(this.position.getX(), this.position.getY(), this.sprite, this.width, this.height);
-  }
-
-  @Override
-  public String onClick(double MouseX, double MouseY) {
-    return "";
+  public void update(double MouseX, double MouseY, double delta_time) {
+    StdDraw.picture(this.getPosition().getX(), this.getPosition().getY(), this.sprite, this.getWidth(), this.getHeight());
   }
 }

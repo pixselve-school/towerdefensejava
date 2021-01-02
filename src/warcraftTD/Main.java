@@ -2,7 +2,7 @@ package warcraftTD;
 
 public class Main {
 
-  public static void main(String[] args) {
+  public static void main(String[] args){
     int width = 1200;
     int height = 800;
     int nbSquareX = 11;

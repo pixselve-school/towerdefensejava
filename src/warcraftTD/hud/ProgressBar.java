@@ -37,20 +37,14 @@ public class ProgressBar extends Element {
     }
   }
 
-  public void ProgressBar(Interface parent) {
-    this.parent = parent;
+  public void ProgressBar(InterfaceJeu parent) {
+    this.setParent(parent);
   }
 
   @Override
-  public void Update(double MouseX, double MouseY, double delta_time) {
-    StdDraw.picture(this.position.getX(), this.position.getY(), this.sprite, this.width, this.height);
-    StdDraw.picture(this.shiftx - this.shiftx * this.progressPercent / 100 + this.position.getX() - (this.width / 2) + (this.progressPercent / 100) * (this.width / 2), this.position.getY(), this.sprite_fill, (this.progressPercent / 100) * this.width, this.height);
+  public void update(double MouseX, double MouseY, double delta_time) {
+    StdDraw.picture(this.getPosition().getX(), this.getPosition().getY(), this.sprite, this.getWidth(), this.getHeight());
+    StdDraw.picture(this.shiftx - this.shiftx * this.progressPercent / 100 + this.getPosition().getX() - (this.getWidth() / 2) + (this.progressPercent / 100) * (this.getWidth() / 2), this.getPosition().getY(), this.sprite_fill, (this.progressPercent / 100) * this.getWidth(), this.getHeight());
   }
-
-  @Override
-  public String onClick(double MouseX, double MouseY) {
-    return "";
-  }
-
 
 }
