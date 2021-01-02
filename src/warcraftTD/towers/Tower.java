@@ -5,9 +5,13 @@ import warcraftTD.libs.StdDraw;
 import warcraftTD.monsters.Monster;
 import warcraftTD.towers.projectiles.Projectile;
 import warcraftTD.utils.Position;
+import warcraftTD.utils.Sound;
 import warcraftTD.utils.Vector;
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -185,7 +189,13 @@ abstract public class Tower {
   private StatUpgrade attackspeed_u;
   private StatUpgrade special_u;
 
-  public Tower(Position p, double width, double height, World world) {
+  public Sound getShootingSound() {
+    return this.shootingSound;
+  }
+
+  private final Sound shootingSound;
+
+  public Tower(Position p, double width, double height, World world, String soundFilePath) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     this.position = p;
     this.width = width;
     this.height = height;
@@ -195,6 +205,7 @@ abstract public class Tower {
     this.targetMonster = null;
     this.list_projectile = new ArrayList<Projectile>();
     this.world = world;
+    this.shootingSound = new Sound(soundFilePath, false);
   }
 
   public void Update(double delta_time, boolean hovered) {
@@ -224,7 +235,7 @@ abstract public class Tower {
         this.targetMonster = null;
       }
       for (int i = 0; i < this.world.getMonsters().size(); i++) {
-        if (this.world.getMonsters().get(i).getPosition().dist(this.position) <= this.range) {
+        if (!this.world.getMonsters().get(i).isDead() && this.world.getMonsters().get(i).getPosition().dist(this.position) <= this.range) {
           this.targetMonster = this.world.getMonsters().get(i);
           break;
         }

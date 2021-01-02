@@ -29,23 +29,39 @@ public abstract class Monster {
 
   private Map<String, Effect> undergoingEffects;
 
+  public boolean isReadyToBeRemoved() {
+    return this.isReadyToBeRemoved;
+  }
 
-  public Monster(Position p, List<Position> path, int nbSquareX, int nbSquareY, double squareWidth, double squareHeight, int health) {
+  public void setReadyToBeRemoved(boolean readyToBeRemoved) {
+    this.isReadyToBeRemoved = readyToBeRemoved;
+  }
+
+  private boolean isReadyToBeRemoved;
+  private int goldWhenDead;
+
+  public Monster(Position p, World world, int health, int goldWhenDead, double speed) {
     this.position = p;
-    this.path = new LinkedList<>(path);
-    this.path = this.path.stream().map(position -> new Position(position.getX() / nbSquareX + (squareWidth / 2), position.getY() / nbSquareY + (squareHeight / 2))).collect(Collectors.toList());
+    this.path = new LinkedList<>(world.getPaths());
+    this.path = this.path.stream().map(position -> new Position(position.getX() / world.getNbSquareX() + (world.getSquareWidth() / 2), position.getY() / world.getNbSquareY() + (world.getSquareHeight() / 2))).collect(Collectors.toList());
     this.vector = new Vector(this.position, this.path.get(0));
     this.previousLength = this.vector.length();
     this.health = health;
-    this.speed = 0.1;
+    this.speed = speed;
     this.undergoingEffects = new HashMap<>();
-
+    this.isReadyToBeRemoved = false;
+    this.goldWhenDead = goldWhenDead;
   }
 
   /**
    * Déplace le monstre en fonction de sa vitesse sur l'axe des x et des y et de sa prochaine position.
    */
   public void move(double delta_time) {
+    if (this.isDead()) {
+      return;
+    }
+
+
     double speedModifier = 1.0;
     for (Effect effect : this.undergoingEffects.values()) {
       speedModifier *= effect.getSpeedMultiplier();
@@ -87,7 +103,7 @@ public abstract class Monster {
   public void update(double deltaTime) {
     this.updateEffectsDuration(deltaTime);
     this.move(deltaTime);
-    this.draw();
+    this.draw(deltaTime);
 
     this.checkpoint++;
   }
@@ -130,7 +146,7 @@ public abstract class Monster {
   /**
    * Fonction abstraite qui sera instanciée dans les classes filles pour afficher le monstre sur le plateau de jeu.
    */
-  public abstract void draw();
+  public abstract void draw(double deltaTime);
 
   public Position getPosition() {
     return this.position;
@@ -194,5 +210,9 @@ public abstract class Monster {
 
   public void setUndergoingEffects(Map<String, Effect> undergoingEffects) {
     this.undergoingEffects = undergoingEffects;
+  }
+
+  public int getGoldWhenDead() {
+    return goldWhenDead;
   }
 }

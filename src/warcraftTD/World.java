@@ -2,8 +2,12 @@ package warcraftTD;
 
 import warcraftTD.hud.InterfaceJeu;
 import warcraftTD.libs.StdDraw;
-import warcraftTD.monsters.BaseMonster;
 import warcraftTD.monsters.Monster;
+import warcraftTD.monsters.Wave;
+import warcraftTD.monsters.entities.ScienceKnight;
+import warcraftTD.monsters.entities.Scorpion;
+import warcraftTD.monsters.entities.StoneChild;
+import warcraftTD.monsters.entities.StoneGiant;
 import warcraftTD.towers.*;
 import warcraftTD.utils.Position;
 import warcraftTD.utils.Wallet;
@@ -11,11 +15,13 @@ import warcraftTD.utils.Wallet;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class World {
   // l'ensemble des monstres, pour gerer (notamment) l'affichage
   private List<Monster> monsters = new ArrayList<Monster>();
   private int totalMonsterAmount;
+
 
   // l'ensemble des cases du chemin
   private List<Position> paths = new ArrayList<Position>();
@@ -59,6 +65,8 @@ public class World {
   boolean end = false;
 
   boolean isMonsterActing = false;
+
+  Wave wave;
 
   /**
    * Initialisation du monde en fonction de la largeur, la hauteur et le nombre de cases données
@@ -196,6 +204,7 @@ public class World {
    * Modifie la position du monstre au cours du temps à l'aide du paramètre nextP.
    */
   public void updateMonsters() {
+    this.wave.spawn(this, this.delta_time);
     Iterator<Monster> i = this.monsters.iterator();
     Monster m;
     while (i.hasNext()) {
@@ -206,24 +215,32 @@ public class World {
         this.life -= 1;
       }
       if (m.isDead()) {
+        this.HUD.setWaveEnemyProgress(((100 * this.amountAliveMonsters()) / (double) this.totalMonsterAmount));
+      }
+      if (m.isReadyToBeRemoved()) {
         i.remove();
-        this.HUD.setWaveEnemyProgress(((100 * this.monsters.size()) / (double) this.totalMonsterAmount));
+        this.player_wallet.addMoney(m.getGoldWhenDead());
+
       }
     }
 
-    if (this.monsters.size() == 0) {
-      this.isMonsterActing = false;
-      new java.util.Timer().schedule(
-          new java.util.TimerTask() {
-            @Override
-            public void run() {
-              World.this.initWave(World.this.totalMonsterAmount + 1);
-            }
-          },
-          5000
-      );
-    }
+//    if (this.monsters.size() == 0) {
+//      this.isMonsterActing = false;
+//      new java.util.Timer().schedule(
+//          new java.util.TimerTask() {
+//            @Override
+//            public void run() {
+//              World.this.initWave(World.this.totalMonsterAmount + 1);
+//            }
+//          },
+//          5000
+//      );
+//    }
 
+  }
+
+  private int amountAliveMonsters() {
+    return this.monsters.stream().filter(monster -> !monster.isDead()).collect(Collectors.toCollection(ArrayList::new)).size();
   }
 
 
@@ -231,11 +248,20 @@ public class World {
     this.HUD.setWaveEnemyProgress(100);
     this.totalMonsterAmount = monsterAmount;
     this.monsters = new ArrayList<>();
+    this.wave = new Wave();
     for (int i = 0; i < monsterAmount; i++) {
-      Position startingPosition = new Position(this.paths.get(0).getX() * this.squareWidth + this.squareWidth / 2, this.paths.get(0).getY() * this.squareHeight + this.squareHeight / 2 + 0.04 * i);
-      this.monsters.add(new BaseMonster(startingPosition, this.paths, this.nbSquareX, this.nbSquareY, (double) 1 / this.nbSquareX, (double) 1 / this.nbSquareY, 200));
+      double random = Math.random();
+      if (random < 0.2) {
+        this.wave.addMonster(new Scorpion(new Position(this.paths.get(0).getX() * this.squareWidth + this.squareWidth / 2, this.paths.get(0).getY() * this.squareHeight + this.squareHeight / 2), this), 1);
+      } else if (random < 0.4) {
+        this.wave.addMonster(new ScienceKnight(new Position(this.paths.get(0).getX() * this.squareWidth + this.squareWidth / 2, this.paths.get(0).getY() * this.squareHeight + this.squareHeight / 2), this), 1);
+      } else if (random < 0.6) {
+        this.wave.addMonster(new StoneChild(new Position(this.paths.get(0).getX() * this.squareWidth + this.squareWidth / 2, this.paths.get(0).getY() * this.squareHeight + this.squareHeight / 2), this), 1);
+      } else {
+        this.wave.addMonster(new StoneGiant(new Position(this.paths.get(0).getX() * this.squareWidth + this.squareWidth / 2, this.paths.get(0).getY() * this.squareHeight + this.squareHeight / 2), this), 5);
+      }
+
     }
-    this.isMonsterActing = true;
   }
 
   public void updateTowers() {
@@ -251,6 +277,7 @@ public class World {
     }
   }
 
+
   /**
    * Met à jour toutes les informations du plateau de jeu ainsi que les déplacements des monstres et les attaques des tours.
    *
@@ -259,14 +286,10 @@ public class World {
   public int update() {
     this.drawBackground();
     this.drawPath();
-    if (this.isMonsterActing) {
-      this.updateMonsters();
-    }
-
+    this.updateMonsters();
     this.updateTowers();
     this.drawMouse();
     this.drawInfos();
-
     return this.life;
   }
 
@@ -384,8 +407,8 @@ public class World {
 
       this.update();
       StdDraw.show();
-      //StdDraw.pause(20);
-      System.out.println(this.monsters.size());
+
+
       int ms = (int) (System.nanoTime() - time_nano) / 1000000;
       int fps = 1000 / ms;
       this.delta_time = 1.0 / fps;
@@ -573,5 +596,9 @@ public class World {
 
   public void setSecondCounter(double secondCounter) {
     this.secondCounter = secondCounter;
+  }
+
+  public void addMonster(Monster monster) {
+    this.monsters.add(monster);
   }
 }
