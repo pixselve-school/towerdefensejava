@@ -224,7 +224,7 @@ abstract public class Tower {
         this.targetMonster = null;
       }
       for (int i = 0; i < this.world.getMonsters().size(); i++) {
-        if (this.world.getMonsters().get(i).getPosition().dist(this.position) <= this.range) {
+        if (!this.world.getMonsters().get(i).isDead() && this.world.getMonsters().get(i).getPosition().dist(this.position) <= this.range) {
           this.targetMonster = this.world.getMonsters().get(i);
           break;
         }
