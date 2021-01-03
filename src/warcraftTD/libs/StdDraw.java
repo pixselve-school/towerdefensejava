@@ -598,6 +598,10 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
   // the frame for drawing to the screen
   private static JFrame frame;
 
+  public static JFrame getFrame() {
+    return frame;
+  }
+
   // mouse state
   private static boolean isMousePressed = false;
   private static double mouseX = 0;

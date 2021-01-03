@@ -1,5 +1,6 @@
 package warcraftTD;
 
+import warcraftTD.hud.MainMenu;
 import warcraftTD.utils.Sound;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -11,6 +12,10 @@ public class Main {
   public static void main(String[] args){
     int width = 1200;
     int height = 800;
+
+    //MainMenu menu = new MainMenu(width, height);
+    //menu.start();
+
     int nbSquareX = 11;
     int nbSquareY = 11;
     int startX = 1;
