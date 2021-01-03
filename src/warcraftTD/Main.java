@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class Main {
 
-  public static void main(String[] args){
+  public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     int width = 1200;
     int height = 800;
 

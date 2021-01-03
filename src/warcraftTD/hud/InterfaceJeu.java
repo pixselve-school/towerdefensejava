@@ -3,8 +3,12 @@ package warcraftTD.hud;
 import warcraftTD.World;
 import warcraftTD.towers.*;
 import warcraftTD.utils.Position;
+import warcraftTD.utils.Sound;
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.awt.*;
+import java.io.IOException;
 
 public class InterfaceJeu extends Interface{
   private final World world;
@@ -39,7 +43,7 @@ public class InterfaceJeu extends Interface{
   private Text upgradeAttackSpeedPrice;
   private Text upgradeSpecialPrice;
 
-  public InterfaceJeu(World parent) {
+  public InterfaceJeu(World parent) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     super();
     this.world = parent;
     this.shop_btn = new Button(new Position(0.9, 0.1), 0.1, 0.13, "images/shop_button.png", "images/shop_button_hover.png", "Shopping", this);
@@ -125,7 +129,7 @@ public class InterfaceJeu extends Interface{
   }
 
   @Override
-  public Boolean onClick(double mouseX, double mouseY, int mouseButton) {
+  public Boolean onClick(double mouseX, double mouseY, int mouseButton) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     if (mouseButton == 3 && this.building) {
       this.stopBuilding();
       return true;
@@ -158,49 +162,49 @@ public class InterfaceJeu extends Interface{
         if (this.upgradingTower != null && this.upgradingTower.getDamage_u().getLevel() != this.upgradingTower.getDamage_u().getMax_level()) {
           if (this.world.getPlayer_wallet().pay(this.upgradingTower.getDamage_u().getLevel_price()[this.upgradingTower.getDamage_u().getLevel()])) {
             this.upgradingTower.upgradeDamage();
-            this.world.setNeedReleaseMouse(true);
             this.upgradeDamageIm.setSprite("images/level" + this.upgradingTower.getDamage_u().getLevel() + ".png");
             if (this.upgradingTower.getDamage_u().getLevel() != this.upgradingTower.getDamage_u().getMax_level())
               this.upgradeDamagePrice.setText(this.upgradingTower.getDamage_u().getLevel_price()[this.upgradingTower.getDamage_u().getLevel()] + "");
             else this.upgradeDamagePrice.setText("---");
           }
         }
+        this.world.setNeedReleaseMouse(true);
         break;
       case "UpgradeRange":
         if (this.upgradingTower != null && this.upgradingTower.getRange_u().getLevel() != this.upgradingTower.getRange_u().getMax_level()) {
           if (this.world.getPlayer_wallet().pay(this.upgradingTower.getRange_u().getLevel_price()[this.upgradingTower.getRange_u().getLevel()])) {
             this.upgradingTower.upgradeRange();
-            this.world.setNeedReleaseMouse(true);
             this.upgradeRangeIm.setSprite("images/level" + this.upgradingTower.getRange_u().getLevel() + ".png");
             if (this.upgradingTower.getRange_u().getLevel() != this.upgradingTower.getRange_u().getMax_level())
               this.upgradeRangePrice.setText(this.upgradingTower.getRange_u().getLevel_price()[this.upgradingTower.getRange_u().getLevel()] + "");
             else this.upgradeRangePrice.setText("---");
           }
         }
+        this.world.setNeedReleaseMouse(true);
         break;
       case "UpgradeAttackSpeed":
         if (this.upgradingTower != null && this.upgradingTower.getAttackspeed_u().getLevel() != this.upgradingTower.getAttackspeed_u().getMax_level()) {
           if (this.world.getPlayer_wallet().pay(this.upgradingTower.getAttackspeed_u().getLevel_price()[this.upgradingTower.getAttackspeed_u().getLevel()])) {
             this.upgradingTower.upgradeAttackSpeed();
-            this.world.setNeedReleaseMouse(true);
             this.upgradeAttackSpeedIm.setSprite("images/level" + this.upgradingTower.getAttackspeed_u().getLevel() + ".png");
             if (this.upgradingTower.getAttackspeed_u().getLevel() != this.upgradingTower.getAttackspeed_u().getMax_level())
               this.upgradeAttackSpeedPrice.setText(this.upgradingTower.getAttackspeed_u().getLevel_price()[this.upgradingTower.getAttackspeed_u().getLevel()] + "");
             else this.upgradeAttackSpeedPrice.setText("---");
           }
         }
+        this.world.setNeedReleaseMouse(true);
         break;
       case "UpgradeSpecial":
         if (this.upgradingTower != null && this.upgradingTower.getSpecial_u().getLevel() != this.upgradingTower.getSpecial_u().getMax_level()) {
           if (this.world.getPlayer_wallet().pay(this.upgradingTower.getSpecial_u().getLevel_price()[this.upgradingTower.getSpecial_u().getLevel()])) {
             this.upgradingTower.upgradeSpecial();
-            this.world.setNeedReleaseMouse(true);
             this.upgradeSpecialIm.setSprite("images/level" + this.upgradingTower.getSpecial_u().getLevel() + ".png");
             if (this.upgradingTower.getSpecial_u().getLevel() != this.upgradingTower.getSpecial_u().getMax_level())
               this.upgradeSpecialPrice.setText(this.upgradingTower.getSpecial_u().getLevel_price()[this.upgradingTower.getSpecial_u().getLevel()] + "");
             else this.upgradeSpecialPrice.setText("---");
           }
         }
+        this.world.setNeedReleaseMouse(true);
         break;
     }
   }
@@ -212,7 +216,9 @@ public class InterfaceJeu extends Interface{
     this.world.startBuilding(towerClass);
   }
 
-  public void stopBuilding(){
+  public void stopBuilding() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    Sound soundTower = new Sound("music/click.wav", false);
+    soundTower.play(0.5);
     this.building = false;
     this.shopBox.setVisible(true);
     this.building_text.setVisible(false);
@@ -227,9 +233,11 @@ public class InterfaceJeu extends Interface{
     return this.waveEnnemyBar.getProgressPercent();
   }
 
-  public void showUpgradeTowerBox(Tower tower) {
+  public void showUpgradeTowerBox(Tower tower) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     if (this.upgradingTower != tower) {
       if (this.shopBox.isVisible()) this.shopBox.HideBox();
+      Sound soundTower = new Sound("music/click.wav", false);
+      soundTower.play(0.5);
       this.upgradingTower = tower;
       this.world.setNeedReleaseMouse(true);
       this.upgradeBox.ShowBox(0.3, 0.0);
