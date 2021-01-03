@@ -208,20 +208,31 @@ abstract public class Tower {
     this.shootingSound = new Sound(soundFilePath, false);
   }
 
-  public void Update(double delta_time, boolean hovered) {
+  public void Update(double delta_time) {
     if (this.animationy > 0.0) {
       StdDraw.picture(this.position.getX(), this.position.getY(), "images/black_hover.png", this.width / (3 + this.animationy * (1 / this.animationymax)), this.height / (1.3 + this.animationy * (1 / this.animationymax)));
       StdDraw.picture(this.position.getX(), this.position.getY() + this.animationy, this.sprite, this.width, this.height);
       this.animationy -= 0.8 * delta_time;
     } else {
-      if (hovered) {
-        StdDraw.setPenColor(new Color(0, 161, 255, 90));
-        StdDraw.filledCircle(this.position.getX(), this.position.getY(), this.range);
-        StdDraw.picture(this.position.getX(), this.position.getY(), this.sprite_hover, this.width, this.height);
-      } else StdDraw.picture(this.position.getX(), this.position.getY(), this.sprite, this.width, this.height);
+      StdDraw.picture(this.position.getX(), this.position.getY(), this.sprite, this.width, this.height);
 
       this.ProjectilesManagement(delta_time);
       this.AttackManagement(delta_time);
+    }
+  }
+
+  public void hoveredVisual(){
+    if (!(this.animationy > 0.0)) {
+      StdDraw.setPenColor(new Color(0, 161, 255, 90));
+      StdDraw.filledCircle(this.position.getX(), this.position.getY(), this.range);
+      StdDraw.picture(this.position.getX(), this.position.getY(), this.sprite_hover, this.width, this.height);
+    }
+  }
+
+  public void upgradingVisual(){
+    if (!(this.animationy > 0.0)) {
+      StdDraw.picture(this.position.getX(), this.position.getY(), this.sprite, this.width, this.height);
+      StdDraw.picture(this.position.getX(), this.position.getY(), "images/Upgrade_tile.png", this.width, this.height);
     }
   }
 

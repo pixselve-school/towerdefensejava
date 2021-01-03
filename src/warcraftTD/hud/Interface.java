@@ -26,6 +26,7 @@ public abstract class Interface {
 
     public void addNotifText(Position p, Font font, double deltay, String text, Color color) {
         NotifText notif = new NotifText(p, 0.0, 0.0, font, this, text, deltay, color);
+        this.listElements.add(notif);
     }
 
     public void removeNotif(NotifText text) {
