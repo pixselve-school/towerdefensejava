@@ -10,8 +10,12 @@ import warcraftTD.monsters.entities.StoneChild;
 import warcraftTD.monsters.entities.StoneGiant;
 import warcraftTD.towers.*;
 import warcraftTD.utils.Position;
+import warcraftTD.utils.Sound;
 import warcraftTD.utils.Wallet;
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -78,7 +82,7 @@ public class World {
    * @param startSquareX
    * @param startSquareY
    */
-  public World(int width, int height, int nbSquareX, int nbSquareY, int startSquareX, int startSquareY) {
+  public World(int width, int height, int nbSquareX, int nbSquareY, int startSquareX, int startSquareY) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     this.width = width;
     this.height = height;
     this.nbSquareX = nbSquareX;
@@ -332,7 +336,7 @@ public class World {
    * @param x
    * @param y
    */
-  public void mouseClick(double x, double y, int mouseButton) {
+  public void mouseClick(double x, double y, int mouseButton) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     double normalizedX = (int) (x / this.squareWidth) * this.squareWidth + this.squareWidth / 2;
     double normalizedY = (int) (y / this.squareHeight) * this.squareHeight + this.squareHeight / 2;
     Position p = new Position(normalizedX, normalizedY);
@@ -348,6 +352,8 @@ public class World {
             Constructor cons = this.building_class.getConstructor(Position.class, double.class, double.class, World.class);
             Tower t = (Tower) cons.newInstance(new Position(normalizedX, normalizedY), this.squareWidth, this.squareHeight, this);
             this.list_tower.put(new Position((int) ((normalizedX * this.nbSquareX)), (int) ((normalizedY * this.nbSquareY))), t);
+            Sound soundTower = new Sound("music/putTower.wav", false);
+            soundTower.play(0.5);
           } catch (NoSuchMethodException e) {
             e.printStackTrace();
           } catch (IllegalAccessException e) {
@@ -392,7 +398,7 @@ public class World {
   /**
    * Récupère la touche entrée au clavier ainsi que la position de la souris et met à jour le plateau en fonction de ces interractions
    */
-  public void run() {
+  public void run() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     this.printCommands();
     while (!this.end) {
       long time_nano = System.nanoTime();

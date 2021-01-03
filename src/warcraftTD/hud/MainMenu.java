@@ -3,11 +3,15 @@ package warcraftTD.hud;
 import warcraftTD.libs.StdDraw;
 import warcraftTD.utils.Animation;
 import warcraftTD.utils.Position;
+
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
 
 import java.awt.*;
+import java.io.IOException;
 
 public class MainMenu extends Interface {
     private HorizontalGroupBox groupBox;
@@ -16,7 +20,7 @@ public class MainMenu extends Interface {
     private boolean needReleaseMouse;
     private Animation background;
 
-    public MainMenu(int width, int height) {
+    public MainMenu(int width, int height) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         StdDraw.setCanvasSize(width, height);
         StdDraw.enableDoubleBuffering();
 
@@ -95,7 +99,7 @@ public class MainMenu extends Interface {
         }
     }
 
-    public void start(){
+    public void start() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         while(!quit){
             long time_nano = System.nanoTime();
 
