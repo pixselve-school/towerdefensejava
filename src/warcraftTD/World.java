@@ -220,7 +220,6 @@ public class World {
       if (m.isReadyToBeRemoved()) {
         i.remove();
         this.player_wallet.addMoney(m.getGoldWhenDead());
-
       }
     }
 
@@ -269,11 +268,17 @@ public class World {
     double normalizedY = (int) (StdDraw.mouseY() / this.squareHeight) * this.squareHeight + this.squareHeight / 2;
     Position mousep = new Position((int) ((normalizedX * this.nbSquareX)), (int) ((normalizedY * this.nbSquareY)));
     Tower towerUnderMouse = this.list_tower.get(mousep);
+
+    if(this.getHUD().getUpgradingTower()!=null){
+      this.getHUD().getUpgradingTower().upgradingVisual();
+    }
+    if(towerUnderMouse!=null){
+      towerUnderMouse.hoveredVisual();
+    }
+
     for (Map.Entry<Position, Tower> entry : this.list_tower.entrySet()) {
-      boolean hover = false;
       Tower value = entry.getValue();
-      if (this.building_class == null) hover = value == towerUnderMouse;
-      value.Update(this.delta_time, hover);
+      value.Update(this.delta_time);
     }
   }
 
