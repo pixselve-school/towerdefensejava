@@ -3,6 +3,9 @@ package warcraftTD.hud;
 import warcraftTD.libs.StdDraw;
 import warcraftTD.utils.Position;
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -46,7 +49,7 @@ public class HorizontalGroupBox extends ClickableElement {
     }
   }
 
-  public HorizontalGroupBox(Position position, double width, double height, Interface parent, String background) {
+  public HorizontalGroupBox(Position position, double width, double height, Interface parent, String background) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     super(position, width, height, parent);
     this.initialPos = position;
     this.deltax = 0.0;
@@ -76,7 +79,7 @@ public class HorizontalGroupBox extends ClickableElement {
         this.setPosition(new Position(this.initialPos.getX() - (this.fromx - this.deltax), this.initialPos.getY() - (this.fromy - this.deltay)));
         if (this.deltax <= 0.0 && this.deltay <= 0.0) this.setVisible(false);
       }
-      StdDraw.picture(this.getPosition().getX(), this.getPosition().getY(), this.background, this.getWidth(), this.getHeight());
+      if(!this.background.equals("")) StdDraw.picture(this.getPosition().getX(), this.getPosition().getY(), this.background, this.getWidth(), this.getHeight());
 
       Iterator<RelativeHUD_Element> i = this.list_HUD_Elements.iterator();
       RelativeHUD_Element el;
@@ -89,7 +92,7 @@ public class HorizontalGroupBox extends ClickableElement {
   }
 
   @Override
-  public String onClick(double MouseX, double MouseY) {
+  public String onClick(double MouseX, double MouseY) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     if (this.isVisible()) {
       Iterator<RelativeHUD_Element> i = this.list_HUD_Elements.iterator();
       RelativeHUD_Element el;

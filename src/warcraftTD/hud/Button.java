@@ -3,6 +3,10 @@ package warcraftTD.hud;
 import warcraftTD.libs.StdDraw;
 import warcraftTD.utils.Position;
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.IOException;
+
 public class Button extends ClickableElement {
   private final String sprite;
   private final String sprite_hover;
@@ -25,7 +29,7 @@ public class Button extends ClickableElement {
     return this.clickable;
   }
 
-  public Button(Position pos, double width, double height, String sprite, String sprite_hover, String action, Interface Parent) {
+  public Button(Position pos, double width, double height, String sprite, String sprite_hover, String action, Interface Parent) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     super(pos, width, height, Parent);
     this.action = action;
     this.sprite = sprite;
@@ -52,8 +56,9 @@ public class Button extends ClickableElement {
   }
 
   @Override
-  public String onClick(double MouseX, double MouseY) {
+  public String onClick(double MouseX, double MouseY) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     if(this.isVisible() && this.isEnabled() && this.clickable && this.getHitBox().isHit(MouseX, MouseY)){
+      this.getClickSound().play(0.6);
       return this.action;
     } else {
       return "";

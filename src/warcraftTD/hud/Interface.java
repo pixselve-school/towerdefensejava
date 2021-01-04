@@ -2,7 +2,10 @@ package warcraftTD.hud;
 
 import warcraftTD.utils.Position;
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -49,7 +52,7 @@ public abstract class Interface {
         }
     }
 
-    public Boolean onClick(double mouseX, double mouseY, int mouseButton) {
+    public Boolean onClick(double mouseX, double mouseY, int mouseButton) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         Element elc = null;
         String action = "";
         for (Element el : this.listElements) {
