@@ -1,17 +1,13 @@
 package warcraftTD;
 
 import warcraftTD.hud.InterfaceEditor;
-import warcraftTD.hud.InterfaceJeu;
 import warcraftTD.libs.StdDraw;
-import warcraftTD.towers.Tower;
 import warcraftTD.utils.Position;
-import warcraftTD.utils.Sound;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import java.awt.*;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -77,8 +73,36 @@ public class WorldEditor {
     public void drawMouse() {
         double normalizedX = (int) (StdDraw.mouseX() / this.squareWidth) * this.squareWidth + this.squareWidth / 2;
         double normalizedY = (int) (StdDraw.mouseY() / this.squareHeight) * this.squareHeight + this.squareHeight / 2;
+        Position mousep = new Position((int) ((normalizedX * this.nbSquareX)), (int) ((normalizedY * this.nbSquareY)));
 
-        StdDraw.picture(normalizedX, normalizedY, "images/Select_tile.png", this.squareWidth, this.squareHeight);
+        switch (this.HUD.getBuilding_type()){
+            case None:
+                break;
+            case Path:
+                if(!this.paths.contains(mousep)){
+                    if(((this.paths.get(this.paths.size()-1).equals(new Position(mousep.getX()+1, mousep.getY())) ? 1 : 0) + (this.paths.get(this.paths.size()-1).equals(new Position(mousep.getX()-1, mousep.getY())) ? 1 : 0) + (this.paths.get(this.paths.size()-1).equals(new Position(mousep.getX(), mousep.getY()+1)) ? 1 : 0) + (this.paths.get(this.paths.size()-1).equals(new Position(mousep.getX(), mousep.getY()-1)) ? 1 : 0) == 1)){
+                        if(((this.paths.contains(new Position(mousep.getX()+1, mousep.getY())) ? 1 : 0) + (this.paths.contains(new Position(mousep.getX()-1, mousep.getY())) ? 1 : 0) + (this.paths.contains(new Position(mousep.getX(), mousep.getY()+1)) ? 1 : 0) + (this.paths.contains(new Position(mousep.getX(), mousep.getY()-1)) ? 1 : 0) == 1)) {
+                            StdDraw.picture(normalizedX, normalizedY, "images/Select_tile.png", this.squareWidth, this.squareHeight);
+                            return;
+                        }
+                    }
+                    StdDraw.picture(normalizedX, normalizedY, "images/Select_tile_unavailable.png", this.squareWidth, this.squareHeight);
+                } else {
+                    StdDraw.picture(normalizedX, normalizedY, "images/Select_tile_unavailable.png", this.squareWidth, this.squareHeight);
+                }
+                break;
+            case RemovePath:
+                if(paths.size()>0 && (this.paths.get(0).equals(mousep) || this.paths.get(this.paths.size()-1).equals(mousep))){
+                    StdDraw.picture(normalizedX, normalizedY, "images/Select_tile_unavailable.png", this.squareWidth, this.squareHeight);
+                }
+                break;
+            case Spawn:
+                if(!this.paths.contains(mousep)){
+                    StdDraw.picture(normalizedX, normalizedY, "images/Select_tile.png", this.squareWidth, this.squareHeight);
+                }
+                break;
+        }
+
     }
 
     public void drawBackground() {
@@ -184,9 +208,17 @@ public class WorldEditor {
 		 	p = i.next();
 			 double coorX = p.getX() / nbSquareX + (squareWidth/2);
 			 double coorY = p.getY() / nbSquareY + (squareHeight/2);
+             StdDraw.setPenColor(StdDraw.YELLOW);
 			 StdDraw.filledRectangle(coorX, coorY, squareWidth / 2, squareHeight / 2);
+			 StdDraw.setPenColor(StdDraw.PRINCETON_ORANGE);
+             StdDraw.rectangle(coorX, coorY, squareWidth/2 , squareHeight/2);
 			 //StdDraw.picture(coorX, coorY, "images/sand.jpg", squareWidth, squareHeight);
 		 }
+		 if(this.paths.size()>0){
+             StdDraw.setPenColor(StdDraw.BLACK);
+             StdDraw.setFont(new Font("Arial", Font.BOLD, 30));
+		     StdDraw.text(this.paths.get(0).getX()/nbSquareX + squareWidth/2,this.paths.get(0).getY()/nbSquareY + squareHeight/2, "Spawn");
+         }
     }
 
     public int update() {
@@ -203,7 +235,38 @@ public class WorldEditor {
         Position p = new Position(normalizedX, normalizedY);
         Position mousep = new Position((int) ((normalizedX * this.nbSquareX)), (int) ((normalizedY * this.nbSquareY)));
 
-        this.HUD.onClick(x,y,mouseButton);
+        if(this.HUD.onClick(x,y,mouseButton)) return;
+
+        switch (this.HUD.getBuilding_type()){
+            case None:
+                break;
+            case Path:
+                if(!this.paths.contains(mousep)){
+                    if(((this.paths.get(this.paths.size()-1).equals(new Position(mousep.getX()+1, mousep.getY())) ? 1 : 0) + (this.paths.get(this.paths.size()-1).equals(new Position(mousep.getX()-1, mousep.getY())) ? 1 : 0) + (this.paths.get(this.paths.size()-1).equals(new Position(mousep.getX(), mousep.getY()+1)) ? 1 : 0) + (this.paths.get(this.paths.size()-1).equals(new Position(mousep.getX(), mousep.getY()-1)) ? 1 : 0) == 1)){
+                        if(((this.paths.contains(new Position(mousep.getX()+1, mousep.getY())) ? 1 : 0) + (this.paths.contains(new Position(mousep.getX()-1, mousep.getY())) ? 1 : 0) + (this.paths.contains(new Position(mousep.getX(), mousep.getY()+1)) ? 1 : 0) + (this.paths.contains(new Position(mousep.getX(), mousep.getY()-1)) ? 1 : 0) == 1)) {
+                            this.paths.add(mousep);
+                        }
+                    }
+                }
+                break;
+            case RemovePath:
+                if(paths.size()>0 && (this.paths.get(0).equals(mousep) || this.paths.get(this.paths.size()-1).equals(mousep))){
+                    this.paths.remove(mousep);
+                    if(paths.size()==0) this.getHUD().getPathButton().setEnabled(false);
+                }
+                break;
+            case Spawn:
+                if(!this.paths.contains(mousep)){
+                    if(this.paths.size()==0){
+                        this.paths.add(mousep);
+                    } else {
+                        this.paths = new ArrayList<Position>();
+                        this.paths.add(mousep);
+                    }
+                    this.getHUD().getPathButton().setEnabled(true);
+                }
+                break;
+        }
     }
 
     public void run() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
