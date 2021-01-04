@@ -4,12 +4,21 @@ import warcraftTD.World;
 import warcraftTD.utils.Animation;
 import warcraftTD.utils.Position;
 
+import java.util.List;
+
 public abstract class BaseMonster extends Monster {
   private final Animation walkingAnimation;
   private final Animation dieAnimation;
 
   public BaseMonster(Position position, World world, int health, int goldWhenDead, double speed, Animation walkingAnimation, Animation dieAnimation) {
     super(position, world, health, goldWhenDead, speed);
+    this.walkingAnimation = walkingAnimation;
+    this.dieAnimation = dieAnimation;
+    this.dieAnimation.setCallback(() -> this.setReadyToBeRemoved(true));
+  }
+
+  public BaseMonster(List<Position> path, int health, int goldWhenDead, double speed, Animation walkingAnimation, Animation dieAnimation) {
+    super(health, goldWhenDead, speed, path);
     this.walkingAnimation = walkingAnimation;
     this.dieAnimation = dieAnimation;
     this.dieAnimation.setCallback(() -> this.setReadyToBeRemoved(true));
