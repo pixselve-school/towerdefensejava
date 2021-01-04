@@ -4,14 +4,14 @@ import warcraftTD.hud.InterfaceJeu;
 import warcraftTD.libs.StdDraw;
 import warcraftTD.monsters.Monster;
 import warcraftTD.monsters.Wave;
-import warcraftTD.monsters.entities.ScienceKnight;
-import warcraftTD.monsters.entities.Scorpion;
-import warcraftTD.monsters.entities.StoneChild;
-import warcraftTD.monsters.entities.StoneGiant;
 import warcraftTD.towers.*;
 import warcraftTD.utils.Position;
+import warcraftTD.utils.Sound;
 import warcraftTD.utils.Wallet;
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -24,7 +24,7 @@ public class World {
 
 
   // l'ensemble des cases du chemin
-  private List<Position> paths = new ArrayList<Position>();
+  private List<Position> paths;
 
   // L'interface du jeu
   private InterfaceJeu HUD;
@@ -66,7 +66,11 @@ public class World {
 
   boolean isMonsterActing = false;
 
-  Wave wave;
+  boolean displayWater;
+
+  List<Wave> waves;
+
+  String musicPath;
 
   /**
    * Initialisation du monde en fonction de la largeur, la hauteur et le nombre de cases données
@@ -137,19 +141,53 @@ public class World {
     this.paths.add(new Position(8, 0));
   }
 
+  public World(int nbSquareX, int nbSquareY, int money, int health, boolean displayWater, String musicPath, List<Position> path, List<Wave> waves) {
+    this.width = 1200;
+    this.height = 800;
+    this.nbSquareX = nbSquareX;
+    this.nbSquareY = nbSquareY;
+    this.squareWidth = (double) 1 / nbSquareX;
+    this.squareHeight = (double) 1 / nbSquareY;
+    this.spawn = new Position(path.get(0).getX() * this.squareWidth + this.squareWidth / 2, path.get(0).getY() * this.squareHeight + this.squareHeight / 2);
+    StdDraw.setCanvasSize(this.width, this.height);
+    StdDraw.enableDoubleBuffering();
+    this.delta_time = 0.0;
+    this.life = health;
+    this.displayWater = displayWater;
+
+    this.player_wallet = new Wallet(this);
+    this.player_wallet.addMoney(money);
+    this.HUD = new InterfaceJeu(this);
+
+    this.list_tower = new TreeMap<>();
+
+    this.price_tower = new Hashtable<>();
+    this.price_tower.put(Arrow.class, 50);
+    this.price_tower.put(Bomb.class, 60);
+    this.price_tower.put(Ice.class, 70);
+    this.price_tower.put(Poison.class, 80);
+    this.paths = path;
+    this.waves = waves;
+    this.musicPath = musicPath;
+    if (this.waves.size() > 0) {
+      this.HUD.setWaveEnemyProgress(100);
+      this.totalMonsterAmount = this.waves.get(0).monsterAmount();
+    }
+
+  }
+
   /**
    * Définit le décors du plateau de jeu.
    */
   public void drawBackground() {
     //StdDraw.setPenColor(StdDraw.LIGHT_GREEN);
-    StdDraw.picture(0.5, 0.5, "images/fondtest_complet.jpg", 1.0, 1.0);
+//    StdDraw.picture(0.5, 0.5, "images/fondtest_complet.jpg", 1.0, 1.0);
 
-//    for (int i = 0; i < nbSquareX; i++) {
-//      for (int j = 0; j < nbSquareY; j++) {
-//        StdDraw.filledRectangle(i * squareWidth + squareWidth / 2, j * squareHeight + squareHeight / 2, squareWidth , squareHeight);
-//        StdDraw.picture(i * squareWidth + squareWidth / 2, j * squareHeight + squareHeight / 2, "images/grass.jpg", squareWidth, squareHeight);
-//      }
-//    }
+    for (int i = 0; i < this.nbSquareX; i++) {
+      for (int j = 0; j < this.nbSquareY; j++) {
+        StdDraw.picture(i * this.squareWidth + this.squareWidth / 2, j * this.squareHeight + this.squareHeight / 2, "images/tiles/grass.png", this.squareWidth + 0.001, this.squareHeight + 0.001);
+      }
+    }
 
 
   }
@@ -158,19 +196,168 @@ public class World {
    * Initialise le chemin sur la position du point de départ des monstres. Cette fonction permet d'afficher une route qui sera différente du décors.
    */
   public void drawPath() {
+    List<Position> positions = this.paths;
+    for (int i = 0, positionsSize = positions.size(); i < positionsSize; i++) {
+      Position path = positions.get(i).getWorldPosition(this);
+
+      double coorX = path.getX();
+      double coorY = path.getY();
+//      Divide the tile by 4 smaller tiles
+      Position topLeft = new Position(coorX - this.squareWidth / 4, coorY + this.squareHeight / 4);
+      Position topRight = new Position(coorX + this.squareWidth / 4, coorY + this.squareHeight / 4);
+      Position bottomLeft = new Position(coorX - this.squareWidth / 4, coorY - this.squareHeight / 4);
+      Position bottomRight = new Position(coorX + this.squareWidth / 4, coorY - this.squareHeight / 4);
+
+      if (i - 1 >= 0 && i + 1 < positionsSize) {
+        Position previousPath = positions.get(i - 1).getWorldPosition(this);
+        Position nextPath = positions.get(i + 1).getWorldPosition(this);
+
+        if (previousPath.getX() == path.getX() && path.getX() == nextPath.getX()) {
+//        Aligned vertically
+          StdDraw.picture(topLeft.getX(), topLeft.getY(), "images/tiles/left.png", this.squareWidth / 2, this.squareHeight / 2);
+          StdDraw.picture(topRight.getX(), topRight.getY(), "images/tiles/right.png", this.squareWidth / 2, this.squareHeight / 2);
+          StdDraw.picture(bottomLeft.getX(), bottomLeft.getY(), "images/tiles/left.png", this.squareWidth / 2, this.squareHeight / 2);
+          StdDraw.picture(bottomRight.getX(), bottomRight.getY(), "images/tiles/right.png", this.squareWidth / 2, this.squareHeight / 2);
+        } else if (previousPath.getY() == path.getY() && path.getY() == nextPath.getY()) {
+//        Aligned horizontally
+          StdDraw.picture(topLeft.getX(), topLeft.getY(), "images/tiles/top.png", this.squareWidth / 2, this.squareHeight / 2);
+          StdDraw.picture(topRight.getX(), topRight.getY(), "images/tiles/top.png", this.squareWidth / 2, this.squareHeight / 2);
+          StdDraw.picture(bottomLeft.getX(), bottomLeft.getY(), "images/tiles/bottom.png", this.squareWidth / 2, this.squareHeight / 2);
+          StdDraw.picture(bottomRight.getX(), bottomRight.getY(), "images/tiles/bottom.png", this.squareWidth / 2, this.squareHeight / 2);
+        } else {
+          if (path.getX() < previousPath.getX() && path.getY() > nextPath.getY() || path.getX() < nextPath.getX() && path.getY() > previousPath.getY()) {
+              /*
+              Corner type:
+
+              * --
+              |
+
+               */
+            StdDraw.picture(topLeft.getX(), topLeft.getY(), "images/tiles/top-left.png", this.squareWidth / 2, this.squareHeight / 2);
+            StdDraw.picture(topRight.getX(), topRight.getY(), "images/tiles/top.png", this.squareWidth / 2, this.squareHeight / 2);
+            StdDraw.picture(bottomLeft.getX(), bottomLeft.getY(), "images/tiles/left.png", this.squareWidth / 2, this.squareHeight / 2);
+            StdDraw.picture(bottomRight.getX(), bottomRight.getY(), "images/tiles/bottom-right-corner.png", this.squareWidth / 2, this.squareHeight / 2);
+          } else if (path.getX() > previousPath.getX() && path.getY() > nextPath.getY() || path.getX() > nextPath.getX() && path.getY() > previousPath.getY()) {
+              /*
+              Corner type:
+
+              -- *
+                 |
+
+               */
+            StdDraw.picture(topLeft.getX(), topLeft.getY(), "images/tiles/top.png", this.squareWidth / 2, this.squareHeight / 2);
+            StdDraw.picture(topRight.getX(), topRight.getY(), "images/tiles/top-right.png", this.squareWidth / 2, this.squareHeight / 2);
+            StdDraw.picture(bottomLeft.getX(), bottomLeft.getY(), "images/tiles/bottom-left-corner.png", this.squareWidth / 2, this.squareHeight / 2);
+            StdDraw.picture(bottomRight.getX(), bottomRight.getY(), "images/tiles/right.png", this.squareWidth / 2, this.squareHeight / 2);
+          } else if (path.getX() < previousPath.getX() && path.getY() < nextPath.getY() || path.getX() < nextPath.getX() && path.getY() < previousPath.getY()) {
+              /*
+              Corner type:
+
+              |
+              * --
+
+               */
+            StdDraw.picture(topLeft.getX(), topLeft.getY(), "images/tiles/left.png", this.squareWidth / 2, this.squareHeight / 2);
+            StdDraw.picture(topRight.getX(), topRight.getY(), "images/tiles/top-right-corner.png", this.squareWidth / 2, this.squareHeight / 2);
+            StdDraw.picture(bottomLeft.getX(), bottomLeft.getY(), "images/tiles/bottom-left.png", this.squareWidth / 2, this.squareHeight / 2);
+            StdDraw.picture(bottomRight.getX(), bottomRight.getY(), "images/tiles/bottom.png", this.squareWidth / 2, this.squareHeight / 2);
+          } else {
+              /*
+              Corner type:
+
+                 |
+              -- *
+
+               */
+            StdDraw.picture(topLeft.getX(), topLeft.getY(), "images/tiles/top-left-corner.png", this.squareWidth / 2, this.squareHeight / 2);
+            StdDraw.picture(topRight.getX(), topRight.getY(), "images/tiles/right.png", this.squareWidth / 2, this.squareHeight / 2);
+            StdDraw.picture(bottomLeft.getX(), bottomLeft.getY(), "images/tiles/bottom.png", this.squareWidth / 2, this.squareHeight / 2);
+            StdDraw.picture(bottomRight.getX(), bottomRight.getY(), "images/tiles/bottom-right.png", this.squareWidth / 2, this.squareHeight / 2);
+          }
+        }
+
+      } else {
+        Position previousOrNext = null;
+        if (i - 1 >= 0) {
+          previousOrNext = positions.get(i - 1).getWorldPosition(this);
+        } else if (i + 1 < positionsSize) {
+          previousOrNext = positions.get(i + 1).getWorldPosition(this);
+        }
+
+        if (previousOrNext == null) {
+//          Non connected path. Should not happen
+          StdDraw.picture(topLeft.getX(), topLeft.getY(), "images/tiles/top-left.png", this.squareWidth / 2, this.squareHeight / 2);
+          StdDraw.picture(topRight.getX(), topRight.getY(), "images/tiles/top-right.png", this.squareWidth / 2, this.squareHeight / 2);
+          StdDraw.picture(bottomLeft.getX(), bottomLeft.getY(), "images/tiles/bottom-left.png", this.squareWidth / 2, this.squareHeight / 2);
+          StdDraw.picture(bottomRight.getX(), bottomRight.getY(), "images/tiles/bottom-right.png", this.squareWidth / 2, this.squareHeight / 2);
+        } else {
+          if (previousOrNext.getY() == path.getY()) {
+            if (previousOrNext.getX() > path.getX()) {
+              StdDraw.picture(topLeft.getX(), topLeft.getY(), "images/tiles/top-left.png", this.squareWidth / 2, this.squareHeight / 2);
+              StdDraw.picture(topRight.getX(), topRight.getY(), "images/tiles/top.png", this.squareWidth / 2, this.squareHeight / 2);
+              StdDraw.picture(bottomLeft.getX(), bottomLeft.getY(), "images/tiles/bottom-left.png", this.squareWidth / 2, this.squareHeight / 2);
+              StdDraw.picture(bottomRight.getX(), bottomRight.getY(), "images/tiles/bottom.png", this.squareWidth / 2, this.squareHeight / 2);
+            } else {
+              StdDraw.picture(topLeft.getX(), topLeft.getY(), "images/tiles/top.png", this.squareWidth / 2, this.squareHeight / 2);
+              StdDraw.picture(topRight.getX(), topRight.getY(), "images/tiles/top-right.png", this.squareWidth / 2, this.squareHeight / 2);
+              StdDraw.picture(bottomLeft.getX(), bottomLeft.getY(), "images/tiles/bottom.png", this.squareWidth / 2, this.squareHeight / 2);
+              StdDraw.picture(bottomRight.getX(), bottomRight.getY(), "images/tiles/bottom-right.png", this.squareWidth / 2, this.squareHeight / 2);
+            }
+          } else {
+            if (previousOrNext.getY() > path.getY()) {
+              StdDraw.picture(topLeft.getX(), topLeft.getY(), "images/tiles/left.png", this.squareWidth / 2, this.squareHeight / 2);
+              StdDraw.picture(topRight.getX(), topRight.getY(), "images/tiles/right.png", this.squareWidth / 2, this.squareHeight / 2);
+              StdDraw.picture(bottomLeft.getX(), bottomLeft.getY(), "images/tiles/bottom-left.png", this.squareWidth / 2, this.squareHeight / 2);
+              StdDraw.picture(bottomRight.getX(), bottomRight.getY(), "images/tiles/bottom-right.png", this.squareWidth / 2, this.squareHeight / 2);
+            } else {
+              StdDraw.picture(topLeft.getX(), topLeft.getY(), "images/tiles/top-left.png", this.squareWidth / 2, this.squareHeight / 2);
+              StdDraw.picture(topRight.getX(), topRight.getY(), "images/tiles/top-right.png", this.squareWidth / 2, this.squareHeight / 2);
+              StdDraw.picture(bottomLeft.getX(), bottomLeft.getY(), "images/tiles/left.png", this.squareWidth / 2, this.squareHeight / 2);
+              StdDraw.picture(bottomRight.getX(), bottomRight.getY(), "images/tiles/right.png", this.squareWidth / 2, this.squareHeight / 2);
+            }
+          }
+        }
+      }
+    }
 
 
-//		 Iterator<Position> i = paths.iterator();
-//		 Position p;
-//		 while (i.hasNext()) {
-//		 	p = i.next();
-//			 StdDraw.setPenColor(StdDraw.YELLOW);
-//			 double coorX = p.x / nbSquareX + (squareWidth/2);
-//			 double coorY = p.y / nbSquareY + (squareHeight/2);
-//			 //StdDraw.filledRectangle(coorX, coorY, squareWidth / 2, squareHeight / 2);
-//			 StdDraw.picture(coorX, coorY, "images/sand.jpg", squareWidth, squareHeight);
-//		 }
+  }
 
+  /**
+   * Affiche un contour d'eau
+   */
+  public void drawWater() {
+    for (int x = 0; x < this.nbSquareX; x++) {
+      for (int y = 0; y < this.nbSquareY; y++) {
+        if (y == 0) {
+          if (x == 0) {
+            StdDraw.picture(x * this.squareWidth + this.squareWidth / 2, y * this.squareHeight + this.squareHeight / 2, "images/tiles/water/bottom-left.png", this.squareWidth + 0.001, this.squareHeight + 0.001);
+          } else if (x == this.nbSquareX - 1) {
+            StdDraw.picture(x * this.squareWidth + this.squareWidth / 2, y * this.squareHeight + this.squareHeight / 2, "images/tiles/water/bottom-right.png", this.squareWidth + 0.001, this.squareHeight + 0.001);
+          } else {
+            StdDraw.picture(x * this.squareWidth + this.squareWidth / 2, y * this.squareHeight + this.squareHeight / 2, "images/tiles/water/bottom.png", this.squareWidth + 0.001, this.squareHeight + 0.001);
+          }
+
+
+        } else if (y == this.nbSquareY - 1) {
+          if (x == 0) {
+            StdDraw.picture(x * this.squareWidth + this.squareWidth / 2, y * this.squareHeight + this.squareHeight / 2, "images/tiles/water/top-left.png", this.squareWidth + 0.001, this.squareHeight + 0.001);
+          } else if (x == this.nbSquareX - 1) {
+            StdDraw.picture(x * this.squareWidth + this.squareWidth / 2, y * this.squareHeight + this.squareHeight / 2, "images/tiles/water/top-right.png", this.squareWidth + 0.001, this.squareHeight + 0.001);
+          } else {
+            StdDraw.picture(x * this.squareWidth + this.squareWidth / 2, y * this.squareHeight + this.squareHeight / 2, "images/tiles/water/top.png", this.squareWidth + 0.001, this.squareHeight + 0.001);
+          }
+        } else {
+          if (x == 0) {
+            StdDraw.picture(x * this.squareWidth + this.squareWidth / 2, y * this.squareHeight + this.squareHeight / 2, "images/tiles/water/left.png", this.squareWidth + 0.001, this.squareHeight + 0.001);
+          } else if (x == this.nbSquareX - 1) {
+            StdDraw.picture(x * this.squareWidth + this.squareWidth / 2, y * this.squareHeight + this.squareHeight / 2, "images/tiles/water/right.png", this.squareWidth + 0.001, this.squareHeight + 0.001);
+          }
+        }
+
+      }
+
+    }
   }
 
   /**
@@ -197,22 +384,20 @@ public class World {
     }
   }
 
-  double secondCounter = 0.0;
-
   /**
    * Pour chaque monstre de la liste de monstres de la vague, utilise la fonction update() qui appelle les fonctions run() et draw() de Monster.
    * Modifie la position du monstre au cours du temps à l'aide du paramètre nextP.
    */
   public void updateMonsters() {
-    this.wave.spawn(this, this.delta_time);
     Iterator<Monster> i = this.monsters.iterator();
     Monster m;
     while (i.hasNext()) {
       m = i.next();
       m.update(this.delta_time);
 
-      if (m.hasFinishedPath() && this.secondCounter >= 1.0) {
+      if (m.hasFinishedPath()) {
         this.life -= 1;
+        i.remove();
       }
       if (m.isDead()) {
         this.HUD.setWaveEnemyProgress(((100 * this.amountAliveMonsters()) / (double) this.totalMonsterAmount));
@@ -223,44 +408,11 @@ public class World {
       }
     }
 
-//    if (this.monsters.size() == 0) {
-//      this.isMonsterActing = false;
-//      new java.util.Timer().schedule(
-//          new java.util.TimerTask() {
-//            @Override
-//            public void run() {
-//              World.this.initWave(World.this.totalMonsterAmount + 1);
-//            }
-//          },
-//          5000
-//      );
-//    }
 
   }
 
   private int amountAliveMonsters() {
     return this.monsters.stream().filter(monster -> !monster.isDead()).collect(Collectors.toCollection(ArrayList::new)).size();
-  }
-
-
-  public void initWave(int monsterAmount) {
-    this.HUD.setWaveEnemyProgress(100);
-    this.totalMonsterAmount = monsterAmount;
-    this.monsters = new ArrayList<>();
-    this.wave = new Wave();
-    for (int i = 0; i < monsterAmount; i++) {
-      double random = Math.random();
-      if (random < 0.2) {
-        this.wave.addMonster(new Scorpion(new Position(this.paths.get(0).getX() * this.squareWidth + this.squareWidth / 2, this.paths.get(0).getY() * this.squareHeight + this.squareHeight / 2), this), 1);
-      } else if (random < 0.4) {
-        this.wave.addMonster(new ScienceKnight(new Position(this.paths.get(0).getX() * this.squareWidth + this.squareWidth / 2, this.paths.get(0).getY() * this.squareHeight + this.squareHeight / 2), this), 1);
-      } else if (random < 0.6) {
-        this.wave.addMonster(new StoneChild(new Position(this.paths.get(0).getX() * this.squareWidth + this.squareWidth / 2, this.paths.get(0).getY() * this.squareHeight + this.squareHeight / 2), this), 1);
-      } else {
-        this.wave.addMonster(new StoneGiant(new Position(this.paths.get(0).getX() * this.squareWidth + this.squareWidth / 2, this.paths.get(0).getY() * this.squareHeight + this.squareHeight / 2), this), 5);
-      }
-
-    }
   }
 
   public void updateTowers() {
@@ -269,10 +421,10 @@ public class World {
     Position mousep = new Position((int) ((normalizedX * this.nbSquareX)), (int) ((normalizedY * this.nbSquareY)));
     Tower towerUnderMouse = this.list_tower.get(mousep);
 
-    if(this.getHUD().getUpgradingTower()!=null){
+    if (this.getHUD().getUpgradingTower() != null) {
       this.getHUD().getUpgradingTower().upgradingVisual();
     }
-    if(towerUnderMouse!=null){
+    if (towerUnderMouse != null) {
       towerUnderMouse.hoveredVisual();
     }
 
@@ -283,6 +435,23 @@ public class World {
   }
 
 
+  public void updateWave() {
+    if (this.waves.size() > 0) {
+      Wave currentWave = this.waves.get(0);
+      if (currentWave.getTimeBeforeStartingSpawn() > 0) {
+        currentWave.subtractTimeBeforeStartingSpawn(this.delta_time);
+      } else if (currentWave.finishedSpawning() && this.monsters.size() <= 0) {
+        this.waves.remove(0);
+        if (this.waves.size() > 0) {
+          this.HUD.setWaveEnemyProgress(100);
+          this.totalMonsterAmount = currentWave.monsterAmount();
+        }
+      } else {
+        currentWave.spawn(this, this.delta_time);
+      }
+    }
+  }
+
   /**
    * Met à jour toutes les informations du plateau de jeu ainsi que les déplacements des monstres et les attaques des tours.
    *
@@ -290,7 +459,11 @@ public class World {
    */
   public int update() {
     this.drawBackground();
+    if (this.displayWater) {
+      this.drawWater();
+    }
     this.drawPath();
+    this.updateWave();
     this.updateMonsters();
     this.updateTowers();
     this.drawMouse();
@@ -298,30 +471,6 @@ public class World {
     return this.life;
   }
 
-  /**
-   * Récupère la touche appuyée par l'utilisateur et affiche les informations pour la touche séléctionnée
-   *
-   * @param key la touche utilisée par le joueur
-   */
-  public void keyPress(char key) {
-    key = Character.toLowerCase(key);
-    this.key = key;
-    switch (key) {
-      case 'a':
-        System.out.println("Arrow Tower selected (50g).");
-        break;
-      case 'b':
-        System.out.println("Bomb Tower selected (60g).");
-        break;
-      case 'e':
-        System.out.println("Evolution selected (40g).");
-        break;
-      case 's':
-        System.out.println("Starting game!");
-      case 'q':
-        System.out.println("Exiting.");
-    }
-  }
 
   /**
    * Vérifie lorsque l'utilisateur clique sur sa souris qu'il peut:
@@ -338,7 +487,7 @@ public class World {
     Position p = new Position(normalizedX, normalizedY);
     Position mousep = new Position((int) ((normalizedX * this.nbSquareX)), (int) ((normalizedY * this.nbSquareY)));
 
-    if(this.HUD.onClick(x, y, mouseButton)) return;
+    if (this.HUD.onClick(x, y, mouseButton)) return;
 
     if (this.building_class != null && !this.needReleaseMouse) {
       if (!(this.paths.contains(mousep) || this.list_tower.containsKey(mousep))) {
@@ -348,13 +497,7 @@ public class World {
             Constructor cons = this.building_class.getConstructor(Position.class, double.class, double.class, World.class);
             Tower t = (Tower) cons.newInstance(new Position(normalizedX, normalizedY), this.squareWidth, this.squareHeight, this);
             this.list_tower.put(new Position((int) ((normalizedX * this.nbSquareX)), (int) ((normalizedY * this.nbSquareY))), t);
-          } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-          } catch (IllegalAccessException e) {
-            e.printStackTrace();
-          } catch (InstantiationException e) {
-            e.printStackTrace();
-          } catch (InvocationTargetException e) {
+          } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
             e.printStackTrace();
           }
         }
@@ -365,18 +508,6 @@ public class World {
         this.HUD.showUpgradeTowerBox(towerUnderMouse);
       }
     }
-  }
-
-  /**
-   * Comme son nom l'indique, cette fonction permet d'afficher dans le terminal les différentes possibilités
-   * offertes au joueur pour intéragir avec le clavier
-   */
-  public void printCommands() {
-    System.out.println("Press A to select Arrow Tower (cost 50g).");
-    System.out.println("Press B to select Cannon Tower (cost 60g).");
-    System.out.println("Press E to update a tower (cost 40g).");
-    System.out.println("Click on the grass to build it.");
-    System.out.println("Press S to start.");
   }
 
   public void startBuilding(Class c) {
@@ -393,14 +524,17 @@ public class World {
    * Récupère la touche entrée au clavier ainsi que la position de la souris et met à jour le plateau en fonction de ces interractions
    */
   public void run() {
-    this.printCommands();
+
+    try {
+      Sound gameMusic = new Sound(this.musicPath, true);
+      gameMusic.play(0.25);
+    } catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
+      e.printStackTrace();
+    }
+
     while (!this.end) {
       long time_nano = System.nanoTime();
-
       StdDraw.clear();
-			/*if (StdDraw.hasNextKeyTyped()) {
-				keyPress(StdDraw.nextKeyTyped());
-			}*/
 
       if (StdDraw.isMousePressed()) {
         if (!this.needReleaseMouse) {
@@ -418,11 +552,6 @@ public class World {
       int fps = 1000 / ms;
       this.delta_time = 1.0 / fps;
 
-      if (this.secondCounter >= 1.0) {
-        this.secondCounter = 0.0;
-      } else {
-        this.secondCounter += this.delta_time;
-      }
 
     }
   }
@@ -595,13 +724,6 @@ public class World {
     this.isMonsterActing = monsterActing;
   }
 
-  public double getSecondCounter() {
-    return this.secondCounter;
-  }
-
-  public void setSecondCounter(double secondCounter) {
-    this.secondCounter = secondCounter;
-  }
 
   public void addMonster(Monster monster) {
     this.monsters.add(monster);
