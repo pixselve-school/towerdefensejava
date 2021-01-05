@@ -1,6 +1,6 @@
 package warcraftTD.hud;
 
-import warcraftTD.World;
+import warcraftTD.WorldGame;
 import warcraftTD.towers.*;
 import warcraftTD.utils.Position;
 import warcraftTD.utils.Sound;
@@ -10,8 +10,8 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.awt.*;
 import java.io.IOException;
 
-public class InterfaceJeu extends Interface{
-  private final World world;
+public class InterfaceGame extends Interface{
+  private final WorldGame world;
   private final Button shop_btn;
   private final ProgressBar waveEnnemyBar;
   private final HorizontalGroupBox shopBox;
@@ -19,7 +19,7 @@ public class InterfaceJeu extends Interface{
   private final Text building_text;
   private final boolean dev_mode = true;
 
-  public World getWorld() {
+  public WorldGame getWorld() {
     return this.world;
   }
 
@@ -43,7 +43,7 @@ public class InterfaceJeu extends Interface{
   private Text upgradeAttackSpeedPrice;
   private Text upgradeSpecialPrice;
 
-  public InterfaceJeu(World parent) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+  public InterfaceGame(WorldGame parent) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     super();
     this.world = parent;
     this.shop_btn = new Button(new Position(0.9, 0.1), 0.1, 0.13, "images/shop_button.png", "images/shop_button_hover.png", "Shopping", this);

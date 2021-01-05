@@ -1,16 +1,15 @@
 package warcraftTD.towers;
 
-import warcraftTD.World;
+import warcraftTD.WorldGame;
 import warcraftTD.utils.Position;
 import warcraftTD.utils.Vector;
 
 import javax.sound.sampled.*;
-import java.io.File;
 import java.io.IOException;
 
 public class Arrow extends Tower {
 
-  public Arrow(Position p, double width, double height, World world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+  public Arrow(Position p, double width, double height, WorldGame world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     super(p, width, height, world, "music/arrow.wav");
 
     this.setSprite("images/tower_arrow.png");

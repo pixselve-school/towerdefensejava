@@ -81,7 +81,7 @@ public class InterfaceEditor extends Interface{
         this.getListElements().add(this.waveBtn);
         this.saveBtn = new Button(new Position(0.21, 0.08), 0.08, 0.11, "images/save_button_editor.png", "images/save_button_editor_hover.png", "save", this);
         this.getListElements().add(this.saveBtn);
-        this.exitBtn = new Button(new Position(0.085, 0.08), 0.15,0.1,"images/mm_button_quit.png","images/mm_button_quit_hover.png","quit", this);
+        this.exitBtn = new Button(new Position(0.085, 0.08), 0.15,0.1,"images/mm_button_quit.png","images/mm_button_quit_hover.png","exit", this);
         this.getListElements().add(this.exitBtn);
 
         this.settingsBox = new HorizontalGroupBox(new Position(0.88,0.5), 0.32,1.08,this, "images/PanelSettings.png");
@@ -341,6 +341,10 @@ public class InterfaceEditor extends Interface{
             case "closeWavePanel":
                 this.waveBox.HideBox();
                 this.toggleBottomToolbar(true);
+                this.world.setNeedReleaseMouse(true);
+                break;
+            case "exit":
+                this.world.setEnd(true);
                 this.world.setNeedReleaseMouse(true);
                 break;
         }

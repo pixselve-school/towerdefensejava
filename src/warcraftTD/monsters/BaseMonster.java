@@ -1,6 +1,6 @@
 package warcraftTD.monsters;
 
-import warcraftTD.World;
+import warcraftTD.WorldGame;
 import warcraftTD.utils.Animation;
 import warcraftTD.utils.Position;
 
@@ -10,7 +10,7 @@ public abstract class BaseMonster extends Monster {
   private final Animation walkingAnimation;
   private final Animation dieAnimation;
 
-  public BaseMonster(Position position, World world, int health, int goldWhenDead, double speed, Animation walkingAnimation, Animation dieAnimation) {
+  public BaseMonster(Position position, WorldGame world, int health, int goldWhenDead, double speed, Animation walkingAnimation, Animation dieAnimation) {
     super(position, world, health, goldWhenDead, speed);
     this.walkingAnimation = walkingAnimation;
     this.dieAnimation = dieAnimation;

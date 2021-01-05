@@ -1,6 +1,6 @@
 package warcraftTD.towers.projectiles;
 
-import warcraftTD.World;
+import warcraftTD.WorldGame;
 import warcraftTD.monsters.Monster;
 import warcraftTD.utils.Position;
 import warcraftTD.utils.Vector;
@@ -11,7 +11,7 @@ public class Poison extends Projectile {
   int duration;
   int poisondamage;
 
-  public Poison(Position initialPosition, Vector direction, World world, int damage, int poisondamage) {
+  public Poison(Position initialPosition, Vector direction, WorldGame world, int damage, int poisondamage) {
     super(initialPosition, direction, world, damage);
     this.sprite = "images/poison.png";
     this.rotating = true;

@@ -1,6 +1,6 @@
 package warcraftTD.monsters.entities;
 
-import warcraftTD.World;
+import warcraftTD.WorldGame;
 import warcraftTD.monsters.BaseMonster;
 import warcraftTD.utils.Animation;
 import warcraftTD.utils.Position;
@@ -10,7 +10,7 @@ public class ScienceKnight extends BaseMonster {
   public static double scaledWidth = 0.1;
 
 
-  public ScienceKnight(Position position, World world) {
+  public ScienceKnight(Position position, WorldGame world) {
     super(position, world, 10, 10, 0.2,
         new Animation(new String[]{
             "images/enemies/4/4_enemies_1_walk_000.png",

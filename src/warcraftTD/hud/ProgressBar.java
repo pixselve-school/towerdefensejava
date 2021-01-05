@@ -37,7 +37,7 @@ public class ProgressBar extends Element {
     }
   }
 
-  public void ProgressBar(InterfaceJeu parent) {
+  public void ProgressBar(InterfaceGame parent) {
     this.setParent(parent);
   }
 

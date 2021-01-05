@@ -1,6 +1,6 @@
 package warcraftTD.towers;
 
-import warcraftTD.World;
+import warcraftTD.WorldGame;
 import warcraftTD.utils.Position;
 import warcraftTD.utils.Vector;
 
@@ -9,7 +9,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 
 public class Bomb extends Tower {
-  public Bomb(Position p, double width, double height, World world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+  public Bomb(Position p, double width, double height, WorldGame world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     super(p, width, height, world, "music/bomb.wav");
     this.setSprite("images/bomb_tower.png");
     this.setSprite_hover("images/bomb_tower_hover.png");

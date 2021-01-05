@@ -1,6 +1,6 @@
 package warcraftTD.towers.projectiles;
 
-import warcraftTD.World;
+import warcraftTD.WorldGame;
 import warcraftTD.monsters.Monster;
 import warcraftTD.utils.Position;
 import warcraftTD.utils.Vector;
@@ -13,7 +13,7 @@ public class Arrow extends Projectile {
   boolean touched;
   ArrayList<Monster> list_collid_monsters;
 
-  public Arrow(Position initialPosition, Vector direction, World world, int damage, int percent_count) {
+  public Arrow(Position initialPosition, Vector direction, WorldGame world, int damage, int percent_count) {
     super(initialPosition, direction, world, damage);
     this.sprite = "images/arrow.png";
     this.rotating = true;

@@ -1,8 +1,12 @@
 package warcraftTD;
 
+import warcraftTD.hud.MainMenu;
 import warcraftTD.utils.Level;
+import warcraftTD.utils.Sound;
 
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 
@@ -17,26 +21,13 @@ public class Main {
     int startY = 10;
 
     MainMenu menu = new MainMenu(width, height);
-    menu.start();
+    menu.run();
 
     //WorldEditor we = new WorldEditor(width, height);
-
     //we.run();
-
-    try {
-      Sound gameMusic = new Sound("music/glorious.wav", true);
-      gameMusic.play(0.25);
-    } catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
-      e.printStackTrace();
-    }
-
-    World w = new World(width, height, nbSquareX, nbSquareY, startX, startY);
 
     //Level level = new Level(new File("levels/level.tdl"));
     //World world = level.getWorld();
-
-    // Lancement de la boucle principale du jeu
-    world.run();
   }
 }
 

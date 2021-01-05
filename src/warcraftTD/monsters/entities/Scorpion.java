@@ -1,6 +1,5 @@
 package warcraftTD.monsters.entities;
 
-import warcraftTD.World;
 import warcraftTD.monsters.BaseMonster;
 import warcraftTD.utils.Animation;
 import warcraftTD.utils.Position;

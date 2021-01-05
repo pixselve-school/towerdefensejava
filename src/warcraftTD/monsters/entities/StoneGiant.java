@@ -1,6 +1,6 @@
 package warcraftTD.monsters.entities;
 
-import warcraftTD.World;
+import warcraftTD.WorldGame;
 import warcraftTD.monsters.BaseMonster;
 import warcraftTD.utils.Animation;
 import warcraftTD.utils.Position;
@@ -9,7 +9,7 @@ public class StoneGiant extends BaseMonster {
   public static double scaledHeight = 0.3;
   public static double scaledWidth = 0.25;
 
-  public StoneGiant(Position position, World world) {
+  public StoneGiant(Position position, WorldGame world) {
     super(position, world, 100, 100, 0.05,
         new Animation(new String[]{
             "images/enemies/10/10_enemies_1_walk_000.png",

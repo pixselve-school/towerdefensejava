@@ -1,6 +1,6 @@
 package warcraftTD.towers;
 
-import warcraftTD.World;
+import warcraftTD.WorldGame;
 import warcraftTD.utils.Position;
 import warcraftTD.utils.Vector;
 
@@ -9,7 +9,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 
 public class Poison extends Tower {
-  public Poison(Position p, double width, double height, World world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+  public Poison(Position p, double width, double height, WorldGame world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     super(p, width, height, world, "music/poison.wav");
     this.setSprite("images/poison_tower.png");
     this.setSprite_hover("images/poison_tower_hover.png");

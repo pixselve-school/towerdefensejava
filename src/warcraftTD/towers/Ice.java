@@ -1,6 +1,6 @@
 package warcraftTD.towers;
 
-import warcraftTD.World;
+import warcraftTD.WorldGame;
 import warcraftTD.utils.Position;
 import warcraftTD.utils.Vector;
 
@@ -9,7 +9,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 
 public class Ice extends Tower {
-  public Ice(Position p, double width, double height, World world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+  public Ice(Position p, double width, double height, WorldGame world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     super(p, width, height, world, "music/snow.wav");
     this.setSprite("images/ice_tower.png");
     this.setSprite_hover("images/ice_tower_hover.png");

@@ -1,6 +1,6 @@
 package warcraftTD.towers.projectiles;
 
-import warcraftTD.World;
+import warcraftTD.WorldGame;
 import warcraftTD.monsters.Monster;
 import warcraftTD.utils.Position;
 import warcraftTD.utils.Vector;
@@ -11,7 +11,7 @@ public class Ice extends Projectile {
   int duration;
   int iceSlow;
 
-  public Ice(Position initialPosition, Vector direction, World world, int damage, int iceSlow) {
+  public Ice(Position initialPosition, Vector direction, WorldGame world, int damage, int iceSlow) {
     super(initialPosition, direction, world, damage);
     this.sprite = "images/ice.png";
     this.rotating = false;

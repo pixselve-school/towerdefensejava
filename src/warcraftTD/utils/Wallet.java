@@ -1,14 +1,14 @@
 package warcraftTD.utils;
 
-import warcraftTD.World;
+import warcraftTD.WorldGame;
 
 import java.awt.*;
 
 public class Wallet {
   private int money;
-  private final World world;
+  private final WorldGame world;
 
-  public Wallet(World world) {
+  public Wallet(WorldGame world) {
     this.world = world;
   }
 
