@@ -11,7 +11,8 @@ import java.util.Iterator;
 import java.util.List;
 
 public class HorizontalGroupBox extends ClickableElement {
-  private final List<RelativeHUD_Element> list_HUD_Elements = new ArrayList<RelativeHUD_Element>();
+  private final List<RelativeHUD_Element> list_HUD_Elements;
+  private List<RelativeHUD_Element> garbage;
   private double deltax;
   private double deltay;
   private double fromy;
@@ -57,12 +58,24 @@ public class HorizontalGroupBox extends ClickableElement {
     this.speed = 0.5;
     this.background = background;
     this.setVisible(false);
+    this.list_HUD_Elements = new ArrayList<RelativeHUD_Element>();
+    this.garbage = new ArrayList<RelativeHUD_Element>();
+
   }
 
   public void addHUDElement(Element element) {
     if (!this.list_HUD_Elements.contains(element)) {
       RelativeHUD_Element el = new RelativeHUD_Element(element, element.getPosition());
       this.list_HUD_Elements.add(el);
+    }
+  }
+
+  public void removeHUDElement(Element element) {
+    Iterator<RelativeHUD_Element> i = this.list_HUD_Elements.iterator();
+    RelativeHUD_Element el;
+    while (i.hasNext()) {
+      el = i.next();
+      if(el.getElement().equals(element)) this.garbage.add(el);
     }
   }
 
@@ -88,6 +101,16 @@ public class HorizontalGroupBox extends ClickableElement {
         if(this.deltay > 0.0 || this.deltax > 0.0) el.element.setPosition(new Position((this.getPosition().getX() - (this.getWidth() / 2) + el.relativepos.getX() * this.getWidth()), (this.getPosition().getY() - (this.getHeight() / 2) + el.relativepos.getY() * this.getHeight())));
         el.element.update(MouseX, MouseY, delta_time);
       }
+
+      if(this.garbage.size()>0){
+        i = this.garbage.iterator();
+        while (i.hasNext()) {
+          el = i.next();
+          this.list_HUD_Elements.remove(el);
+        }
+        this.garbage = new ArrayList<RelativeHUD_Element>();
+      }
+
     }
   }
 

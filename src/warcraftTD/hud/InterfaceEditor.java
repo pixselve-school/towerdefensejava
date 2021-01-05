@@ -30,6 +30,7 @@ public class InterfaceEditor extends Interface{
 
     private HorizontalGroupBox waveBox;
     private List<Button> listWaveButton;
+    private List<Text> listTextWave;
     private List<Button> monstersButton;
     private int pageWave;
     private int pageQueue;
@@ -56,13 +57,13 @@ public class InterfaceEditor extends Interface{
         this.selectedWave = selectedWave;
         this.pageQueue = 1;
         this.setSelectedQueueInstance(null);
-        this.selectedWave.setEnabled(false);
+        if(this.selectedWave!=null) this.selectedWave.setEnabled(false);
     }
 
     public void setSelectedQueueInstance(Button selectedQueueInstance) {
-        if(this.selectedWave!=null) this.selectedQueueInstance.setEnabled(true);
+        if(this.selectedQueueInstance!=null) this.selectedQueueInstance.setEnabled(true);
         this.selectedQueueInstance = selectedQueueInstance;
-        this.selectedQueueInstance.setEnabled(false);
+        if(this.selectedQueueInstance!=null) this.selectedQueueInstance.setEnabled(false);
     }
 
     public void setSelectedMonster(Button selectedMonster) {
@@ -175,6 +176,7 @@ public class InterfaceEditor extends Interface{
         btn = new Button(new Position(0.5, 0.15), 0.15, 0.09, "images/editor/exitPanel.png", "images/editor/exitPanel_hover.png", "closeWavePanel", this);
         this.waveBox.addHUDElement(btn);
 
+        this.listTextWave = new ArrayList<Text>();
     }
 
     public void startBuilding(TypeBuildEditor type){
@@ -197,11 +199,59 @@ public class InterfaceEditor extends Interface{
     }
 
     public void refreshPositionWavesButton(){
+        double delta_x = 0.063;
+        double delta_y = 0.12;
         for(int i = 0;i<this.listWaveButton.size();i++){
-            for(int j = 0;j<=(this.listWaveButton.size()-1)/15;j++){
+                int page = i/15 + 1;
+                listWaveButton.get(i).setPosition(new Position(0.1+delta_x*(i%5), 0.67-delta_y*((i-(page-1)*15)/5)));
+                listTextWave.get(i).setPosition(new Position(0.1+delta_x*(i%5), 0.67-delta_y*((i-(page-1)*15)/5)));
+                listTextWave.get(i).setText(i+1+"");
+                if(page!=pageWave){
+                    listWaveButton.get(i).setVisible(false);
+                    listTextWave.get(i).setVisible(false);
+                }
+                else {
+                    listWaveButton.get(i).setVisible(true);
+                    listTextWave.get(i).setVisible(true);
+                }
+        }
+    }
 
+    public void switchPageWave(int page){
+        if(page > (this.listWaveButton.size()-1)/15 + 1) return;
+        else if (page<1) return;
+        this.pageWave = page;
+
+        for(int i = 0;i<this.listWaveButton.size();i++){
+            int pagei = i/15 + 1;
+            if(pagei!=pageWave) {
+                listWaveButton.get(i).setVisible(false);
+                listTextWave.get(i).setVisible(false);
+            }
+            else {
+                listWaveButton.get(i).setVisible(true);
+                listTextWave.get(i).setVisible(true);
             }
         }
+    }
+
+    public boolean addingWaveButton(Button btn){
+        int i = this.listWaveButton.size();
+        if(i==60) return false;
+        int j = (this.listWaveButton.size()-1)/15;
+        this.listWaveButton.add(btn);
+        double delta_x = 0.063;
+        double delta_y = 0.12;
+        int page = i/15 + 1;
+        this.waveBox.addHUDElement(btn);
+        btn.setPosition(new Position(0.1+delta_x*(i%5), 0.67-delta_y*((i-(page-1)*15)/5)));
+        listTextWave.add(new Text(new Position(0.1+delta_x*(i%5), 0.67-delta_y*((i-(page-1)*15)/5)),0.0,0.0,new Font("Arial", Font.BOLD, 35),this,i+1+""));
+        this.waveBox.addHUDElement(listTextWave.get(listTextWave.size()-1));
+        if(page!=pageWave){
+            listWaveButton.get(i).setVisible(false);
+            listTextWave.get(i).setVisible(false);
+        }
+        return true;
     }
 
     @Override
@@ -219,7 +269,7 @@ public class InterfaceEditor extends Interface{
     }
 
     @Override
-    public void makeAction(String action, Element from) {
+    public void makeAction(String action, Element from) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         switch (action) {
             case "settings":
                 this.toggleBottomToolbar(false);
@@ -335,8 +385,32 @@ public class InterfaceEditor extends Interface{
                 this.world.setNeedReleaseMouse(true);
                 break;
             case "addWave":
+                Button btn = new Button(new Position(0.0,0.0),0.06,0.08,"images/empty_button.png", "images/empty_button_hover.png","",this);
+                if(addingWaveButton(btn)) {
+                    setSelectedWave(btn);
+                    int page = (this.listWaveButton.size()-1)/15 +1;
+                    if(page!=this.pageWave) switchPageWave(page);
+                }
+                this.world.setNeedReleaseMouse(true);
                 break;
             case "removeWave":
+                if(this.selectedWave != null){
+                    int i = this.listWaveButton.indexOf(this.selectedWave);
+                    if(i!=-1){
+                        this.waveBox.removeHUDElement(this.selectedWave);
+                        this.waveBox.removeHUDElement(this.listTextWave.get(i));
+                        this.getGarbage().add(this.selectedWave);
+                        this.getGarbage().add(this.listTextWave.get(i));
+                        this.listWaveButton.remove(this.selectedWave);
+                        this.listTextWave.remove(this.listTextWave.get(i));
+                        if(i!=0 && i!=this.listWaveButton.size()-1) this.setSelectedWave(this.listWaveButton.get(i-1));
+                        else this.setSelectedWave(null);
+                        refreshPositionWavesButton();
+                        int page = (this.listWaveButton.size()-1)/15 +1;
+                        if(page!=this.pageWave) switchPageWave(page);
+                    }
+                }
+                this.world.setNeedReleaseMouse(true);
                 break;
             case "closeWavePanel":
                 this.waveBox.HideBox();
@@ -346,6 +420,14 @@ public class InterfaceEditor extends Interface{
             case "exit":
                 this.world.setEnd(true);
                 this.world.setNeedReleaseMouse(true);
+                break;
+            case "nextPageWave":
+                this.world.setNeedReleaseMouse(true);
+                this.switchPageWave(this.pageWave+1);
+                break;
+            case "previousPageWave":
+                this.world.setNeedReleaseMouse(true);
+                this.switchPageWave(this.pageWave-1);
                 break;
         }
     }
