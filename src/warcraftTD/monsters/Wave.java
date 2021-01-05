@@ -7,20 +7,26 @@ import java.util.LinkedList;
 
 public class Wave {
   LinkedList<QueueInstance> monsterQueue;
+  private final double timeBeforeStartingSpawn;
+  private double timeTracking;
+
+  public double getCurrentTimeBeforeStartingSpawn() {
+    return this.timeBeforeStartingSpawn - this.timeTracking;
+  }
 
   public double getTimeBeforeStartingSpawn() {
     return this.timeBeforeStartingSpawn;
   }
 
   public void subtractTimeBeforeStartingSpawn(double time) {
-    this.timeBeforeStartingSpawn -= time;
+    this.timeTracking += time;
   }
 
-  private double timeBeforeStartingSpawn;
 
   public Wave() {
     this.monsterQueue = new LinkedList<>();
-    this.timeBeforeStartingSpawn = 1;
+    this.timeBeforeStartingSpawn = 20;
+    this.timeTracking = 0.0;
   }
 
   public int monsterAmount() {
