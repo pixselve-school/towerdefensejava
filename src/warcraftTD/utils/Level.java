@@ -1,9 +1,12 @@
 package warcraftTD.utils;
 
-import warcraftTD.World;
+import warcraftTD.WorldGame;
+import warcraftTD.hud.MainMenu;
 import warcraftTD.monsters.Wave;
 import warcraftTD.monsters.entities.Scorpion;
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -277,8 +280,8 @@ public class Level {
     return wavesResult;
   }
 
-  public World getWorld() {
-    return new World(this.nbSquareX, this.nbSquareY, this.money, this.life, this.waterActivated, this.musicPath, this.pathPositions, this.waves);
+  public WorldGame getWorld(MainMenu menu) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    return new WorldGame(this.nbSquareX, this.nbSquareY, this.money, this.life, this.waterActivated, this.musicPath, this.pathPositions, this.waves, menu);
   }
 
   public static void main(String[] args) throws IOException {

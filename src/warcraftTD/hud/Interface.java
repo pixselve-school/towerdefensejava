@@ -36,7 +36,7 @@ public abstract class Interface {
         this.garbage.add(text);
     }
 
-    public abstract void makeAction(String action, Element from);
+    public abstract void makeAction(String action, Element from) throws IOException, LineUnavailableException, UnsupportedAudioFileException;
 
     public void updateInterface(double mouseX, double mouseY, double delta_time) {
         Iterator<Element> i = this.listElements.iterator();

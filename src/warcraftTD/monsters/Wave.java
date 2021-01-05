@@ -1,6 +1,6 @@
 package warcraftTD.monsters;
 
-import warcraftTD.World;
+import warcraftTD.WorldGame;
 
 import java.util.LinkedList;
 
@@ -34,7 +34,7 @@ public class Wave {
     this.monsterQueue.addFirst(new QueueInstance(monster, timeLeftBeforeSpawning));
   }
 
-  public void spawn(World world, double deltaTime) {
+  public void spawn(WorldGame world, double deltaTime) {
     if (this.monsterQueue.size() > 0) {
       this.monsterQueue.getFirst().decrementTime(deltaTime);
       if (this.monsterQueue.getFirst().getTimeLeftBeforeSpawning() <= 0) {

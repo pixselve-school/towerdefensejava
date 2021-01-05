@@ -1,6 +1,6 @@
 package warcraftTD.towers;
 
-import warcraftTD.World;
+import warcraftTD.WorldGame;
 import warcraftTD.libs.StdDraw;
 import warcraftTD.monsters.Monster;
 import warcraftTD.towers.projectiles.Projectile;
@@ -112,11 +112,11 @@ abstract public class Tower {
     this.delayAttack = delayAttack;
   }
 
-  public World getWorld() {
+  public WorldGame getWorld() {
     return this.world;
   }
 
-  public void setWorld(World world) {
+  public void setWorld(WorldGame world) {
     this.world = world;
   }
 
@@ -180,7 +180,7 @@ abstract public class Tower {
   private double attackspeed; // nombre de tirs par secondes
   private boolean canAttack;
   private double delayAttack;
-  private World world;
+  private WorldGame world;
   private Monster targetMonster;
   private ArrayList<Projectile> list_projectile;
 
@@ -195,7 +195,7 @@ abstract public class Tower {
 
   private final Sound shootingSound;
 
-  public Tower(Position p, double width, double height, World world, String soundFilePath) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+  public Tower(Position p, double width, double height, WorldGame world, String soundFilePath) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     this.position = p;
     this.width = width;
     this.height = height;

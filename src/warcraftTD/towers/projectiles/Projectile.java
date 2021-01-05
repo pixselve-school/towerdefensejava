@@ -1,6 +1,6 @@
 package warcraftTD.towers.projectiles;
 
-import warcraftTD.World;
+import warcraftTD.WorldGame;
 import warcraftTD.libs.StdDraw;
 import warcraftTD.monsters.Monster;
 import warcraftTD.utils.Position;
@@ -18,10 +18,10 @@ public abstract class Projectile {
   protected double hitrange;
   protected double width;
   protected double height;
-  protected World world;
+  protected WorldGame world;
   protected Color colordamage;
 
-  public Projectile(Position initialPosition, Vector direction, World world, int damage) {
+  public Projectile(Position initialPosition, Vector direction, WorldGame world, int damage) {
     this.position = new Position(initialPosition);
     this.direction = direction;
     this.world = world;

@@ -1,6 +1,6 @@
 package warcraftTD.monsters;
 
-import warcraftTD.World;
+import warcraftTD.WorldGame;
 import warcraftTD.libs.StdDraw;
 import warcraftTD.utils.Position;
 import warcraftTD.utils.Vector;
@@ -40,7 +40,7 @@ public abstract class Monster {
   private boolean isReadyToBeRemoved;
   private int goldWhenDead;
 
-  public Monster(Position p, World world, int health, int goldWhenDead, double speed) {
+  public Monster(Position p, WorldGame world, int health, int goldWhenDead, double speed) {
     this.position = p;
     this.path = new LinkedList<>(world.getPaths());
     this.path = this.path.stream().map(position -> new Position(position.getX() / world.getNbSquareX() + (world.getSquareWidth() / 2), position.getY() / world.getNbSquareY() + (world.getSquareHeight() / 2))).collect(Collectors.toList());
@@ -138,7 +138,7 @@ public abstract class Monster {
 
   }
 
-  public void takeDamage(int damage, World world, Color colordamage) {
+  public void takeDamage(int damage, WorldGame world, Color colordamage) {
     world.getHUD().addNotifText(this.position, new Font("Arial", Font.BOLD, 20), -0.1, "" + damage, colordamage);
     this.health -= damage;
   }
