@@ -3,7 +3,7 @@ package warcraftTD.utils;
 import warcraftTD.WorldGame;
 import warcraftTD.hud.MainMenu;
 import warcraftTD.monsters.Wave;
-import warcraftTD.monsters.entities.Scorpion;
+import warcraftTD.monsters.entities.*;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -81,7 +81,6 @@ public class Level {
     this.nbSquareX += this.padding.getLeft() + this.padding.getRight();
     this.pathPositions = this.pathPositions.stream().map(position -> new Position(position.getX() + this.padding.getLeft(), position.getY() + this.padding.getBottom())).collect(Collectors.toCollection(LinkedList::new));
 
-
     List<Position> pathPositionsInWorld = this.pathPositions.stream().map(position -> new Position(position.getX() * this.getSquareWidth() + this.getSquareWidth() / 2, position.getY() * this.getSquareHeight() + this.getSquareHeight() / 2)).collect(Collectors.toCollection(LinkedList::new));
 
     for (WaveData waveDatum : this.waveData) {
@@ -92,31 +91,31 @@ public class Level {
             wave.addMonster(new Scorpion(pathPositionsInWorld), monster.timeBeforeSpawning);
             break;
           case 2:
-            wave.addMonster(new Scorpion(pathPositionsInWorld), monster.timeBeforeSpawning);
+            wave.addMonster(new Mage(pathPositionsInWorld), monster.timeBeforeSpawning);
             break;
           case 3:
-            wave.addMonster(new Scorpion(pathPositionsInWorld), monster.timeBeforeSpawning);
+            wave.addMonster(new OgreWithMallet(pathPositionsInWorld), monster.timeBeforeSpawning);
             break;
           case 4:
-            wave.addMonster(new Scorpion(pathPositionsInWorld), monster.timeBeforeSpawning);
+            wave.addMonster(new ScienceKnight(pathPositionsInWorld), monster.timeBeforeSpawning);
             break;
           case 5:
-            wave.addMonster(new Scorpion(pathPositionsInWorld), monster.timeBeforeSpawning);
+            wave.addMonster(new OgreKnight(pathPositionsInWorld), monster.timeBeforeSpawning);
             break;
           case 6:
-            wave.addMonster(new Scorpion(pathPositionsInWorld), monster.timeBeforeSpawning);
+            wave.addMonster(new FoolKnight(pathPositionsInWorld), monster.timeBeforeSpawning);
             break;
           case 7:
-            wave.addMonster(new Scorpion(pathPositionsInWorld), monster.timeBeforeSpawning);
+            wave.addMonster(new BlueOgre(pathPositionsInWorld), monster.timeBeforeSpawning);
             break;
           case 8:
-            wave.addMonster(new Scorpion(pathPositionsInWorld), monster.timeBeforeSpawning);
+            wave.addMonster(new StoneChild(pathPositionsInWorld), monster.timeBeforeSpawning);
             break;
           case 9:
-            wave.addMonster(new Scorpion(pathPositionsInWorld), monster.timeBeforeSpawning);
+            wave.addMonster(new FlyingNinja(pathPositionsInWorld), monster.timeBeforeSpawning);
             break;
           case 10:
-            wave.addMonster(new Scorpion(pathPositionsInWorld), monster.timeBeforeSpawning);
+            wave.addMonster(new StoneGiant(pathPositionsInWorld), monster.timeBeforeSpawning);
             break;
         }
       }
