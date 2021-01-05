@@ -53,6 +53,18 @@ public abstract class Monster {
     this.goldWhenDead = goldWhenDead;
   }
 
+  public Monster(int health, int goldWhenDead, double speed, List<Position> path) {
+    this.path = new LinkedList<>(path);
+    this.position = this.path.get(0);
+    this.vector = new Vector(this.position, this.path.get(0));
+    this.previousLength = this.vector.length();
+    this.health = health;
+    this.speed = speed;
+    this.undergoingEffects = new HashMap<>();
+    this.isReadyToBeRemoved = false;
+    this.goldWhenDead = goldWhenDead;
+  }
+
   /**
    * Déplace le monstre en fonction de sa vitesse sur l'axe des x et des y et de sa prochaine position.
    */

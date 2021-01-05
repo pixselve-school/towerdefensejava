@@ -1,5 +1,7 @@
 package warcraftTD.utils;
 
+import warcraftTD.World;
+
 public class Position implements Comparable<Position> {
   private double x;
   private double y;
@@ -35,6 +37,10 @@ public class Position implements Comparable<Position> {
   public Position(Position p) {
     this.x = p.x;
     this.y = p.y;
+  }
+
+  public Position getWorldPosition(World world) {
+    return new Position(this.x * world.getSquareWidth() + world.getSquareWidth() / 2, this.y * world.getSquareHeight() + world.getSquareHeight() / 2);
   }
 
   public boolean equals(Position p) {
