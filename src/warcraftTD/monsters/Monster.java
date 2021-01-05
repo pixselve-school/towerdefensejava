@@ -38,7 +38,7 @@ public abstract class Monster {
   }
 
   private boolean isReadyToBeRemoved;
-  private int goldWhenDead;
+  private final int goldWhenDead;
 
   public Monster(Position p, WorldGame world, int health, int goldWhenDead, double speed) {
     this.position = p;
@@ -77,6 +77,14 @@ public abstract class Monster {
     double speedModifier = 1.0;
     for (Effect effect : this.undergoingEffects.values()) {
       speedModifier *= effect.getSpeedMultiplier();
+    }
+
+    Effect poisonEffect = this.undergoingEffects.get("poison");
+    if (poisonEffect != null) {
+      if (poisonEffect.getTimeTracking() >= 1.0) {
+        this.health += poisonEffect.getHealthAdd();
+        poisonEffect.resetTimeTracking();
+      }
     }
 
 
@@ -131,6 +139,7 @@ public abstract class Monster {
     while (entryIterator.hasNext()) {
       Map.Entry<String, Effect> effectEntry = entryIterator.next();
       effectEntry.getValue().setDuration(effectEntry.getValue().getDuration() - deltaTime);
+      effectEntry.getValue().addTimeToTimeTracking(deltaTime);
       if (effectEntry.getValue().getDuration() <= 0) {
         entryIterator.remove();
       }
@@ -148,7 +157,7 @@ public abstract class Monster {
   }
 
   public void applyPoisonEffect(int duration, int damage) {
-    this.undergoingEffects.computeIfAbsent("poison", (s) -> new Effect(duration, 1.0, damage, 1.0)).setDurationIfGreater(duration);
+    this.undergoingEffects.computeIfAbsent("poison", (s) -> new Effect(duration, 1.0, -damage, 1.0)).setDurationIfGreater(duration);
   }
 
   public void applySlowEffect(int duration, int slowPercent) {
@@ -225,6 +234,6 @@ public abstract class Monster {
   }
 
   public int getGoldWhenDead() {
-    return goldWhenDead;
+    return this.goldWhenDead;
   }
 }
