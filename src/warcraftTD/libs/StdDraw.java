@@ -790,11 +790,11 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
   }
 
   // helper functions that scale from user coordinates to screen coordinates and back
-  static double scaleX(double x) {
+  public static double scaleX(double x) {
     return width * (x - xmin) / (xmax - xmin);
   }
 
-  static double scaleY(double y) {
+  public static double scaleY(double y) {
     return height * (ymax - y) / (ymax - ymin);
   }
 
@@ -1421,6 +1421,33 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
           (int) Math.round(hs), null);
     }
     draw();
+  }
+
+  public static void pictureHeight(double x, double y, String filename, double height) {
+    Image image = getImage(filename);
+    if (height < 0) throw new IllegalArgumentException("height  is negative: " + height);
+    double xs = scaleX(x);
+    double ys = scaleY(y);
+    double imageWidth = image.getWidth(null);
+    double imageHeight = image.getHeight(null);
+    double ratio = imageWidth / imageHeight;
+
+    double hs = factorY(height);
+    double ws = factorX(height * ratio);
+
+    if (ws <= 1 && hs <= 1) pixel(x, y);
+    else {
+      offscreen.drawImage(image, (int) Math.round(xs - ws / 2.0),
+          (int) Math.round(ys - hs / 2.0),
+          (int) Math.round(ws),
+          (int) Math.round(hs), null);
+    }
+    draw();
+  }
+
+  public static double getPictureRatio(String filename) {
+    Image image = getImage(filename);
+    return ((double) image.getWidth(null)) / image.getHeight(null);
   }
 
 
