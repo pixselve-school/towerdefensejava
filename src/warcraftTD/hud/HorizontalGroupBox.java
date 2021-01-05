@@ -110,6 +110,15 @@ public class HorizontalGroupBox extends ClickableElement {
     return "";
   }
 
+  public void initialUpdateRelativePosition(){
+    Iterator<RelativeHUD_Element> i = this.list_HUD_Elements.iterator();
+    RelativeHUD_Element el;
+    while (i.hasNext()) {
+      el = i.next();
+      el.element.setPosition(new Position((this.getPosition().getX() - (this.getWidth() / 2) + el.relativepos.getX() * this.getWidth()), (this.getPosition().getY() - (this.getHeight() / 2) + el.relativepos.getY() * this.getHeight())));
+    }
+  }
+
   public void ShowBox(double fromy, double fromx) {
     this.deltax = fromx;
     this.deltay = fromy;
@@ -117,6 +126,7 @@ public class HorizontalGroupBox extends ClickableElement {
     this.fromx = fromx;
     this.setVisible(true);
     this.forward_anim = true;
+    if(deltax==0.0 && deltay==0.0) initialUpdateRelativePosition();
   }
 
   public void HideBox() {
