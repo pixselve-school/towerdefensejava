@@ -6,11 +6,11 @@ import warcraftTD.utils.Position;
 
 import java.util.List;
 
-public class Scorpion extends BaseMonster {
+public class BlueOgre extends BaseMonster {
   public static double scaledHeight = 0.07;
   public static double scaledWidth = 0.09;
 
-  public Scorpion(List<Position> path) {
+  public BlueOgre(List<Position> path) {
     super(path,
         5,
         5,
@@ -69,3 +69,5 @@ public class Scorpion extends BaseMonster {
     return scaledWidth;
   }
 }
+
+
