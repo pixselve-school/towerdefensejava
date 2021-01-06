@@ -16,6 +16,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 abstract public class Tower {
+
+  public boolean isTargetFlyingMonster() {
+    return this.targetFlyingMonster;
+  }
+
+  public void setTargetFlyingMonster(boolean targetFlyingMonster) {
+    this.targetFlyingMonster = targetFlyingMonster;
+  }
+
   public String getSprite() {
     return this.sprite;
   }
@@ -183,6 +192,7 @@ abstract public class Tower {
   private WorldGame world;
   private Monster targetMonster;
   private ArrayList<Projectile> list_projectile;
+  private boolean targetFlyingMonster;
 
   private StatUpgrade damage_u;
   private StatUpgrade range_u;
@@ -206,6 +216,7 @@ abstract public class Tower {
     this.list_projectile = new ArrayList<Projectile>();
     this.world = world;
     this.shootingSound = new Sound(soundFilePath, false);
+    this.targetFlyingMonster = true;
   }
 
   public void Update(double delta_time) {
@@ -246,7 +257,7 @@ abstract public class Tower {
         this.targetMonster = null;
       }
       for (int i = 0; i < this.world.getMonsters().size(); i++) {
-        if (!this.world.getMonsters().get(i).isDead() && this.world.getMonsters().get(i).getPosition().dist(this.position) <= this.range) {
+        if (!this.world.getMonsters().get(i).isDead() && this.world.getMonsters().get(i).getPosition().dist(this.position) <= this.range && (!this.world.getMonsters().get(i).isFlying() || this.targetFlyingMonster)) {
           this.targetMonster = this.world.getMonsters().get(i);
           break;
         }

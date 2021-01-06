@@ -24,11 +24,15 @@ public class Bomb extends Projectile {
 
   @Override
   public boolean onCollideMonster(Monster m) {
-    m.takeDamage(this.damage, this.world, this.colordamage);
-    for (Monster mo : this.world.getMonsters()) {
-      if (mo != m && mo.getPosition().dist(this.position) < this.rangeExplosion)
-        mo.takeDamage(this.damage / 2, this.world, this.colordamage);
+    if(!m.isFlying()){
+      m.takeDamage(this.damage, this.world, this.colordamage);
+      for (Monster mo : this.world.getMonsters()) {
+        if (mo != m && mo.getPosition().dist(this.position) < this.rangeExplosion)
+          mo.takeDamage(this.damage / 2, this.world, this.colordamage);
+      }
+      return false;
     }
-    return false;
+    return true;
   }
+
 }
