@@ -11,7 +11,8 @@ import java.util.Iterator;
 import java.util.List;
 
 public class HorizontalGroupBox extends ClickableElement {
-  private final List<RelativeHUD_Element> list_HUD_Elements = new ArrayList<RelativeHUD_Element>();
+  private final List<RelativeHUD_Element> list_HUD_Elements;
+  private List<RelativeHUD_Element> garbage;
   private double deltax;
   private double deltay;
   private double fromy;
@@ -57,12 +58,24 @@ public class HorizontalGroupBox extends ClickableElement {
     this.speed = 0.5;
     this.background = background;
     this.setVisible(false);
+    this.list_HUD_Elements = new ArrayList<RelativeHUD_Element>();
+    this.garbage = new ArrayList<RelativeHUD_Element>();
+
   }
 
   public void addHUDElement(Element element) {
     if (!this.list_HUD_Elements.contains(element)) {
       RelativeHUD_Element el = new RelativeHUD_Element(element, element.getPosition());
       this.list_HUD_Elements.add(el);
+    }
+  }
+
+  public void removeHUDElement(Element element) {
+    Iterator<RelativeHUD_Element> i = this.list_HUD_Elements.iterator();
+    RelativeHUD_Element el;
+    while (i.hasNext()) {
+      el = i.next();
+      if(el.getElement().equals(element)) this.garbage.add(el);
     }
   }
 
@@ -88,26 +101,36 @@ public class HorizontalGroupBox extends ClickableElement {
         if(this.deltay > 0.0 || this.deltax > 0.0) el.element.setPosition(new Position((this.getPosition().getX() - (this.getWidth() / 2) + el.relativepos.getX() * this.getWidth()), (this.getPosition().getY() - (this.getHeight() / 2) + el.relativepos.getY() * this.getHeight())));
         el.element.update(MouseX, MouseY, delta_time);
       }
+
+      if(this.garbage.size()>0){
+        i = this.garbage.iterator();
+        while (i.hasNext()) {
+          el = i.next();
+          this.list_HUD_Elements.remove(el);
+        }
+        this.garbage = new ArrayList<RelativeHUD_Element>();
+      }
+
     }
   }
 
   @Override
-  public String onClick(double MouseX, double MouseY) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+  public ActionElement onClick(double MouseX, double MouseY) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     if (this.isVisible()) {
       Iterator<RelativeHUD_Element> i = this.list_HUD_Elements.iterator();
       RelativeHUD_Element el;
-      String action = "";
+      ActionElement action = null;
       while (i.hasNext()) {
         el = i.next();
         if(el.getElement() instanceof ClickableElement) action = ((ClickableElement) el.getElement()).onClick(MouseX, MouseY);
-        if (!action.equals("")) break;
+        if (action!=null) break;
       }
-      if(action.equals("")){
-        return (this.getHitBox().isHit(MouseX, MouseY) ? "cancel" : "");
+      if(action==null){
+        return (this.getHitBox().isHit(MouseX, MouseY) ? new ActionElement(this, "cancel") : null);
       }
       return action;
     }
-    return "";
+    return null;
   }
 
   public void initialUpdateRelativePosition(){

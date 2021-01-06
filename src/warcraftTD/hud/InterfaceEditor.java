@@ -30,15 +30,20 @@ public class InterfaceEditor extends Interface{
 
     private HorizontalGroupBox waveBox;
     private List<Button> listWaveButton;
+    private List<Text> listTextWave;
     private List<Button> monstersButton;
+    private List<Button> listQueueButton;
+    private List<List<QueueMonster>> listQueue;
     private int pageWave;
+    private Text pageWaveText;
     private int pageQueue;
+    private Text pageQueueText;
+
+    private Text timeQueueMonster;
 
     private Button selectedWave;
     private Button selectedQueueInstance;
     private Button selectedMonster;
-
-    //private List<List<QueueInstance>>
 
     private final Text building_text;
     private TypeBuildEditor building_type;
@@ -47,26 +52,105 @@ public class InterfaceEditor extends Interface{
         Spawn, Path, RemovePath, None
     }
 
+    private class QueueMonster{
+        private int monster;
+        private double timeLeftBeforeSpawning;
+
+        public void setMonster(int monster) {
+            this.monster = monster;
+        }
+
+        public int getMonster() {
+            return this.monster;
+        }
+
+        public double getTimeLeftBeforeSpawning() {
+            return this.timeLeftBeforeSpawning;
+        }
+
+        public void setTimeLeftBeforeSpawning(double timeLeftBeforeSpawning) {
+            this.timeLeftBeforeSpawning = timeLeftBeforeSpawning;
+        }
+
+        public QueueMonster(int monster, double timeLeftBeforeSpawning) {
+            this.monster = monster;
+            this.timeLeftBeforeSpawning = timeLeftBeforeSpawning;
+        }
+    }
+
     public TypeBuildEditor getBuilding_type() {
         return this.building_type;
     }
 
-    public void setSelectedWave(Button selectedWave) {
+    public void setSelectedWave(Button selectedWave) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         if(this.selectedWave!=null) this.selectedWave.setEnabled(true);
         this.selectedWave = selectedWave;
-        this.pageQueue = 1;
         this.setSelectedQueueInstance(null);
-        this.selectedWave.setEnabled(false);
+        if(this.selectedWave!=null) {
+            this.selectedWave.setEnabled(false);
+            this.refreshQueueButtons();
+        }
+        switchPageQueue(1);
+    }
+
+    public void refreshQueueButtons() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        int i = this.listWaveButton.indexOf(this.selectedWave);
+        if(i==-1) return;
+        for(Button btn : this.listQueueButton){
+            this.waveBox.removeHUDElement(btn);
+        }
+        this.listQueueButton = new ArrayList<Button>();
+        for(QueueMonster queue : this.listQueue.get(i)){
+            ButtonQueueEditor btnq = new ButtonQueueEditor(new Position(0.0,0.0),0.13,0.05,"images/largeButton_empty.png", "images/largeButton_empty_hover.png","selectQueue",this, "images/enemies/"+queue.getMonster()+"/"+queue.getMonster()+"_enemies_1_attack_000.png", queue.getTimeLeftBeforeSpawning());
+            generateButtonQueue(btnq);
+        }
+    }
+
+    public void generateButtonQueue(Button btn){
+        int i = this.listWaveButton.indexOf(this.selectedWave);
+        if(i==-1) return;
+        int j = this.listQueueButton.size();
+        double delta_y = 0.05;
+        btn.setPosition(new Position(0.55, 0.68-delta_y*(j%7)));
+        this.listQueueButton.add(btn);
+        this.waveBox.addHUDElement(btn);
+        int page = j/7 + 1;
+        if(page!=pageQueue){
+            this.listQueueButton.get(j).setVisible(false);
+        }
     }
 
     public void setSelectedQueueInstance(Button selectedQueueInstance) {
-        if(this.selectedWave!=null) this.selectedQueueInstance.setEnabled(true);
+        if(this.selectedQueueInstance!=null) this.selectedQueueInstance.setEnabled(true);
         this.selectedQueueInstance = selectedQueueInstance;
-        this.selectedQueueInstance.setEnabled(false);
+        if(this.selectedQueueInstance!=null){
+            this.selectedQueueInstance.setEnabled(false);
+            for(Button btn : this.monstersButton){
+                btn.setEnabled(true);
+            }
+            int i = this.listQueueButton.indexOf(this.selectedQueueInstance);
+            int j = this.listQueue.get(this.listWaveButton.indexOf(this.selectedWave)).get(i).getMonster();
+            double time = this.listQueue.get(this.listWaveButton.indexOf(this.selectedWave)).get(i).getTimeLeftBeforeSpawning();
+            this.setSelectedMonster(this.monstersButton.get(j-1));
+            this.timeQueueMonster.setText(time+"");
+        } else {
+            for(Button btn : this.monstersButton){
+                btn.setEnabled(false);
+            }
+        }
     }
 
     public void setSelectedMonster(Button selectedMonster) {
+        if(this.selectedMonster!=null) this.selectedMonster.setEnabled(true);
         this.selectedMonster = selectedMonster;
+        if(this.selectedMonster!=null){
+            this.selectedMonster.setEnabled(false);
+            int i = this.monstersButton.indexOf(this.selectedMonster);
+            ((ButtonQueueEditor)this.selectedQueueInstance).setImagePath("images/enemies/"+(i+1)+"/"+(i+1)+"_enemies_1_attack_000.png");
+            int iw = this.listWaveButton.indexOf(this.selectedWave);
+            int iq = this.listQueueButton.indexOf(this.selectedQueueInstance);
+            this.listQueue.get(iw).get(iq).setMonster(i+1);
+        }
     }
 
     public InterfaceEditor(WorldEditor world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
@@ -142,7 +226,8 @@ public class InterfaceEditor extends Interface{
         this.pageQueue = 1;
 
         for(int i = 0;i<10; i++){
-            btn = new Button(new Position(0.727+(i%5)*0.045, 0.627-(i>4 ? 0.08 : 0.0)), 0.04, 0.06, "images/editor/button_monster_"+(i+1)+".png", "images/editor/button_monster_"+(i+1)+"_hover.png", "monster", this);
+            btn = new Button(new Position(0.727+(i%5)*0.045, 0.627-(i>4 ? 0.08 : 0.0)), 0.04, 0.06, "images/editor/button_monster_"+(i+1)+".png", "images/editor/button_monster_"+(i+1)+"_hover.png", "selectMonster", this);
+            btn.setEnabled(false);
             this.waveBox.addHUDElement(btn);
             this.monstersButton.add(btn);
         }
@@ -157,9 +242,9 @@ public class InterfaceEditor extends Interface{
         btn = new Button(new Position(0.52, 0.3), 0.06, 0.08, "images/button_downgrade.png", "images/button_downgrade_hover.png", "removeQueue", this);
         this.waveBox.addHUDElement(btn);
 
-        btn = new Button(new Position(0.88, 0.46), 0.05, 0.07, "images/button_upgrade.png", "images/button_upgrade_hover.png", "addQueue", this);
+        btn = new Button(new Position(0.88, 0.46), 0.05, 0.07, "images/button_upgrade.png", "images/button_upgrade_hover.png", "addTimeQueue", this);
         this.waveBox.addHUDElement(btn);
-        btn = new Button(new Position(0.76, 0.46), 0.05, 0.07, "images/button_downgrade.png", "images/button_downgrade_hover.png", "removeQueue", this);
+        btn = new Button(new Position(0.76, 0.46), 0.05, 0.07, "images/button_downgrade.png", "images/button_downgrade_hover.png", "removeTimeQueue", this);
         this.waveBox.addHUDElement(btn);
 
         btn = new Button(new Position(0.39, 0.78), 0.08, 0.1, "images/editor/nextPage_button.png", "images/editor/nextPage_button_hover.png", "nextPageWave", this);
@@ -175,6 +260,17 @@ public class InterfaceEditor extends Interface{
         btn = new Button(new Position(0.5, 0.15), 0.15, 0.09, "images/editor/exitPanel.png", "images/editor/exitPanel_hover.png", "closeWavePanel", this);
         this.waveBox.addHUDElement(btn);
 
+        this.listTextWave = new ArrayList<Text>();
+        this.listQueueButton = new ArrayList<Button>();
+        this.listQueue = new ArrayList<List<QueueMonster>>();
+
+        this.pageWaveText = new Text(new Position(0.37,0.3),0.0,0.0,new Font("Arial", Font.BOLD, 45), this, "p 1/1");
+        this.waveBox.addHUDElement(this.pageWaveText);
+        this.pageQueueText = new Text(new Position(0.55,0.72),0.0,0.0,new Font("Arial", Font.BOLD, 35), this, "p 1/1");
+        this.waveBox.addHUDElement(this.pageQueueText);
+
+        this.timeQueueMonster = new Text(new Position(0.82,0.46),0.0,0.0,new Font("Arial", Font.BOLD, 30), this, "1.0");
+        this.waveBox.addHUDElement(this.timeQueueMonster);
     }
 
     public void startBuilding(TypeBuildEditor type){
@@ -197,11 +293,113 @@ public class InterfaceEditor extends Interface{
     }
 
     public void refreshPositionWavesButton(){
+        double delta_x = 0.063;
+        double delta_y = 0.12;
         for(int i = 0;i<this.listWaveButton.size();i++){
-            for(int j = 0;j<=(this.listWaveButton.size()-1)/15;j++){
+                int page = i/15 + 1;
+                listWaveButton.get(i).setPosition(new Position(0.1+delta_x*(i%5), 0.67-delta_y*((i-(page-1)*15)/5)));
+                listTextWave.get(i).setPosition(new Position(0.1+delta_x*(i%5), 0.67-delta_y*((i-(page-1)*15)/5)));
+                listTextWave.get(i).setText(i+1+"");
+                if(page!=pageWave){
+                    listWaveButton.get(i).setVisible(false);
+                    listTextWave.get(i).setVisible(false);
+                }
+                else {
+                    listWaveButton.get(i).setVisible(true);
+                    listTextWave.get(i).setVisible(true);
+                }
+        }
+    }
 
+    public void refreshPositionQueueButton(){
+        double delta_y = 0.05;
+        for(int i = 0;i < this.listQueueButton.size();i++){
+            int page = i/7 + 1;
+            listQueueButton.get(i).setPosition(new Position(0.55, 0.68-delta_y*(i%7)));
+            if(page!=pageQueue){
+                listQueueButton.get(i).setVisible(false);
+            }
+            else {
+                listQueueButton.get(i).setVisible(true);
             }
         }
+    }
+
+    public void switchPageWave(int page){
+        if(page > (this.listWaveButton.size()-1)/15 + 1) return;
+        else if (page<1) return;
+        this.pageWave = page;
+
+        for(int i = 0;i<this.listWaveButton.size();i++){
+            int pagei = i/15 + 1;
+            if(pagei!=pageWave) {
+                listWaveButton.get(i).setVisible(false);
+                listTextWave.get(i).setVisible(false);
+            }
+            else {
+                listWaveButton.get(i).setVisible(true);
+                listTextWave.get(i).setVisible(true);
+            }
+        }
+
+        this.pageWaveText.setText("p "+this.pageWave+"/"+((this.listWaveButton.size()-1)/15 + 1));
+    }
+
+    public void switchPageQueue(int page){
+        if(page > (this.listQueueButton.size()-1)/7 + 1) return;
+        else if (page<1) return;
+        this.pageQueue = page;
+
+        for(int i = 0;i<this.listQueueButton.size();i++){
+            int pagei = i/7 + 1;
+            if(pagei!=this.pageQueue) {
+                this.listQueueButton.get(i).setVisible(false);
+            }
+            else {
+                this.listQueueButton.get(i).setVisible(true);
+            }
+        }
+
+        this.pageQueueText.setText("p "+this.pageQueue+"/"+((this.listQueueButton.size()-1)/7 + 1));
+    }
+
+    public boolean addingWaveButton(Button btn){
+        int i = this.listWaveButton.size();
+        if(i==60) return false;
+        int j = (this.listWaveButton.size()-1)/15;
+        this.listWaveButton.add(btn);
+        double delta_x = 0.063;
+        double delta_y = 0.12;
+        int page = i/15 + 1;
+        btn.setPosition(new Position(0.1+delta_x*(i%5), 0.67-delta_y*((i-(page-1)*15)/5)));
+        listTextWave.add(new Text(new Position(0.1+delta_x*(i%5), 0.67-delta_y*((i-(page-1)*15)/5)),0.0,0.0,new Font("Arial", Font.BOLD, 35),this,i+1+""));
+        this.listQueue.add(new ArrayList<QueueMonster>());
+        this.waveBox.addHUDElement(btn);
+        this.waveBox.addHUDElement(listTextWave.get(listTextWave.size()-1));
+        if(page!=pageWave){
+            listWaveButton.get(i).setVisible(false);
+            listTextWave.get(i).setVisible(false);
+        } else {
+            listWaveButton.get(i).setVisible(true);
+            listTextWave.get(i).setVisible(true);
+        }
+        return true;
+    }
+
+    public boolean addingQueueButton(Button btn){
+        int i = this.listWaveButton.indexOf(this.selectedWave);
+        if(i==-1) return false;
+        int j = this.listQueue.get(i).size();
+        double delta_y = 0.05;
+        btn.setPosition(new Position(0.55, 0.68-delta_y*(j%7)));
+        this.listQueueButton.add(btn);
+        this.waveBox.addHUDElement(btn);
+        this.listQueue.get(i).add(new QueueMonster(1,1.0));
+        int page = j/7 + 1;
+        if(page!=pageQueue){
+            this.listQueueButton.get(j).setVisible(false);
+        }
+        return true;
     }
 
     @Override
@@ -219,7 +417,7 @@ public class InterfaceEditor extends Interface{
     }
 
     @Override
-    public void makeAction(String action, Element from) {
+    public void makeAction(String action, Element from) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         switch (action) {
             case "settings":
                 this.toggleBottomToolbar(false);
@@ -335,8 +533,34 @@ public class InterfaceEditor extends Interface{
                 this.world.setNeedReleaseMouse(true);
                 break;
             case "addWave":
+                Button btn = new Button(new Position(0.0,0.0),0.06,0.08,"images/empty_button.png", "images/empty_button_hover.png","selectWave",this);
+                if(addingWaveButton(btn)) {
+                    setSelectedWave(btn);
+                    int page = (this.listWaveButton.size()-1)/15 +1;
+                    if(page!=this.pageWave) switchPageWave(page);
+                }
+                this.world.setNeedReleaseMouse(true);
                 break;
             case "removeWave":
+                if(this.selectedWave != null){
+                    int i = this.listWaveButton.indexOf(this.selectedWave);
+                    List<QueueMonster> l = this.listQueue.get(i);
+                    if(i!=-1){
+                        this.waveBox.removeHUDElement(this.selectedWave);
+                        this.waveBox.removeHUDElement(this.listTextWave.get(i));
+                        //this.getGarbage().add(this.selectedWave);
+                        //this.getGarbage().add(this.listTextWave.get(i));
+                        this.listWaveButton.remove(this.selectedWave);
+                        this.listTextWave.remove(this.listTextWave.get(i));
+                        this.listQueue.remove(l);
+                        if(i!=0) this.setSelectedWave(this.listWaveButton.get(i-1));
+                        else this.setSelectedWave(null);
+                        refreshPositionWavesButton();
+                        int page = (i-1)/15 +1;
+                        if(page!=this.pageWave) switchPageWave(page);
+                    }
+                }
+                this.world.setNeedReleaseMouse(true);
                 break;
             case "closeWavePanel":
                 this.waveBox.HideBox();
@@ -345,6 +569,95 @@ public class InterfaceEditor extends Interface{
                 break;
             case "exit":
                 this.world.setEnd(true);
+                this.world.setNeedReleaseMouse(true);
+                break;
+            case "nextPageWave":
+                this.world.setNeedReleaseMouse(true);
+                this.switchPageWave(this.pageWave+1);
+                break;
+            case "previousPageWave":
+                this.world.setNeedReleaseMouse(true);
+                this.switchPageWave(this.pageWave-1);
+                break;
+            case "selectWave":
+                if(this.selectedWave!=from){
+                    this.setSelectedWave((Button)from);
+                }
+                break;
+            case "addQueue":
+                if(this.selectedWave!=null){
+                    ButtonQueueEditor btnq = new ButtonQueueEditor(new Position(0.0,0.0),0.13,0.05,"images/largeButton_empty.png", "images/largeButton_empty_hover.png","selectQueue",this, "images/enemies/1/1_enemies_1_attack_000.png", 1.0);
+                    if(addingQueueButton(btnq)) {
+                        setSelectedQueueInstance(btnq);
+                        int page = (this.listQueueButton.size()-1)/7 +1;
+                        if(page!=this.pageQueue) switchPageQueue(page);
+                    }
+                }
+                this.world.setNeedReleaseMouse(true);
+                break;
+            case "removeQueue":
+                if(this.selectedWave!=null && this.selectedQueueInstance!=null){
+                    int j = this.listWaveButton.indexOf(this.selectedWave);
+                    int i = this.listQueueButton.indexOf(this.selectedQueueInstance);
+                    QueueMonster qMonster = this.listQueue.get(j).get(i);
+                    if(i!=-1){
+                        this.waveBox.removeHUDElement(this.selectedQueueInstance);
+                        this.listQueueButton.remove(this.selectedQueueInstance);
+                        this.listQueue.get(j).remove(qMonster);
+                        if(i!=0) this.setSelectedQueueInstance(this.listQueueButton.get(i-1));
+                        else this.setSelectedQueueInstance(null);
+                        refreshPositionQueueButton();
+                        int page = (i-1)/7 +1;
+                        if(page!=this.pageQueue) switchPageQueue(page);
+                    }
+                }
+                this.world.setNeedReleaseMouse(true);
+                break;
+            case "nextPageQueue":
+                this.world.setNeedReleaseMouse(true);
+                this.switchPageQueue(this.pageQueue+1);
+                break;
+            case "previousPageQueue":
+                this.world.setNeedReleaseMouse(true);
+                this.switchPageQueue(this.pageQueue-1);
+                break;
+            case "selectQueue":
+                if(this.selectedQueueInstance!=from){
+                    this.setSelectedQueueInstance((Button) from);
+                }
+                this.world.setNeedReleaseMouse(true);
+                break;
+            case "selectMonster":
+                this.world.setNeedReleaseMouse(true);
+                if(this.selectedMonster!=from){
+                    this.setSelectedMonster((Button) from);
+                }
+                this.world.setNeedReleaseMouse(true);
+                break;
+            case "addTimeQueue":
+                if(this.selectedQueueInstance!=null){
+                    int j = this.listWaveButton.indexOf(this.selectedWave);
+                    int i = this.listQueueButton.indexOf(this.selectedQueueInstance);
+                    double time = this.listQueue.get(j).get(i).getTimeLeftBeforeSpawning() + 0.5;
+                    if(!(time>60.0)){
+                        this.listQueue.get(j).get(i).setTimeLeftBeforeSpawning(time);
+                        ((ButtonQueueEditor)this.selectedQueueInstance).setTime(time);
+                        this.timeQueueMonster.setText(time+"");
+                    }
+                }
+                this.world.setNeedReleaseMouse(true);
+                break;
+            case "removeTimeQueue":
+                if(this.selectedQueueInstance!=null){
+                    int j = this.listWaveButton.indexOf(this.selectedWave);
+                    int i = this.listQueueButton.indexOf(this.selectedQueueInstance);
+                    double time = this.listQueue.get(j).get(i).getTimeLeftBeforeSpawning() - 0.5;
+                    if(!(time<0.5)){
+                        this.listQueue.get(j).get(i).setTimeLeftBeforeSpawning(time);
+                        ((ButtonQueueEditor)this.selectedQueueInstance).setTime(time);
+                        this.timeQueueMonster.setText(time+"");
+                    }
+                }
                 this.world.setNeedReleaseMouse(true);
                 break;
         }

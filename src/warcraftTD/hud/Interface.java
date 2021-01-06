@@ -54,16 +54,16 @@ public abstract class Interface {
 
     public Boolean onClick(double mouseX, double mouseY, int mouseButton) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         Element elc = null;
-        String action = "";
+        ClickableElement.ActionElement action = null;
         for (Element el : this.listElements) {
             if(el instanceof ClickableElement) action = ((ClickableElement) el).onClick(mouseX, mouseY);
-            if (!action.equals("")) {
+            if (action!=null) {
                 elc = el;
                 break;
             }
         }
-        if (!action.equals("")){
-            this.makeAction(action, elc);
+        if (action!=null){
+            this.makeAction(action.getAction(), action.getElement());
             return true;
         }
         return false;

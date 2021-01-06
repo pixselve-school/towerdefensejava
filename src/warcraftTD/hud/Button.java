@@ -56,12 +56,12 @@ public class Button extends ClickableElement {
   }
 
   @Override
-  public String onClick(double MouseX, double MouseY) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+  public ActionElement onClick(double MouseX, double MouseY) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     if(this.isVisible() && this.isEnabled() && this.clickable && this.getHitBox().isHit(MouseX, MouseY)){
       this.getClickSound().play(0.6);
-      return this.action;
+      return new ActionElement(this, this.action);
     } else {
-      return "";
+      return null;
     }
   }
 }
