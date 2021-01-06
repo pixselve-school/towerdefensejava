@@ -382,19 +382,21 @@ public class WorldGame extends World {
       if (m.hasFinishedPath()) {
         this.life -= 1;
         i.remove();
+        this.updateProgressBar();
       }
       if (m.isDead()) {
-        Wave currentWave = this.waves.get(0);
-        this.HUD.setWaveEnemyProgress((100 * (this.amountAliveMonsters()+currentWave.monsterAmount()) / (double) this.totalMonsterAmount));
-        //System.out.println(this.amountAliveMonsters())+);
+        this.updateProgressBar();
       }
       if (m.isReadyToBeRemoved()) {
         i.remove();
         this.player_wallet.addMoney(m.getGoldWhenDead());
       }
     }
+  }
 
-
+  public void updateProgressBar() {
+    Wave currentWave = this.waves.get(0);
+    this.HUD.setWaveEnemyProgress((100 * (this.amountAliveMonsters()+currentWave.monsterAmount()) / (double) this.totalMonsterAmount));
   }
 
   private int amountAliveMonsters() {
