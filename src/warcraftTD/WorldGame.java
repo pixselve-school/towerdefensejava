@@ -422,12 +422,12 @@ public class WorldGame extends World {
   public void updateWave() {
     if (this.waves.size() > 0) {
       Wave currentWave = this.waves.get(0);
-      if (currentWave.getTimeBeforeStartingSpawn() > 0) {
+      if (currentWave.getCurrentTimeBeforeStartingSpawn() > 0) {
         currentWave.subtractTimeBeforeStartingSpawn(this.getDelta_time());
+        this.HUD.setWaveEnemyProgress(100 - ((100 * currentWave.getCurrentTimeBeforeStartingSpawn()) / currentWave.getTimeBeforeStartingSpawn()));
       } else if (currentWave.finishedSpawning() && this.monsters.size() <= 0) {
         this.waves.remove(0);
         if (this.waves.size() > 0) {
-          this.HUD.setWaveEnemyProgress(100);
           this.totalMonsterAmount = currentWave.monsterAmount();
         }
       } else {
@@ -602,6 +602,7 @@ public class WorldGame extends World {
   public void setSpawn(Position spawn) {
     this.spawn = spawn;
   }
+
   public int getLife() {
     return this.life;
   }
