@@ -1,7 +1,6 @@
 package warcraftTD.monsters;
 
 import warcraftTD.WorldGame;
-import warcraftTD.libs.StdDraw;
 import warcraftTD.utils.Position;
 import warcraftTD.utils.Vector;
 
@@ -17,26 +16,17 @@ public abstract class Monster {
   private double speed;
 
   // Compteur de déplacement pour savoir si le monstre à atteint le chateau du joueur
-  private int checkpoint = 0;
-
   private Vector vector;
-
   private double previousLength;
-
   private List<Position> path;
-
   private int health;
-
-  private Map<String, Effect> undergoingEffects;
-
+  private final Map<String, Effect> undergoingEffects;
   public boolean isReadyToBeRemoved() {
     return this.isReadyToBeRemoved;
   }
-
   public void setReadyToBeRemoved(boolean readyToBeRemoved) {
     this.isReadyToBeRemoved = readyToBeRemoved;
   }
-
   private boolean isReadyToBeRemoved;
   private final int goldWhenDead;
 
@@ -110,22 +100,10 @@ public abstract class Monster {
   }
 
 
-  /**
-   * Debug only
-   */
-  private void debug() {
-    if (this.path.size() > 0) {
-      StdDraw.setPenColor(StdDraw.RED);
-      StdDraw.filledCircle(this.path.get(0).getX(), this.path.get(0).getY(), 0.01);
-    }
-  }
-
   public void update(double deltaTime) {
     this.updateEffectsDuration(deltaTime);
     this.move(deltaTime);
     this.draw(deltaTime);
-
-    this.checkpoint++;
   }
 
 
@@ -164,6 +142,8 @@ public abstract class Monster {
     this.undergoingEffects.computeIfAbsent("slow", (s) -> new Effect(duration, 1.0, 0, slowPercent / 100.0)).setDurationIfGreater(duration);
   }
 
+  public abstract boolean isFlying();
+
   /**
    * Fonction abstraite qui sera instanciée dans les classes filles pour afficher le monstre sur le plateau de jeu.
    */
@@ -185,13 +165,6 @@ public abstract class Monster {
     this.speed = speed;
   }
 
-  public int getCheckpoint() {
-    return this.checkpoint;
-  }
-
-  public void setCheckpoint(int checkpoint) {
-    this.checkpoint = checkpoint;
-  }
 
   public Vector getVector() {
     return this.vector;
@@ -201,13 +174,6 @@ public abstract class Monster {
     this.vector = vector;
   }
 
-  public double getPreviousLength() {
-    return this.previousLength;
-  }
-
-  public void setPreviousLength(double previousLength) {
-    this.previousLength = previousLength;
-  }
 
   public List<Position> getPath() {
     return this.path;
@@ -217,23 +183,10 @@ public abstract class Monster {
     this.path = path;
   }
 
-  public int getHealth() {
-    return this.health;
-  }
-
-  public void setHealth(int health) {
-    this.health = health;
-  }
-
-  public Map<String, Effect> getUndergoingEffects() {
-    return this.undergoingEffects;
-  }
-
-  public void setUndergoingEffects(Map<String, Effect> undergoingEffects) {
-    this.undergoingEffects = undergoingEffects;
-  }
 
   public int getGoldWhenDead() {
     return this.goldWhenDead;
   }
+
 }
+
