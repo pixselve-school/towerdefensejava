@@ -146,7 +146,7 @@ public class InterfaceEditor extends Interface{
         if(this.selectedMonster!=null){
             this.selectedMonster.setEnabled(false);
             int i = this.monstersButton.indexOf(this.selectedMonster);
-            ((ButtonQueueEditor)this.selectedQueueInstance).setImagePath("images/enemies/"+(i+1)+"/"+(i+1)+"_enemies_1_attack_000.png");
+            ((ButtonQueueEditor)this.selectedQueueInstance).setImagePath("images/enemies/"+(i+1)+"/die-0.png");
             int iw = this.listWaveButton.indexOf(this.selectedWave);
             int iq = this.listQueueButton.indexOf(this.selectedQueueInstance);
             this.listQueue.get(iw).get(iq).setMonster(i+1);
@@ -586,7 +586,7 @@ public class InterfaceEditor extends Interface{
                 break;
             case "addQueue":
                 if(this.selectedWave!=null){
-                    ButtonQueueEditor btnq = new ButtonQueueEditor(new Position(0.0,0.0),0.13,0.05,"images/largeButton_empty.png", "images/largeButton_empty_hover.png","selectQueue",this, "images/enemies/1/1_enemies_1_attack_000.png", 1.0);
+                    ButtonQueueEditor btnq = new ButtonQueueEditor(new Position(0.0,0.0),0.13,0.05,"images/largeButton_empty.png", "images/largeButton_empty_hover.png","selectQueue",this, "images/enemies/1/die-0.png", 1.0);
                     if(addingQueueButton(btnq)) {
                         setSelectedQueueInstance(btnq);
                         int page = (this.listQueueButton.size()-1)/7 +1;
