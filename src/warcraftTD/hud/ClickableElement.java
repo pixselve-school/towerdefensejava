@@ -35,5 +35,32 @@ abstract public class ClickableElement extends Element{
         this.hitBox.refresh(this.getPosition());
     }
 
-    abstract public String onClick(double MouseX, double MouseY) throws UnsupportedAudioFileException, IOException, LineUnavailableException;
+    abstract public ActionElement onClick(double MouseX, double MouseY) throws UnsupportedAudioFileException, IOException, LineUnavailableException;
+
+    protected class ActionElement{
+        private Element element;
+        private String action;
+
+        public Element getElement() {
+            return this.element;
+        }
+
+        public void setElement(Element element) {
+            this.element = element;
+        }
+
+        public String getAction() {
+            return this.action;
+        }
+
+        public void setAction(String action) {
+            this.action = action;
+        }
+
+        public ActionElement(Element el, String action){
+            this.element = el;
+            this.action = action;
+        }
+
+    }
 }

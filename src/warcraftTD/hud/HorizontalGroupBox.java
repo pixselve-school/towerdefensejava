@@ -115,22 +115,22 @@ public class HorizontalGroupBox extends ClickableElement {
   }
 
   @Override
-  public String onClick(double MouseX, double MouseY) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+  public ActionElement onClick(double MouseX, double MouseY) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     if (this.isVisible()) {
       Iterator<RelativeHUD_Element> i = this.list_HUD_Elements.iterator();
       RelativeHUD_Element el;
-      String action = "";
+      ActionElement action = null;
       while (i.hasNext()) {
         el = i.next();
         if(el.getElement() instanceof ClickableElement) action = ((ClickableElement) el.getElement()).onClick(MouseX, MouseY);
-        if (!action.equals("")) break;
+        if (action!=null) break;
       }
-      if(action.equals("")){
-        return (this.getHitBox().isHit(MouseX, MouseY) ? "cancel" : "");
+      if(action==null){
+        return (this.getHitBox().isHit(MouseX, MouseY) ? new ActionElement(this, "cancel") : null);
       }
       return action;
     }
-    return "";
+    return null;
   }
 
   public void initialUpdateRelativePosition(){
