@@ -1,11 +1,16 @@
 package warcraftTD.hud;
 
 import warcraftTD.WorldEditor;
+import warcraftTD.libs.StdDraw;
 import warcraftTD.utils.Position;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -101,7 +106,7 @@ public class InterfaceEditor extends Interface{
         }
         this.listQueueButton = new ArrayList<Button>();
         for(QueueMonster queue : this.listQueue.get(i)){
-            ButtonQueueEditor btnq = new ButtonQueueEditor(new Position(0.0,0.0),0.13,0.05,"images/largeButton_empty.png", "images/largeButton_empty_hover.png","selectQueue",this, "images/enemies/"+queue.getMonster()+"/"+queue.getMonster()+"_enemies_1_attack_000.png", queue.getTimeLeftBeforeSpawning());
+            ButtonQueueEditor btnq = new ButtonQueueEditor(new Position(0.0,0.0),0.13,0.05,"images/largeButton_empty.png", "images/largeButton_empty_hover.png","selectQueue",this, "images/enemies/"+queue.getMonster()+"/die-0.png", queue.getTimeLeftBeforeSpawning());
             generateButtonQueue(btnq);
         }
     }
@@ -146,7 +151,7 @@ public class InterfaceEditor extends Interface{
         if(this.selectedMonster!=null){
             this.selectedMonster.setEnabled(false);
             int i = this.monstersButton.indexOf(this.selectedMonster);
-            ((ButtonQueueEditor)this.selectedQueueInstance).setImagePath("images/enemies/"+(i+1)+"/"+(i+1)+"_enemies_1_attack_000.png");
+            ((ButtonQueueEditor)this.selectedQueueInstance).setImagePath("images/enemies/"+(i+1)+"/die-0.png");
             int iw = this.listWaveButton.indexOf(this.selectedWave);
             int iq = this.listQueueButton.indexOf(this.selectedQueueInstance);
             this.listQueue.get(iw).get(iq).setMonster(i+1);
@@ -163,7 +168,7 @@ public class InterfaceEditor extends Interface{
         this.getListElements().add(this.settingsBtn);
         this.waveBtn = new Button(new Position(0.83, 0.08), 0.1, 0.13, "images/wave_button_editor.png", "images/wave_button_editor_hover.png", "wave", this);
         this.getListElements().add(this.waveBtn);
-        this.saveBtn = new Button(new Position(0.21, 0.08), 0.08, 0.11, "images/save_button_editor.png", "images/save_button_editor_hover.png", "save", this);
+        this.saveBtn = new Button(new Position(0.21, 0.08), 0.08, 0.11, "images/save_button_editor.png", "images/save_button_editor_hover.png", "saveMap", this);
         this.getListElements().add(this.saveBtn);
         this.exitBtn = new Button(new Position(0.085, 0.08), 0.15,0.1,"images/mm_button_quit.png","images/mm_button_quit_hover.png","exit", this);
         this.getListElements().add(this.exitBtn);
@@ -586,7 +591,7 @@ public class InterfaceEditor extends Interface{
                 break;
             case "addQueue":
                 if(this.selectedWave!=null){
-                    ButtonQueueEditor btnq = new ButtonQueueEditor(new Position(0.0,0.0),0.13,0.05,"images/largeButton_empty.png", "images/largeButton_empty_hover.png","selectQueue",this, "images/enemies/1/1_enemies_1_attack_000.png", 1.0);
+                    ButtonQueueEditor btnq = new ButtonQueueEditor(new Position(0.0,0.0),0.13,0.05,"images/largeButton_empty.png", "images/largeButton_empty_hover.png","selectQueue",this, "images/enemies/1/die-0.png", 1.0);
                     if(addingQueueButton(btnq)) {
                         setSelectedQueueInstance(btnq);
                         int page = (this.listQueueButton.size()-1)/7 +1;
@@ -660,6 +665,99 @@ public class InterfaceEditor extends Interface{
                 }
                 this.world.setNeedReleaseMouse(true);
                 break;
+            case "saveMap":
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Specify a file to save");
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("Tower Defense Level", "tdl", "tdl");
+                fileChooser.setFileFilter(filter);
+                int userSelection = fileChooser.showSaveDialog(StdDraw.getFrame());
+                if (userSelection == JFileChooser.APPROVE_OPTION) {
+                    File fileChoosen = fileChooser.getSelectedFile();
+                    File fileToSave;
+                    if(fileChoosen.getName().length()>4 && fileChoosen.getName().substring(fileChoosen.getName().length()-4).equals(".tdl")){
+                        fileToSave = fileChoosen;
+                    } else {
+                        fileToSave = new File(fileChoosen.getPath()+".tdl");
+                    }
+                    fileToSave.createNewFile();
+                    FileWriter myWriter = new FileWriter(fileToSave.getAbsoluteFile());
+                    myWriter.write("MUSIC_PATH=music\\glorious.wav\n");
+                    myWriter.write("LIFE="+this.lifeInitial+"\n");
+                    myWriter.write("MONEY="+this.moneyInitial+"\n");
+                    myWriter.write(this.getPathTextSave()+"\n");
+                    myWriter.write(this.getPaddingTextSave()+"\n");
+                    myWriter.write("WATER=0\n");
+                    myWriter.write(this.getWaveTextSave());
+                    myWriter.close();
+                }
+                this.world.setNeedReleaseMouse(true);
+                break;
         }
+    }
+
+    public String getPathTextSave(){
+        String text = "PATH=";
+        Position previous = null;
+        int dir = 0;
+        int count = 0;
+        String[] dirText = new String[]{"null","U","D","L","R"};
+        for(Position p : this.world.getPaths()){
+            if(previous != null){
+                int newDir = getDirText(previous, p);
+                if(dir == newDir){
+                    count ++;
+                } else {
+                    if(dir!=0) text+=count+dirText[dir];
+                    dir = newDir;
+                    count = 1;
+                }
+            }
+            previous = p;
+        }
+        return text+count+dirText[dir];
+    }
+
+    public int getDirText(Position previous, Position p){
+        if(previous.getY()<p.getY()) return 1;
+        else if(previous.getY()>p.getY()) return 2;
+        else if(previous.getX()>p.getX()) return 3;
+        else return 4;
+    }
+
+    public String getWaveTextSave(){
+        String text = "WAVES=";
+        boolean first = true;
+        for(List<QueueMonster> l : this.listQueue){
+            if(l.size()>0){
+                if(first)first = false;
+                else text+=";";
+                text+="[";
+                for(int i = 0; i<l.size();i++){
+                    text+="("+l.get(i).getMonster()+","+l.get(i).getTimeLeftBeforeSpawning()+")"+(i!=l.size()-1 ? "_" : "");
+                }
+                text+="]";
+            }
+        }
+        if(text.equals("WAVES=")) return "WAVES=[(1,1)]";
+        return text;
+    }
+
+    public String getPaddingTextSave(){
+        String text = "PADDING=";
+        int maxX = 0;
+        int minX = this.world.getNbSquareX()-1;
+        int maxY = 0;
+        int minY = this.world.getNbSquareY()-1;
+        for(Position p : this.world.getPaths()){
+            if(p.getX()>maxX) maxX = (int)p.getX();
+            if(p.getX()<minX) minX = (int)p.getX();
+            if(p.getY()>maxY) maxY = (int)p.getY();
+            if(p.getY()<minY) minY = (int)p.getY();
+        }
+        text+=(this.world.getNbSquareY()-maxY-1)+",";
+        text+=minY+",";
+        text+=minX+",";
+        text+=(this.world.getNbSquareX()-maxX-1);
+        return text;
     }
 }
