@@ -384,7 +384,9 @@ public class WorldGame extends World {
         i.remove();
       }
       if (m.isDead()) {
-        this.HUD.setWaveEnemyProgress(((100 * this.amountAliveMonsters()) / (double) this.totalMonsterAmount));
+        Wave currentWave = this.waves.get(0);
+        this.HUD.setWaveEnemyProgress((100 * (this.amountAliveMonsters()+currentWave.monsterAmount()) / (double) this.totalMonsterAmount));
+        //System.out.println(this.amountAliveMonsters())+);
       }
       if (m.isReadyToBeRemoved()) {
         i.remove();
