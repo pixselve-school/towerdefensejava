@@ -10,6 +10,7 @@ import warcraftTD.monsters.Wave;
 import warcraftTD.towers.*;
 import warcraftTD.utils.Position;
 import warcraftTD.utils.Sound;
+import warcraftTD.utils.TowerDataStruct;
 import warcraftTD.utils.Wallet;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -43,7 +44,7 @@ public class WorldGame extends World {
   // le porte monnaie du joueur
   private Wallet player_wallet;
 
-  private Hashtable<Class, Integer> price_tower;
+  private ArrayList<TowerDataStruct> listTowerData;
 
   private TreeMap<Position, Tower> list_tower;
 
@@ -73,73 +74,6 @@ public class WorldGame extends World {
     Game, Pause, End
   }
 
-  /**
-   * Initialisation du monde en fonction de la largeur, la hauteur et le nombre de cases données
-   *
-   * @param width
-   * @param height
-   * @param nbSquareX
-   * @param nbSquareY
-   * @param startSquareX
-   * @param startSquareY
-   */
-  /*public WorldGame(int width, int height, int nbSquareX, int nbSquareY, int startSquareX, int startSquareY, MainMenu menu) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-    super(width, height, menu);
-
-    this.setNbSquareX(nbSquareX);
-    this.setNbSquareY(nbSquareY);
-    this.setSquareWidth((double) 1 / nbSquareX);
-    this.setSquareHeight((double) 1 / nbSquareY);
-    this.spawn = new Position(startSquareX * this.getSquareWidth() + this.getSquareWidth() / 2, startSquareY * this.getSquareHeight() + this.getSquareHeight() / 2);
-
-    this.player_wallet = new Wallet(this);
-    this.player_wallet.addMoney(9999);
-    this.HUD = new InterfaceGame(this);
-
-    this.list_tower = new TreeMap<>();
-
-    this.price_tower = new Hashtable<>();
-    this.price_tower.put(Arrow.class, 50);
-    this.price_tower.put(Bomb.class, 60);
-    this.price_tower.put(Ice.class, 70);
-    this.price_tower.put(Poison.class, 80);
-
-    // Chemin temporaire
-    this.paths.add(new Position(1, 10));
-    this.paths.add(new Position(1, 9));
-    this.paths.add(new Position(1, 8));
-    this.paths.add(new Position(1, 7));
-    this.paths.add(new Position(1, 6));
-    this.paths.add(new Position(1, 5));
-    this.paths.add(new Position(1, 4));
-    this.paths.add(new Position(1, 3));
-    this.paths.add(new Position(1, 2));
-    this.paths.add(new Position(2, 2));
-    this.paths.add(new Position(3, 2));
-    this.paths.add(new Position(4, 2));
-    this.paths.add(new Position(4, 3));
-    this.paths.add(new Position(4, 4));
-    this.paths.add(new Position(4, 5));
-    this.paths.add(new Position(4, 6));
-    this.paths.add(new Position(4, 7));
-    this.paths.add(new Position(4, 8));
-    this.paths.add(new Position(4, 9));
-    this.paths.add(new Position(5, 9));
-    this.paths.add(new Position(6, 9));
-    this.paths.add(new Position(7, 9));
-    this.paths.add(new Position(8, 9));
-    this.paths.add(new Position(8, 8));
-    this.paths.add(new Position(8, 7));
-    this.paths.add(new Position(8, 6));
-    this.paths.add(new Position(8, 5));
-    this.paths.add(new Position(8, 4));
-    this.paths.add(new Position(8, 3));
-    this.paths.add(new Position(8, 2));
-    this.paths.add(new Position(8, 1));
-    this.paths.add(new Position(8, 0));
-
-  }*/
-
   public WorldGame(int nbSquareX, int nbSquareY, int money, int health, boolean displayWater, String musicPath, List<Position> path, List<Wave> waves, MainMenu menu) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     super(1200, 800, menu);
     this.setNbSquareX(nbSquareX);
@@ -153,16 +87,19 @@ public class WorldGame extends World {
 
     this.player_wallet = new Wallet(this);
     this.player_wallet.addMoney(money);
-    this.HUD = new InterfaceGame(this);
+
+    this.listTowerData = new ArrayList<TowerDataStruct>();
+    this.listTowerData.add(new TowerDataStruct("images/shop_arrowtower.png", "images/shop_arrowtower_hover.png", "turret_arrow", 50, Arrow.class));
+    this.listTowerData.add(new TowerDataStruct("images/shop_bombtower.png", "images/shop_bombtower_hover.png", "turret_bomb", 60, Bomb.class));
+    this.listTowerData.add(new TowerDataStruct("images/shop_icetower.png", "images/shop_icetower_hover.png", "turret_ice", 70, Ice.class));
+    this.listTowerData.add(new TowerDataStruct("images/shop_poisontower.png", "images/shop_poisontower_hover.png", "turret_poison", 80, Poison.class));
+
+    this.HUD = new InterfaceGame(this, this.listTowerData);
 
     this.list_tower = new TreeMap<>();
 
-    this.price_tower = new Hashtable<>();
-    this.price_tower.put(Arrow.class, 50);
-    this.price_tower.put(Bomb.class, 60);
-    this.price_tower.put(Ice.class, 70);
-    this.price_tower.put(Poison.class, 80);
     this.paths = path;
+
     this.waves = waves;
     this.musicPath = musicPath;
     if (this.waves.size() > 0) {
@@ -380,13 +317,13 @@ public class WorldGame extends World {
   public void drawInfos() {
     switch(currentStateGame){
       case Game:
-        this.HUD.updateInterface(StdDraw.mouseX(), StdDraw.mouseY(), this.getDelta_time());
+        this.HUD.updateInterface(StdDraw.mouseX(), StdDraw.mouseY(), this.getDeltaTime());
         break;
       case Pause:
-        this.hudPause.updateInterface(StdDraw.mouseX(), StdDraw.mouseY(), this.getDelta_time());
+        this.hudPause.updateInterface(StdDraw.mouseX(), StdDraw.mouseY(), this.getDeltaTime());
         break;
       case End:
-        this.hudEnd.updateInterface(StdDraw.mouseX(), StdDraw.mouseY(), this.getDelta_time());
+        this.hudEnd.updateInterface(StdDraw.mouseX(), StdDraw.mouseY(), this.getDeltaTime());
         break;
     }
   }
@@ -418,7 +355,7 @@ public class WorldGame extends World {
     Monster m;
     while (i.hasNext()) {
       m = i.next();
-      m.update(this.getDelta_time());
+      m.update(this.getDeltaTime());
 
       if (m.hasFinishedPath()) {
         this.life -= 1;
@@ -459,7 +396,7 @@ public class WorldGame extends World {
 
     for (Map.Entry<Position, Tower> entry : this.list_tower.entrySet()) {
       Tower value = entry.getValue();
-      value.Update(this.getDelta_time());
+      value.Update(this.getDeltaTime());
     }
   }
 
@@ -467,7 +404,7 @@ public class WorldGame extends World {
     if (this.waves.size() > 0) {
       Wave currentWave = this.waves.get(0);
       if (currentWave.getCurrentTimeBeforeStartingSpawn() > 0) {
-        currentWave.subtractTimeBeforeStartingSpawn(this.getDelta_time());
+        currentWave.subtractTimeBeforeStartingSpawn(this.getDeltaTime());
         this.HUD.setWaveEnemyProgress(100 - ((100 * currentWave.getCurrentTimeBeforeStartingSpawn()) / currentWave.getTimeBeforeStartingSpawn()));
       } else if (currentWave.finishedSpawning() && this.monsters.size() <= 0) {
         this.waves.remove(0);
@@ -475,7 +412,7 @@ public class WorldGame extends World {
           this.totalMonsterAmount = currentWave.monsterAmount();
         }
       } else {
-        currentWave.spawn(this, this.getDelta_time());
+        currentWave.spawn(this, this.getDeltaTime());
       }
     }
   }
@@ -539,7 +476,7 @@ public class WorldGame extends World {
 
     if (this.building_class != null && !this.isNeedReleaseMouse()) {
       if (!(this.paths.contains(mousep) || this.list_tower.containsKey(mousep))) {
-        int price = this.price_tower.get(this.building_class);
+        int price = this.listTowerData.get(this.listTowerData.indexOf(new TowerDataStruct("","","",0,this.building_class))).price;
         if (this.player_wallet.pay(price)) {
           try {
             Constructor cons = this.building_class.getConstructor(Position.class, double.class, double.class, WorldGame.class);
@@ -676,14 +613,6 @@ public class WorldGame extends World {
 
   public void setPlayer_wallet(Wallet player_wallet) {
     this.player_wallet = player_wallet;
-  }
-
-  public Hashtable<Class, Integer> getPrice_tower() {
-    return this.price_tower;
-  }
-
-  public void setPrice_tower(Hashtable<Class, Integer> price_tower) {
-    this.price_tower = price_tower;
   }
 
   public TreeMap<Position, Tower> getList_tower() {
