@@ -2,7 +2,6 @@ package warcraftTD.hud;
 
 import warcraftTD.World;
 import warcraftTD.WorldEditor;
-import warcraftTD.WorldGame;
 import warcraftTD.libs.StdDraw;
 import warcraftTD.utils.Animation;
 import warcraftTD.utils.Level;
@@ -51,7 +50,7 @@ public class MainMenu extends Interface {
         this.title = new Image(new Position(0.5,0.85), 0.8,0.25,this, "images/titlegame.png");
         this.getListElements().add(this.title);
 
-        this.groupBox.ShowBox(0.5,0.0);
+        this.groupBox.showBox(0.5,0.0);
 
         btn = new Button(new Position(0.105,0.055),0.2,0.1,"images/leveleditor_button.png","images/leveleditor_button_hover.png","leveleditor", this);
         this.getListElements().add(btn);

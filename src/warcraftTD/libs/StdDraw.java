@@ -1423,6 +1423,27 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
     draw();
   }
 
+  // Same as picture but it's not saving the image in cache
+  public static Image pictureNget(double x, double y, String filename, double scaledWidth, double scaledHeight) {
+    Image image = getImage(filename);
+    if (scaledWidth < 0) throw new IllegalArgumentException("width  is negative: " + scaledWidth);
+    if (scaledHeight < 0) throw new IllegalArgumentException("height is negative: " + scaledHeight);
+    double xs = scaleX(x);
+    double ys = scaleY(y);
+    double ws = factorX(scaledWidth);
+    double hs = factorY(scaledHeight);
+    if (ws < 0 || hs < 0) throw new IllegalArgumentException("image " + filename + " is corrupt");
+    if (ws <= 1 && hs <= 1) pixel(x, y);
+    else {
+      offscreen.drawImage(image, (int) Math.round(xs - ws / 2.0),
+              (int) Math.round(ys - hs / 2.0),
+              (int) Math.round(ws),
+              (int) Math.round(hs), null);
+    }
+    draw();
+    return image;
+  }
+
   public static void pictureHeight(double x, double y, String filename, double height) {
     Image image = getImage(filename);
     if (height < 0) throw new IllegalArgumentException("height  is negative: " + height);

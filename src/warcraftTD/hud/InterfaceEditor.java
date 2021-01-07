@@ -285,7 +285,7 @@ public class InterfaceEditor extends Interface{
     }
 
     public void stopBuilding(){
-        this.settingsBox.ShowBox(0.0,0.0);
+        this.settingsBox.showBox(0.0,0.0);
         this.building_text.setVisible(false);
         this.building_type = TypeBuildEditor.None;
     }
@@ -428,7 +428,7 @@ public class InterfaceEditor extends Interface{
                 this.toggleBottomToolbar(false);
                 this.world.setNeedReleaseMouse(true);
 
-                this.settingsBox.ShowBox(0.0,0.0);
+                this.settingsBox.showBox(0.0,0.0);
                 break;
             case "ClosingSettings":
                 this.toggleBottomToolbar(true);
@@ -534,7 +534,7 @@ public class InterfaceEditor extends Interface{
                 break;
             case "wave":
                 toggleBottomToolbar(false);
-                this.waveBox.ShowBox(1.0,0.0);
+                this.waveBox.showBox(1.0,0.0);
                 this.world.setNeedReleaseMouse(true);
                 break;
             case "addWave":

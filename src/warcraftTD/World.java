@@ -154,6 +154,8 @@ public abstract class World {
                 this.needReleaseMouse = false;
             }
 
+
+            this.updateEvent();
             this.update();
             StdDraw.show();
 
@@ -163,6 +165,10 @@ public abstract class World {
         }
 
         endWorld();
+    }
+
+    public void updateEvent() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+
     }
 
     public void endWorld() throws UnsupportedAudioFileException, IOException, LineUnavailableException {

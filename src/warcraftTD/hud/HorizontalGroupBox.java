@@ -18,7 +18,8 @@ public class HorizontalGroupBox extends ClickableElement {
   private double fromy;
   private double fromx;
   private boolean forward_anim;
-  private final double speed;
+  private double speed;
+  private boolean moving;
 
   private final Position initialPos;
   private String background = "";
@@ -83,8 +84,14 @@ public class HorizontalGroupBox extends ClickableElement {
   public void update(double MouseX, double MouseY, double delta_time) {
     if (this.isVisible()) {
 
-      if (this.deltay > 0.0) this.deltay -= this.speed * delta_time;
-      if (this.deltax > 0.0) this.deltax -= this.speed * delta_time;
+      if (this.deltay > 0.0) {
+        this.deltay -= this.speed * delta_time;
+        if(this.deltay<0.0) this.deltay = 0.0;
+      }
+      if (this.deltax > 0.0){
+        this.deltax -= this.speed * delta_time;
+        if(this.deltax<0.0) this.deltax = 0.0;
+      }
 
       if (this.forward_anim)
         this.setPosition(new Position(this.initialPos.getX() - this.deltax, this.initialPos.getY() - this.deltay));
@@ -99,8 +106,13 @@ public class HorizontalGroupBox extends ClickableElement {
       while (i.hasNext()) {
         el = i.next();
         if(this.deltay > 0.0 || this.deltax > 0.0) el.element.setPosition(new Position((this.getPosition().getX() - (this.getWidth() / 2) + el.relativepos.getX() * this.getWidth()), (this.getPosition().getY() - (this.getHeight() / 2) + el.relativepos.getY() * this.getHeight())));
+        else if(this.moving) {
+          el.element.setPosition(new Position((this.getPosition().getX() - (this.getWidth() / 2) + el.relativepos.getX() * this.getWidth()), (this.getPosition().getY() - (this.getHeight() / 2) + el.relativepos.getY() * this.getHeight())));
+        }
         el.element.update(MouseX, MouseY, delta_time);
       }
+
+      if(this.moving && !(this.deltay > 0.0 || this.deltax > 0.0)) this.moving = false;
 
       if(this.garbage.size()>0){
         i = this.garbage.iterator();
@@ -142,7 +154,7 @@ public class HorizontalGroupBox extends ClickableElement {
     }
   }
 
-  public void ShowBox(double fromy, double fromx) {
+  public void showBox(double fromy, double fromx) {
     this.deltax = fromx;
     this.deltay = fromy;
     this.fromy = fromy;
@@ -150,6 +162,19 @@ public class HorizontalGroupBox extends ClickableElement {
     this.setVisible(true);
     this.forward_anim = true;
     if(deltax==0.0 && deltay==0.0) initialUpdateRelativePosition();
+    else this.moving = true;
+  }
+
+  public void showBox(double fromy, double fromx, double speed) {
+    this.speed = speed;
+    this.deltax = fromx;
+    this.deltay = fromy;
+    this.fromy = fromy;
+    this.fromx = fromx;
+    this.setVisible(true);
+    this.forward_anim = true;
+    if(deltax==0.0 && deltay==0.0) initialUpdateRelativePosition();
+    else this.moving = true;
   }
 
   public void HideBox() {
