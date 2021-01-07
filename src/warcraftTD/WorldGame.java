@@ -67,7 +67,7 @@ public class WorldGame extends World {
    * @param startSquareX
    * @param startSquareY
    */
-  public WorldGame(int width, int height, int nbSquareX, int nbSquareY, int startSquareX, int startSquareY, MainMenu menu) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+  /*public WorldGame(int width, int height, int nbSquareX, int nbSquareY, int startSquareX, int startSquareY, MainMenu menu) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     super(width, height, menu);
 
     this.setNbSquareX(nbSquareX);
@@ -122,14 +122,14 @@ public class WorldGame extends World {
     this.paths.add(new Position(8, 1));
     this.paths.add(new Position(8, 0));
 
-  }
+  }*/
 
   public WorldGame(int nbSquareX, int nbSquareY, int money, int health, boolean displayWater, String musicPath, List<Position> path, List<Wave> waves, MainMenu menu) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     super(1200, 800, menu);
     this.setNbSquareX(nbSquareX);
     this.setNbSquareY(nbSquareY);
-    this.setSquareWidth((double) 1 / nbSquareX);
-    this.setSquareHeight((double) 1 / nbSquareY);
+    this.setSquareWidth((double) 1.006 / nbSquareX);
+    this.setSquareHeight((double) 1.006 / nbSquareY);
     this.spawn = new Position(path.get(0).getX() * this.getSquareWidth() + this.getSquareWidth() / 2, path.get(0).getY() * this.getSquareHeight() + this.getSquareHeight() / 2);
 
     this.life = health;
@@ -196,7 +196,7 @@ public class WorldGame extends World {
 
         if (previousPath.getX() == path.getX() && path.getX() == nextPath.getX()) {
 //        Aligned vertically
-          StdDraw.picture(topLeft.getX(), topLeft.getY(), "images/tiles/left.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
+          StdDraw.picture(topLeft.getX(), topLeft.getY(), "images/tiles/left.png", this.getSquareWidth() / 2 , this.getSquareHeight() / 2);
           StdDraw.picture(topRight.getX(), topRight.getY(), "images/tiles/right.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
           StdDraw.picture(bottomLeft.getX(), bottomLeft.getY(), "images/tiles/left.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
           StdDraw.picture(bottomRight.getX(), bottomRight.getY(), "images/tiles/right.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
