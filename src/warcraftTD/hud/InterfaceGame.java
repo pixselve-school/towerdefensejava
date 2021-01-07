@@ -12,40 +12,84 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * L'interface affichée pendant une partie de jeu
+ */
 public class InterfaceGame extends Interface{
+  /** Référence vers le monde de jeu */
   private final WorldGame world;
-  private final Button shopBtn;
-  private final ProgressBar waveEnnemyBar;
-  private final GroupBox shopBox;
-  private final Text fpsText;
-  private final Text buildingText;
-  private final boolean devMode = false;
-
-  public WorldGame getWorld() {
-    return this.world;
-  }
-
-  private final Text walletHUD;
-  private final Text lifeText;
-
-  private final GroupBox upgradeBox;
-
+  /** Spécifie si le joueur est en train de construire des tours ou non */
   private boolean building;
+  /** Spécifie si on est en mode developpement */
+  private final boolean devMode = false;
+  /** Tour actuellement séléctionné à améliorer */
   private Tower upgradingTower;
 
+  /**
+   *  ##############   Elements de l'affichage de Base
+   */
+
+  /** Bouton pour afficher le magasin de tours */
+  private final Button shopBtn;
+  /** Barre de progression de la vague actuelle */
+  private final ProgressBar waveEnnemyBar;
+  /** Texte affichant les FPS (visible uniquement avec devMode=true) */
+  private final Text fpsText;
+  /** Texte affichant le montant d'argent du joueur */
+  private final Text walletHUD;
+  /** Texte affichant le nombre de vies du joueurs */
+  private final Text lifeText;
+
+  /**
+   *  ##############   Elements de l'affichage du magasin
+   */
+
+  /** GroupBox stockant les boutons d'achats de tours */
+  private final GroupBox shopBox;
+
+  /**
+   *  ##############   Element de l'affichage quand on construit
+   */
+
+  /** Texte indiquant comment quitter le mode construction */
+  private final Text buildingText;
+
+  /**
+   *  ##############   Element de l'affichage quand on améliore une tour
+   */
+
+  /** GroupBox qui stocke tous les boutons et images du pannel d'amélioration */
+  private final GroupBox upgradeBox;
+  /** Image Affichant le niveau d'amélioration des dégats */
   private Image upgradeDamageIm;
+  /** Image Affichant le niveau d'amélioration de la portée */
   private Image upgradeRangeIm;
+  /** Image Affichant le niveau d'amélioration de la vitesse d'attaque */
   private Image upgradeAttackSpeedIm;
+  /** Image Affichant le niveau d'amélioration de la capacité spéciale */
   private Image upgradeSpecialIm;
+  /** Image icone de l'amélioration de la capacité spéciale */
   private Image upgradeSpecialImIcon;
+  /** Texte affichant le prix de la prochaine amélioration des dégats */
   private Text upgradeDamagePrice;
+  /** Texte affichant le prix de la prochaine amélioration de la portée */
   private Text upgradeRangePrice;
+  /** Texte affichant le prix de la prochaine amélioration de la vitesse d'attaque */
   private Text upgradeAttackSpeedPrice;
+  /** Texte affichant le prix de la prochaine amélioration de la capacité spéciale */
   private Text upgradeSpecialPrice;
 
-  public InterfaceGame(WorldGame parent, ArrayList<TowerDataStruct> listTowerData) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+  /**
+   * Initialise une interface de jeu
+   * @param world le monde de jeu
+   * @param listTowerData une liste des data de toutes les tours
+   * @throws UnsupportedAudioFileException
+   * @throws IOException
+   * @throws LineUnavailableException
+   */
+  public InterfaceGame(WorldGame world, ArrayList<TowerDataStruct> listTowerData) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     super();
-    this.world = parent;
+    this.world = world;
     this.shopBtn = new Button(new Position(0.9, 0.1), 0.1, 0.13, "images/shop_button.png", "images/shop_button_hover.png", "Shopping", this);
     this.getListElements().add(this.shopBtn);
     this.waveEnnemyBar = new ProgressBar(new Position(0.5, 0.94), 0.3, 0.1, "images/waveprogressbar.png", "images/bar_fill.png", this, 0.062);
@@ -118,6 +162,12 @@ public class InterfaceGame extends Interface{
     this.building = false;
   }
 
+  /**
+   * Actualise la logique de l'interface et affiche son apparence
+   * @param mouseX la position horizontale de la souris
+   * @param mouseY la position verticale de la souris
+   * @param deltaTime le temps d'un tick en seconde
+   */
   @Override
   public void updateInterface(double mouseX, double mouseY, double deltaTime) {
     if (this.devMode) this.fpsText.setText("FPS : " + (int) (1 / deltaTime));
@@ -127,6 +177,16 @@ public class InterfaceGame extends Interface{
     super.updateInterface(mouseX, mouseY, deltaTime);
   }
 
+  /**
+   * Méthode appelé par le world quand la souris est préssée
+   * @param mouseX la position horizontale de la souris
+   * @param mouseY la position verticale de la souris
+   * @param mouseButton le bouton de la souris préssée
+   * @return le clique sur l'interface à réaliser une action
+   * @throws UnsupportedAudioFileException
+   * @throws IOException
+   * @throws LineUnavailableException
+   */
   @Override
   public Boolean onClick(double mouseX, double mouseY, int mouseButton) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     if (mouseButton == 3 && this.building) {
@@ -137,6 +197,14 @@ public class InterfaceGame extends Interface{
     return super.onClick(mouseX, mouseY, mouseButton);
   }
 
+  /**
+   * Réalise une action sur l'interface
+   * @param action l'action à réaliser
+   * @param from l'élément d'où vient l'action à réaliser
+   * @throws IOException
+   * @throws LineUnavailableException
+   * @throws UnsupportedAudioFileException
+   */
   @Override
   public void makeAction(String action, Element from) {
     switch (action) {
@@ -207,6 +275,10 @@ public class InterfaceGame extends Interface{
     }
   }
 
+  /**
+   * Modifie l'interface pour lancer le mode construction
+   * @param towerClass la class de tour à construire
+   */
   public void startBuilding(Class towerClass) {
     this.building = true;
     this.shopBox.setVisible(false);
@@ -214,6 +286,12 @@ public class InterfaceGame extends Interface{
     this.world.startBuilding(towerClass);
   }
 
+  /**
+   * Quitte le mode construction, l'interface se remets en normal
+   * @throws UnsupportedAudioFileException
+   * @throws IOException
+   * @throws LineUnavailableException
+   */
   public void stopBuilding() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     Sound soundTower = new Sound("music/click.wav", false);
     soundTower.play(0.5);
@@ -223,10 +301,13 @@ public class InterfaceGame extends Interface{
     this.world.stopBuilding();
   }
 
-  public void setWaveEnemyProgress(double progressPercent) {
-    this.waveEnnemyBar.setProgressPercent(progressPercent);
-  }
-
+  /**
+   * Affiche le pannel d'amélioration de tour
+   * @param tower la tour à améliorer
+   * @throws UnsupportedAudioFileException
+   * @throws IOException
+   * @throws LineUnavailableException
+   */
   public void showUpgradeTowerBox(Tower tower) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     if (this.upgradingTower != tower) {
       if (this.shopBox.isVisible()) this.shopBox.HideBox();
@@ -261,127 +342,28 @@ public class InterfaceGame extends Interface{
     }
   }
 
-  public Button getShopBtn() {
-    return this.shopBtn;
+  /**
+   * Modifie la progression de la barre de progression des vague
+   * @param progressPercent le nouveau pourcentage de remplissage
+   */
+  public void setWaveEnemyProgress(double progressPercent) {
+    this.waveEnnemyBar.setProgressPercent(progressPercent);
   }
 
-  public ProgressBar getWaveEnnemyBar() {
-    return this.waveEnnemyBar;
-  }
-
-  public GroupBox getShopBox() {
-    return this.shopBox;
-  }
-
-  public Text getFpsText() {
-    return this.fpsText;
-  }
-
-  public Text getBuildingText() {
-    return this.buildingText;
-  }
-
-  public boolean isDevMode() {
-    return this.devMode;
-  }
-
-  public Text getWalletHUD() {
-    return this.walletHUD;
-  }
-
-  public Text getLifeText() {
-    return this.lifeText;
-  }
-
-  public GroupBox getUpgradeBox() {
-    return this.upgradeBox;
-  }
-
-  public boolean isBuilding() {
-    return this.building;
-  }
-
-  public void setBuilding(boolean building) {
-    this.building = building;
-  }
-
+  /**
+   * Récupère la tour en amélioration actuellement
+   * @return la tour en amélioration actuellement
+   */
   public Tower getUpgradingTower() {
     return this.upgradingTower;
   }
 
-  public void setUpgradingTower(Tower upgradingTower) {
-    this.upgradingTower = upgradingTower;
+  /**
+   * Récupère le monde de jeu
+   * @return le monde de jeu
+   */
+  public WorldGame getWorld() {
+    return this.world;
   }
 
-  public Image getUpgradeDamageIm() {
-    return this.upgradeDamageIm;
-  }
-
-  public void setUpgradeDamageIm(Image upgradeDamageIm) {
-    this.upgradeDamageIm = upgradeDamageIm;
-  }
-
-  public Image getUpgradeRangeIm() {
-    return this.upgradeRangeIm;
-  }
-
-  public void setUpgradeRangeIm(Image upgradeRangeIm) {
-    this.upgradeRangeIm = upgradeRangeIm;
-  }
-
-  public Image getUpgradeAttackSpeedIm() {
-    return this.upgradeAttackSpeedIm;
-  }
-
-  public void setUpgradeAttackSpeedIm(Image upgradeAttackSpeedIm) {
-    this.upgradeAttackSpeedIm = upgradeAttackSpeedIm;
-  }
-
-  public Image getUpgradeSpecialIm() {
-    return this.upgradeSpecialIm;
-  }
-
-  public void setUpgradeSpecialIm(Image upgradeSpecialIm) {
-    this.upgradeSpecialIm = upgradeSpecialIm;
-  }
-
-  public Image getUpgradeSpecialImIcon() {
-    return this.upgradeSpecialImIcon;
-  }
-
-  public void setUpgradeSpecialImIcon(Image upgradeSpecialImIcon) {
-    this.upgradeSpecialImIcon = upgradeSpecialImIcon;
-  }
-
-  public Text getUpgradeDamagePrice() {
-    return this.upgradeDamagePrice;
-  }
-
-  public void setUpgradeDamagePrice(Text upgradeDamagePrice) {
-    this.upgradeDamagePrice = upgradeDamagePrice;
-  }
-
-  public Text getUpgradeRangePrice() {
-    return this.upgradeRangePrice;
-  }
-
-  public void setUpgradeRangePrice(Text upgradeRangePrice) {
-    this.upgradeRangePrice = upgradeRangePrice;
-  }
-
-  public Text getUpgradeAttackSpeedPrice() {
-    return this.upgradeAttackSpeedPrice;
-  }
-
-  public void setUpgradeAttackSpeedPrice(Text upgradeAttackSpeedPrice) {
-    this.upgradeAttackSpeedPrice = upgradeAttackSpeedPrice;
-  }
-
-  public Text getUpgradeSpecialPrice() {
-    return this.upgradeSpecialPrice;
-  }
-
-  public void setUpgradeSpecialPrice(Text upgradeSpecialPrice) {
-    this.upgradeSpecialPrice = upgradeSpecialPrice;
-  }
 }
