@@ -7,14 +7,24 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 
-public class InterfacePause extends Interface{
+public class InterfacePause extends Interface {
+    /** le groupement d'éléments du menu pause */
     private GroupBox box;
+    /** Référence vers le monde de jeu */
     private WorldGame world;
 
+    /** Récupère le groupement d'éléments du menu pause */
     public GroupBox getBox() {
         return this.box;
     }
 
+    /**
+     * Initialise l'interface de pause
+     * @param world référence du monde de jeu
+     * @throws UnsupportedAudioFileException
+     * @throws IOException
+     * @throws LineUnavailableException
+     */
     public InterfacePause(WorldGame world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         this.world = world;
 
@@ -26,7 +36,14 @@ public class InterfacePause extends Interface{
         this.box.addHUDElement(btn);
     }
 
-
+    /**
+     * Réalise une action sur l'interface
+     * @param action l'action à réaliser
+     * @param from l'élément d'où vient l'action à réaliser
+     * @throws IOException
+     * @throws LineUnavailableException
+     * @throws UnsupportedAudioFileException
+     */
     @Override
     public void makeAction(String action, Element from) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
         switch (action){
