@@ -8,20 +8,18 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 
 public class InterfaceEndGame extends Interface{
-    private HorizontalGroupBox box;
-    private boolean win;
+    private GroupBox box;
     private WorldGame world;
 
-    public HorizontalGroupBox getBox() {
+    public GroupBox getBox() {
         return this.box;
     }
 
     public InterfaceEndGame(WorldGame world, boolean win) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         this.world = world;
-        this.win = win;
 
-        if(win) this.box = new HorizontalGroupBox(new Position(0.5,0.5),0.45,0.4,this, "images/wonTab.png");
-        else this.box = new HorizontalGroupBox(new Position(0.5,0.5),0.45,0.4,this, "images/lostTab.png");
+        if(win) this.box = new GroupBox(new Position(0.5,0.5),0.45,0.4,this, "images/wonTab.png");
+        else this.box = new GroupBox(new Position(0.5,0.5),0.45,0.4,this, "images/lostTab.png");
 
         this.getListElements().add(this.box);
         Button btn = new Button(new Position(0.5,0.1),0.22,0.1,"images/quitToMenuButton.png","images/quitToMenuButton_hover.png","quit",this);

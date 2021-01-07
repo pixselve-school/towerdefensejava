@@ -11,7 +11,6 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 public class WorldEditor extends World{
 
@@ -38,7 +37,7 @@ public class WorldEditor extends World{
      * Affiche certaines informations sur l'écran telles que les points de vie du joueur ou son or
      */
     public void drawInfos() {
-        this.HUD.updateInterface(StdDraw.mouseX(), StdDraw.mouseY(), this.getDelta_time());
+        this.HUD.updateInterface(StdDraw.mouseX(), StdDraw.mouseY(), this.getDeltaTime());
     }
 
     /**
@@ -50,7 +49,7 @@ public class WorldEditor extends World{
         double normalizedY = (int) (StdDraw.mouseY() / this.getSquareHeight()) * this.getSquareHeight() + this.getSquareHeight() / 2;
         Position mousep = new Position((int) ((normalizedX * this.getNbSquareX())), (int) ((normalizedY * this.getNbSquareY())));
 
-        switch (this.HUD.getBuilding_type()){
+        switch (this.HUD.getBuildingType()){
             case None:
                 break;
             case Path:
@@ -132,7 +131,7 @@ public class WorldEditor extends World{
 
         if(this.HUD.onClick(x,y,mouseButton)) return;
 
-        switch (this.HUD.getBuilding_type()){
+        switch (this.HUD.getBuildingType()){
             case None:
                 break;
             case Path:

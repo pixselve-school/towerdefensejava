@@ -25,15 +25,16 @@ public class InterfaceEditor extends Interface{
 
     private Text lifeText;
     private int lifeInitial;
+
     private Text moneyText;
     private int moneyInitial;
+
     private Text widthText;
     private Text heightText;
 
     private Button pathButton;
-    private HorizontalGroupBox settingsBox;
-
-    private HorizontalGroupBox waveBox;
+    private GroupBox settingsBox;
+    private GroupBox waveBox;
     private List<Button> listWaveButton;
     private List<Text> listTextWave;
     private List<Button> monstersButton;
@@ -50,8 +51,8 @@ public class InterfaceEditor extends Interface{
     private Button selectedQueueInstance;
     private Button selectedMonster;
 
-    private final Text building_text;
-    private TypeBuildEditor building_type;
+    private final Text buildingText;
+    private TypeBuildEditor buildingType;
 
     public enum TypeBuildEditor{
         Spawn, Path, RemovePath, None
@@ -59,7 +60,7 @@ public class InterfaceEditor extends Interface{
 
     private class QueueMonster{
         private int monster;
-        private double timeLeftBeforeSpawning;
+        private double timeBeforeSpawning;
 
         public void setMonster(int monster) {
             this.monster = monster;
@@ -69,22 +70,22 @@ public class InterfaceEditor extends Interface{
             return this.monster;
         }
 
-        public double getTimeLeftBeforeSpawning() {
-            return this.timeLeftBeforeSpawning;
+        public double getTimeBeforeSpawning() {
+            return this.timeBeforeSpawning;
         }
 
-        public void setTimeLeftBeforeSpawning(double timeLeftBeforeSpawning) {
-            this.timeLeftBeforeSpawning = timeLeftBeforeSpawning;
+        public void setTimeBeforeSpawning(double timeBeforeSpawning) {
+            this.timeBeforeSpawning = timeBeforeSpawning;
         }
 
-        public QueueMonster(int monster, double timeLeftBeforeSpawning) {
+        public QueueMonster(int monster, double timeBeforeSpawning) {
             this.monster = monster;
-            this.timeLeftBeforeSpawning = timeLeftBeforeSpawning;
+            this.timeBeforeSpawning = timeBeforeSpawning;
         }
     }
 
-    public TypeBuildEditor getBuilding_type() {
-        return this.building_type;
+    public TypeBuildEditor getBuildingType() {
+        return this.buildingType;
     }
 
     public void setSelectedWave(Button selectedWave) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
@@ -106,7 +107,7 @@ public class InterfaceEditor extends Interface{
         }
         this.listQueueButton = new ArrayList<Button>();
         for(QueueMonster queue : this.listQueue.get(i)){
-            ButtonQueueEditor btnq = new ButtonQueueEditor(new Position(0.0,0.0),0.13,0.05,"images/largeButton_empty.png", "images/largeButton_empty_hover.png","selectQueue",this, "images/enemies/"+queue.getMonster()+"/die-0.png", queue.getTimeLeftBeforeSpawning());
+            ButtonQueueEditor btnq = new ButtonQueueEditor(new Position(0.0,0.0),0.13,0.05,"images/largeButton_empty.png", "images/largeButton_empty_hover.png","selectQueue",this, "images/enemies/"+queue.getMonster()+"/die-0.png", queue.getTimeBeforeSpawning());
             generateButtonQueue(btnq);
         }
     }
@@ -135,7 +136,7 @@ public class InterfaceEditor extends Interface{
             }
             int i = this.listQueueButton.indexOf(this.selectedQueueInstance);
             int j = this.listQueue.get(this.listWaveButton.indexOf(this.selectedWave)).get(i).getMonster();
-            double time = this.listQueue.get(this.listWaveButton.indexOf(this.selectedWave)).get(i).getTimeLeftBeforeSpawning();
+            double time = this.listQueue.get(this.listWaveButton.indexOf(this.selectedWave)).get(i).getTimeBeforeSpawning();
             this.setSelectedMonster(this.monstersButton.get(j-1));
             this.timeQueueMonster.setText(time+"");
         } else {
@@ -173,7 +174,7 @@ public class InterfaceEditor extends Interface{
         this.exitBtn = new Button(new Position(0.085, 0.08), 0.15,0.1,"images/mm_button_quit.png","images/mm_button_quit_hover.png","exit", this);
         this.getListElements().add(this.exitBtn);
 
-        this.settingsBox = new HorizontalGroupBox(new Position(0.88,0.5), 0.32,1.08,this, "images/PanelSettings.png");
+        this.settingsBox = new GroupBox(new Position(0.88,0.5), 0.32,1.08,this, "images/PanelSettings.png");
         this.getListElements().add(this.settingsBox);
         Button btn = new Button(new Position(0.1, 0.93), 0.06, 0.06, "images/close_button.png", "images/close_button_hover.png", "ClosingSettings", this);
         this.settingsBox.addHUDElement(btn);
@@ -217,12 +218,12 @@ public class InterfaceEditor extends Interface{
         btn = new Button(new Position(0.28, 0.36), 0.06, 0.07, "images/close_button.png", "images/close_button_hover.png", "ClearPath", this);
         this.settingsBox.addHUDElement(btn);
 
-        this.building_text = new Text(new Position(0.5, 0.07), 0.0, 0.0, new Font("Arial", Font.BOLD, 40), this, "Right click to cancel !");
-        this.building_text.setVisible(false);
-        this.getListElements().add(this.building_text);
-        this.building_type = TypeBuildEditor.None;
+        this.buildingText = new Text(new Position(0.5, 0.07), 0.0, 0.0, new Font("Arial", Font.BOLD, 40), this, "Right click to cancel !");
+        this.buildingText.setVisible(false);
+        this.getListElements().add(this.buildingText);
+        this.buildingType = TypeBuildEditor.None;
 
-        this.waveBox = new HorizontalGroupBox(new Position(0.5,0.5), 1.0,1.0,this, "images/WavePanel.png");
+        this.waveBox = new GroupBox(new Position(0.5,0.5), 1.0,1.0,this, "images/WavePanel.png");
         this.getListElements().add(this.waveBox);
 
         this.listWaveButton = new ArrayList<Button>();
@@ -280,14 +281,14 @@ public class InterfaceEditor extends Interface{
 
     public void startBuilding(TypeBuildEditor type){
         this.settingsBox.HideBox();
-        this.building_text.setVisible(true);
-        this.building_type = type;
+        this.buildingText.setVisible(true);
+        this.buildingType = type;
     }
 
     public void stopBuilding(){
         this.settingsBox.showBox(0.0,0.0);
-        this.building_text.setVisible(false);
-        this.building_type = TypeBuildEditor.None;
+        this.buildingText.setVisible(false);
+        this.buildingType = TypeBuildEditor.None;
     }
 
     public void toggleBottomToolbar(boolean visible){
@@ -409,7 +410,7 @@ public class InterfaceEditor extends Interface{
 
     @Override
     public Boolean onClick(double mouseX, double mouseY, int mouseButton) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-        if(mouseButton==3 && !building_type.equals(TypeBuildEditor.None)){
+        if(mouseButton==3 && !buildingType.equals(TypeBuildEditor.None)){
             stopBuilding();
             return true;
         }
@@ -643,9 +644,9 @@ public class InterfaceEditor extends Interface{
                 if(this.selectedQueueInstance!=null){
                     int j = this.listWaveButton.indexOf(this.selectedWave);
                     int i = this.listQueueButton.indexOf(this.selectedQueueInstance);
-                    double time = this.listQueue.get(j).get(i).getTimeLeftBeforeSpawning() + 0.5;
+                    double time = this.listQueue.get(j).get(i).getTimeBeforeSpawning() + 0.5;
                     if(!(time>60.0)){
-                        this.listQueue.get(j).get(i).setTimeLeftBeforeSpawning(time);
+                        this.listQueue.get(j).get(i).setTimeBeforeSpawning(time);
                         ((ButtonQueueEditor)this.selectedQueueInstance).setTime(time);
                         this.timeQueueMonster.setText(time+"");
                     }
@@ -656,9 +657,9 @@ public class InterfaceEditor extends Interface{
                 if(this.selectedQueueInstance!=null){
                     int j = this.listWaveButton.indexOf(this.selectedWave);
                     int i = this.listQueueButton.indexOf(this.selectedQueueInstance);
-                    double time = this.listQueue.get(j).get(i).getTimeLeftBeforeSpawning() - 0.5;
+                    double time = this.listQueue.get(j).get(i).getTimeBeforeSpawning() - 0.5;
                     if(!(time<0.5)){
-                        this.listQueue.get(j).get(i).setTimeLeftBeforeSpawning(time);
+                        this.listQueue.get(j).get(i).setTimeBeforeSpawning(time);
                         ((ButtonQueueEditor)this.selectedQueueInstance).setTime(time);
                         this.timeQueueMonster.setText(time+"");
                     }
@@ -734,7 +735,7 @@ public class InterfaceEditor extends Interface{
                 else text+=";";
                 text+="[";
                 for(int i = 0; i<l.size();i++){
-                    text+="("+l.get(i).getMonster()+","+l.get(i).getTimeLeftBeforeSpawning()+")"+(i!=l.size()-1 ? "_" : "");
+                    text+="("+l.get(i).getMonster()+","+l.get(i).getTimeBeforeSpawning()+")"+(i!=l.size()-1 ? "_" : "");
                 }
                 text+="]";
             }

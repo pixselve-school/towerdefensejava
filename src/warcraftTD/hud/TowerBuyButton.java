@@ -9,18 +9,20 @@ import java.io.IOException;
 
 public class TowerBuyButton extends Button {
   private Class towerClass;
+  private int price;
 
-  public TowerBuyButton(Position pos, double width, double height, String sprite, String sprite_hover, String action, InterfaceGame parent, Class towerClass) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+  public TowerBuyButton(Position pos, double width, double height, String sprite, String sprite_hover, String action, InterfaceGame parent, Class towerClass, int price) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     super(pos, width, height, sprite, sprite_hover, action, parent);
     this.towerClass = towerClass;
+    this.price = price;
   }
 
   @Override
-  public void update(double MouseX, double MouseY, double delta_time) {
+  public void update(double MouseX, double MouseY, double deltaTime) {
     if (this.isVisible()) {
-      this.setEnabled(((InterfaceGame)this.getParent()).getWorld().getPlayer_wallet().getMoney() >= ((InterfaceGame)this.getParent()).getWorld().getPrice_tower().get(this.towerClass));
+      this.setEnabled(((InterfaceGame)this.getParent()).getWorld().getPlayer_wallet().getMoney() >= this.price);
 
-      super.update(MouseX, MouseY, delta_time);
+      super.update(MouseX, MouseY, deltaTime);
     }
   }
 

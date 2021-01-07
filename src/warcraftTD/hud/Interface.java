@@ -38,12 +38,12 @@ public abstract class Interface {
 
     public abstract void makeAction(String action, Element from) throws IOException, LineUnavailableException, UnsupportedAudioFileException;
 
-    public void updateInterface(double mouseX, double mouseY, double delta_time) {
+    public void updateInterface(double mouseX, double mouseY, double deltaTime) {
         Iterator<Element> i = this.listElements.iterator();
         Element el;
         while (i.hasNext()) {
             el = i.next();
-            el.update(mouseX, mouseY, delta_time);
+            el.update(mouseX, mouseY, deltaTime);
         }
         i = this.garbage.iterator();
         while (i.hasNext()) {

@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class HorizontalGroupBox extends ClickableElement {
-  private final List<RelativeHUD_Element> list_HUD_Elements;
+public class GroupBox extends ClickableElement {
+  private final List<RelativeHUD_Element> listHUDElements;
   private List<RelativeHUD_Element> garbage;
   private double deltax;
   private double deltay;
@@ -51,7 +51,7 @@ public class HorizontalGroupBox extends ClickableElement {
     }
   }
 
-  public HorizontalGroupBox(Position position, double width, double height, Interface parent, String background) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+  public GroupBox(Position position, double width, double height, Interface parent, String background) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     super(position, width, height, parent);
     this.initialPos = position;
     this.deltax = 0.0;
@@ -59,20 +59,20 @@ public class HorizontalGroupBox extends ClickableElement {
     this.speed = 0.5;
     this.background = background;
     this.setVisible(false);
-    this.list_HUD_Elements = new ArrayList<RelativeHUD_Element>();
+    this.listHUDElements = new ArrayList<RelativeHUD_Element>();
     this.garbage = new ArrayList<RelativeHUD_Element>();
 
   }
 
   public void addHUDElement(Element element) {
-    if (!this.list_HUD_Elements.contains(element)) {
+    if (!this.listHUDElements.contains(element)) {
       RelativeHUD_Element el = new RelativeHUD_Element(element, element.getPosition());
-      this.list_HUD_Elements.add(el);
+      this.listHUDElements.add(el);
     }
   }
 
   public void removeHUDElement(Element element) {
-    Iterator<RelativeHUD_Element> i = this.list_HUD_Elements.iterator();
+    Iterator<RelativeHUD_Element> i = this.listHUDElements.iterator();
     RelativeHUD_Element el;
     while (i.hasNext()) {
       el = i.next();
@@ -81,15 +81,15 @@ public class HorizontalGroupBox extends ClickableElement {
   }
 
   @Override
-  public void update(double MouseX, double MouseY, double delta_time) {
+  public void update(double mouseX, double mouseY, double deltaTime) {
     if (this.isVisible()) {
 
       if (this.deltay > 0.0) {
-        this.deltay -= this.speed * delta_time;
+        this.deltay -= this.speed * deltaTime;
         if(this.deltay<0.0) this.deltay = 0.0;
       }
       if (this.deltax > 0.0){
-        this.deltax -= this.speed * delta_time;
+        this.deltax -= this.speed * deltaTime;
         if(this.deltax<0.0) this.deltax = 0.0;
       }
 
@@ -101,7 +101,7 @@ public class HorizontalGroupBox extends ClickableElement {
       }
       if(!this.background.equals("")) StdDraw.picture(this.getPosition().getX(), this.getPosition().getY(), this.background, this.getWidth(), this.getHeight());
 
-      Iterator<RelativeHUD_Element> i = this.list_HUD_Elements.iterator();
+      Iterator<RelativeHUD_Element> i = this.listHUDElements.iterator();
       RelativeHUD_Element el;
       while (i.hasNext()) {
         el = i.next();
@@ -109,7 +109,7 @@ public class HorizontalGroupBox extends ClickableElement {
         else if(this.moving) {
           el.element.setPosition(new Position((this.getPosition().getX() - (this.getWidth() / 2) + el.relativepos.getX() * this.getWidth()), (this.getPosition().getY() - (this.getHeight() / 2) + el.relativepos.getY() * this.getHeight())));
         }
-        el.element.update(MouseX, MouseY, delta_time);
+        el.element.update(mouseX, mouseY, deltaTime);
       }
 
       if(this.moving && !(this.deltay > 0.0 || this.deltax > 0.0)) this.moving = false;
@@ -118,7 +118,7 @@ public class HorizontalGroupBox extends ClickableElement {
         i = this.garbage.iterator();
         while (i.hasNext()) {
           el = i.next();
-          this.list_HUD_Elements.remove(el);
+          this.listHUDElements.remove(el);
         }
         this.garbage = new ArrayList<RelativeHUD_Element>();
       }
@@ -127,18 +127,18 @@ public class HorizontalGroupBox extends ClickableElement {
   }
 
   @Override
-  public ActionElement onClick(double MouseX, double MouseY) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+  public ActionElement onClick(double mouseX, double mouseY) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     if (this.isVisible()) {
-      Iterator<RelativeHUD_Element> i = this.list_HUD_Elements.iterator();
+      Iterator<RelativeHUD_Element> i = this.listHUDElements.iterator();
       RelativeHUD_Element el;
       ActionElement action = null;
       while (i.hasNext()) {
         el = i.next();
-        if(el.getElement() instanceof ClickableElement) action = ((ClickableElement) el.getElement()).onClick(MouseX, MouseY);
+        if(el.getElement() instanceof ClickableElement) action = ((ClickableElement) el.getElement()).onClick(mouseX, mouseY);
         if (action!=null) break;
       }
       if(action==null){
-        return (this.getHitBox().isHit(MouseX, MouseY) ? new ActionElement(this, "cancel") : null);
+        return (this.getHitBox().isHit(mouseX, mouseY) ? new ActionElement(this, "cancel") : null);
       }
       return action;
     }
@@ -146,7 +146,7 @@ public class HorizontalGroupBox extends ClickableElement {
   }
 
   public void initialUpdateRelativePosition(){
-    Iterator<RelativeHUD_Element> i = this.list_HUD_Elements.iterator();
+    Iterator<RelativeHUD_Element> i = this.listHUDElements.iterator();
     RelativeHUD_Element el;
     while (i.hasNext()) {
       el = i.next();

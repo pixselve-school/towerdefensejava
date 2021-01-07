@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class Button extends ClickableElement {
   private final String sprite;
-  private final String sprite_hover;
+  private final String spriteHover;
   private final String action;
   private final boolean clickable;
 
@@ -17,8 +17,8 @@ public class Button extends ClickableElement {
     return this.sprite;
   }
 
-  public String getSprite_hover() {
-    return this.sprite_hover;
+  public String getSpriteHover() {
+    return this.spriteHover;
   }
 
   public String getAction() {
@@ -29,11 +29,11 @@ public class Button extends ClickableElement {
     return this.clickable;
   }
 
-  public Button(Position pos, double width, double height, String sprite, String sprite_hover, String action, Interface Parent) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-    super(pos, width, height, Parent);
+  public Button(Position pos, double width, double height, String sprite, String spriteHover, String action, Interface parent) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    super(pos, width, height, parent);
     this.action = action;
     this.sprite = sprite;
-    this.sprite_hover = sprite_hover;
+    this.spriteHover = spriteHover;
     this.clickable = true;
   }
 
@@ -43,10 +43,10 @@ public class Button extends ClickableElement {
   }
 
   @Override
-  public void update(double MouseX, double MouseY, double delta_time) {
+  public void update(double mouseX, double mouseY, double deltaTime) {
     if (this.isVisible()) {
-      if (this.getHitBox().isHit(MouseX, MouseY) && this.isEnabled()) {
-        StdDraw.picture(this.getPosition().getX(), this.getPosition().getY(), this.sprite_hover, this.getWidth(), this.getHeight());
+      if (this.getHitBox().isHit(mouseX, mouseY) && this.isEnabled()) {
+        StdDraw.picture(this.getPosition().getX(), this.getPosition().getY(), this.spriteHover, this.getWidth(), this.getHeight());
       } else {
         StdDraw.picture(this.getPosition().getX(), this.getPosition().getY(), this.sprite, this.getWidth(), this.getHeight());
         if (!this.isEnabled())
@@ -56,8 +56,8 @@ public class Button extends ClickableElement {
   }
 
   @Override
-  public ActionElement onClick(double MouseX, double MouseY) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-    if(this.isVisible() && this.isEnabled() && this.clickable && this.getHitBox().isHit(MouseX, MouseY)){
+  public ActionElement onClick(double mouseX, double mouseY) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    if(this.isVisible() && this.isEnabled() && this.clickable && this.getHitBox().isHit(mouseX, mouseY)){
       this.getClickSound().play(0.6);
       return new ActionElement(this, this.action);
     } else {

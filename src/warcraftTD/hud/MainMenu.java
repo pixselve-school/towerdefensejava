@@ -16,9 +16,9 @@ import java.io.File;
 import java.io.IOException;
 
 public class MainMenu extends Interface {
-    private HorizontalGroupBox groupBox;
+    private GroupBox groupBox;
     private boolean quit;
-    private double delta_time;
+    private double deltaTime;
     private boolean needReleaseMouse;
     private Animation background;
     private World nextWorld;
@@ -35,7 +35,7 @@ public class MainMenu extends Interface {
         this.nextWorld = null;
 
         loadBackground("images/mainMenuBackground/capybara/capybara_");
-        this.groupBox = new HorizontalGroupBox(new Position(0.5,0.5), 0.4,0.6,this, "");
+        this.groupBox = new GroupBox(new Position(0.5,0.5), 0.4,0.6,this, "");
         this.getListElements().add(this.groupBox);
 
         Button btn = new Button(new Position(0.5,0.7),0.2,0.1,"images/mm_button_lvl1.png","images/mm_button_lvl1_hover.png","lvl1", this);
@@ -61,7 +61,7 @@ public class MainMenu extends Interface {
         this.getListElements().add(btn);
 
         this.quit = false;
-        this.delta_time = 0.0;
+        this.deltaTime = 0.0;
         this.needReleaseMouse = false;
     }
 
@@ -74,10 +74,10 @@ public class MainMenu extends Interface {
     }
 
     @Override
-    public void updateInterface(double mouseX, double mouseY, double delta_time) {
-        this.background.draw(delta_time);
+    public void updateInterface(double mouseX, double mouseY, double deltaTime) {
+        this.background.draw(deltaTime);
 
-        super.updateInterface(mouseX, mouseY, delta_time);
+        super.updateInterface(mouseX, mouseY, deltaTime);
     }
 
     @Override
@@ -151,13 +151,13 @@ public class MainMenu extends Interface {
             } else if(this.needReleaseMouse){
                 this.needReleaseMouse = false;
             }
-            this.updateInterface(StdDraw.mouseX(), StdDraw.mouseY(), delta_time);
+            this.updateInterface(StdDraw.mouseX(), StdDraw.mouseY(), deltaTime);
 
             StdDraw.show();
 
             int ms = (int) (System.nanoTime() - time_nano) / 1000000;
             int fps = 1000 / ms;
-            this.delta_time = 1.0 / fps;
+            this.deltaTime = 1.0 / fps;
 
         }
     }

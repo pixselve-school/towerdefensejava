@@ -45,7 +45,7 @@ public class Text extends Element {
   }
 
   @Override
-  public void update(double MouseX, double MouseY, double delta_time) {
+  public void update(double MouseX, double MouseY, double deltaTime) {
     if (this.isVisible()) {
       StdDraw.setPenColor(this.color);
       StdDraw.setFont(this.font);

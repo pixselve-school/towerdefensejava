@@ -101,19 +101,19 @@ public abstract class World {
         this.paths = paths;
     }
 
-    public double getDelta_time() {
-        return this.delta_time;
+    public double getDeltaTime() {
+        return this.deltaTime;
     }
 
-    public void setDelta_time(double delta_time) {
-        this.delta_time = delta_time;
+    public void setDeltaTime(double deltaTime) {
+        this.deltaTime = deltaTime;
     }
 
     private boolean needReleaseMouse = false;
 
     private List<Position> paths;
 
-    private double delta_time;
+    private double deltaTime;
 
     public World(int width, int height, MainMenu menu){
         this.width = width;
@@ -123,7 +123,7 @@ public abstract class World {
         StdDraw.setCanvasSize(width, height);
         StdDraw.enableDoubleBuffering();
 
-        this.delta_time = 0.0;
+        this.deltaTime = 0.0;
         this.paths = new ArrayList<Position>();
         this.end = false;
     }
@@ -161,14 +161,15 @@ public abstract class World {
 
             int ms = (int) (System.nanoTime() - time_nano) / 1000000;
             int fps = 1000 / ms;
-            this.delta_time = 1.0 / fps;
+            this.deltaTime = 1.0 / fps;
         }
 
         endWorld();
     }
 
     public void updateEvent() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-
+        // optional implementation in children
+        return;
     }
 
     public void endWorld() throws UnsupportedAudioFileException, IOException, LineUnavailableException {

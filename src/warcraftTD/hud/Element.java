@@ -68,5 +68,5 @@ abstract public class Element {
     this.visible = true;
   }
 
-  abstract public void update(double MouseX, double MouseY, double delta_time);
+  abstract public void update(double mouseX, double mouseY, double deltaTime);
 }

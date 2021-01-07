@@ -8,17 +8,17 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 
 public class InterfacePause extends Interface{
-    private HorizontalGroupBox box;
+    private GroupBox box;
     private WorldGame world;
 
-    public HorizontalGroupBox getBox() {
+    public GroupBox getBox() {
         return this.box;
     }
 
     public InterfacePause(WorldGame world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         this.world = world;
 
-        this.box = new HorizontalGroupBox(new Position(0.5,0.5),0.45,0.4,this, "images/pauseTab.png");
+        this.box = new GroupBox(new Position(0.5,0.5),0.45,0.4,this, "images/pauseTab.png");
         this.getListElements().add(this.box);
         Button btn = new Button(new Position(0.5,0.57),0.2,0.07,"images/resumeButton.png","images/resumeButton_hover.png","resume",this);
         this.box.addHUDElement(btn);

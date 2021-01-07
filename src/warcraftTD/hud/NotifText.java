@@ -6,36 +6,36 @@ import warcraftTD.utils.Position;
 import java.awt.*;
 
 public class NotifText extends Text {
-  private double deltay;
-  private final double maxdeltay;
-  private boolean UpDirection = true;
-  private final Position initpos;
+  private double deltaY;
+  private final double maxDeltaY;
+  private boolean upDirection = true;
+  private final Position initPos;
   private final double speed;
 
-  public NotifText(Position position, double width, double height, Font font, Interface parent, String text, double deltay, Color color) {
+  public NotifText(Position position, double width, double height, Font font, Interface parent, String text, double deltaY, Color color) {
     super(position, width, height, font, parent, text);
-    this.initpos = position;
+    this.initPos = position;
     this.speed = 0.5;
-    if (deltay > 0) {
-      this.deltay = deltay;
-      this.maxdeltay = this.deltay;
+    if (deltaY > 0) {
+      this.deltaY = deltaY;
+      this.maxDeltaY = this.deltaY;
     } else {
-      this.deltay = -deltay;
-      this.maxdeltay = this.deltay;
-      this.UpDirection = false;
+      this.deltaY = -deltaY;
+      this.maxDeltaY = this.deltaY;
+      this.upDirection = false;
     }
     this.setColor(color);
   }
 
   @Override
-  public void update(double MouseX, double MouseY, double delta_time) {
+  public void update(double mouseX, double mouseY, double deltaTime) {
     if (this.isVisible()) {
-      if (this.deltay > 0.0) this.deltay -= this.speed * delta_time;
+      if (this.deltaY > 0.0) this.deltaY -= this.speed * deltaTime;
       else this.getParent().removeNotif(this);
 
       StdDraw.setPenColor(this.getColor());
       StdDraw.setFont(this.getFont());
-      StdDraw.text(this.getPosition().getX(), (this.UpDirection ? this.initpos.getY() + this.deltay : this.initpos.getY() + (this.maxdeltay - this.deltay)), this.getText());
+      StdDraw.text(this.getPosition().getX(), (this.upDirection ? this.initPos.getY() + this.deltaY : this.initPos.getY() + (this.maxDeltaY - this.deltaY)), this.getText());
     }
   }
 

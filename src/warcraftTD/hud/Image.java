@@ -16,7 +16,7 @@ public class Image extends Element {
   }
 
   @Override
-  public void update(double MouseX, double MouseY, double delta_time) {
+  public void update(double MouseX, double MouseY, double deltaTime) {
     if(this.isVisible()) StdDraw.picture(this.getPosition().getX(), this.getPosition().getY(), this.sprite, this.getWidth(), this.getHeight());
   }
 }
