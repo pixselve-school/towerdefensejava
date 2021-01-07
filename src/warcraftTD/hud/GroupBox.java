@@ -13,6 +13,7 @@ import java.util.List;
 /**
  * Un élément d'interface capable de grouper plusieurs autre éléments d'interface
  * les éléments appartenant au GroupBox se positionne alors relativement à celui-ci
+ * les éléments appartenant au GroupBox sont visibles uniquement si la box l'est
  */
 public class GroupBox extends ClickableElement {
   /** liste des éléments appartenant au groupe */
@@ -29,7 +30,7 @@ public class GroupBox extends ClickableElement {
   private double fromX;
   /** Spéicie si l'animation d'apparition est dans le sens normal */
   private boolean forwardAnim;
-  /** vitesse de l'animation d'apparition de la GroupBox */
+  /** vitesse de l'animation d'apparition de la GroupBox en seconde */
   private double speed;
   /** Spécifie si la box est mouvement */
   private boolean moving;
@@ -39,34 +40,52 @@ public class GroupBox extends ClickableElement {
   private String background = "";
 
   /**
-   *
+   * Classe associant un élément d'interface à sa position relative par rapport à la groupBox
    */
   class RelativeHUD_Element {
+    /** L'élément d'interface */
     private Element element;
+    /** la position relative à la groupBox */
     private Position relativepos;
 
+    /**
+     * Récupère l'élément d'interface
+     * @return l'élément d'interface
+     */
     public Element getElement() {
       return this.element;
     }
 
+    /**
+     * Modifie l'élément d'interface
+     * @param element le nouvel élément d'interface
+     */
     public void setElement(Element element) {
       this.element = element;
     }
 
-    public Position getRelativepos() {
-      return this.relativepos;
-    }
-
-    public void setRelativepos(Position relativepos) {
-      this.relativepos = relativepos;
-    }
-
+    /**
+     * Initialise un élément avec sa position relative
+     * @param element l'élément d'interface
+     * @param relativepos sa position relative
+     */
     public RelativeHUD_Element(Element element, Position relativepos) {
       this.element = element;
       this.relativepos = relativepos;
     }
   }
 
+  /**
+   * Initialise une GroupBox
+   * @param position la position de l'élément
+   * @param width la largeur de l'élément
+   * @param height la hauteur de l'élément
+   * @param parent l'interface mère de l'élément
+   * @param background le chemin vers l'image de fond
+   * @throws UnsupportedAudioFileException
+   * @throws IOException
+   * @throws LineUnavailableException
+   */
   public GroupBox(Position position, double width, double height, Interface parent, String background) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     super(position, width, height, parent);
     this.initialPos = position;
@@ -80,6 +99,10 @@ public class GroupBox extends ClickableElement {
 
   }
 
+  /**
+   * Ajoute un élément d'interface au groupe
+   * @param element un élément d'interface
+   */
   public void addHUDElement(Element element) {
     if (!this.listHUDElements.contains(element)) {
       RelativeHUD_Element el = new RelativeHUD_Element(element, element.getPosition());
@@ -87,6 +110,10 @@ public class GroupBox extends ClickableElement {
     }
   }
 
+  /**
+   * Retire un élément d'interface du groupe
+   * @param element un élément d'interface
+   */
   public void removeHUDElement(Element element) {
     Iterator<RelativeHUD_Element> i = this.listHUDElements.iterator();
     RelativeHUD_Element el;
@@ -96,6 +123,12 @@ public class GroupBox extends ClickableElement {
     }
   }
 
+  /**
+   * Actualise la logique de l'élément et affiche son apparence
+   * @param mouseX la position horizontale de la souris
+   * @param mouseY la position verticale de la souris
+   * @param deltaTime le temps d'un tick en seconde
+   */
   @Override
   public void update(double mouseX, double mouseY, double deltaTime) {
     if (this.isVisible()) {
@@ -142,6 +175,15 @@ public class GroupBox extends ClickableElement {
     }
   }
 
+  /**
+   * Méthode appelé par le world quand la souris est préssée
+   * @param mouseX la position horizontale de la souris
+   * @param mouseY la position verticale de la souris
+   * @return un ActionElement spécifiant si l'élément à consumer le clique et l'action à réaliser
+   * @throws UnsupportedAudioFileException
+   * @throws IOException
+   * @throws LineUnavailableException
+   */
   @Override
   public ActionElement onClick(double mouseX, double mouseY) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     if (this.isVisible()) {
@@ -161,6 +203,9 @@ public class GroupBox extends ClickableElement {
     return null;
   }
 
+  /**
+   * Positionne tous les éléments apaprtenant au Groupe relativement à celui-ci
+   */
   public void initialUpdateRelativePosition(){
     Iterator<RelativeHUD_Element> i = this.listHUDElements.iterator();
     RelativeHUD_Element el;
@@ -170,6 +215,11 @@ public class GroupBox extends ClickableElement {
     }
   }
 
+  /**
+   * Affiche le groupement d'éléments avec une animation
+   * @param fromy le décalage vertical d'où part l'animation (0 = pas d'animation verticale)
+   * @param fromx le décalage horizontal d'où part l'animation (0 = pas d'animation horizontale)
+   */
   public void showBox(double fromy, double fromx) {
     this.deltaX = fromx;
     this.deltaY = fromy;
@@ -181,6 +231,12 @@ public class GroupBox extends ClickableElement {
     else this.moving = true;
   }
 
+  /**
+   * Affiche le groupement d'éléments avec une animation et une vitesse spécifique
+   * @param fromy le décalage vertical d'où part l'animation (0 = pas d'animation verticale)
+   * @param fromx le décalage horizontal d'où part l'animation (0 = pas d'animation horizontale)
+   * @param speed la vitesse d'animation
+   */
   public void showBox(double fromy, double fromx, double speed) {
     this.speed = speed;
     this.deltaX = fromx;
@@ -193,6 +249,9 @@ public class GroupBox extends ClickableElement {
     else this.moving = true;
   }
 
+  /**
+   * Cahce la GroupBox
+   */
   public void HideBox() {
     this.forwardAnim = false;
     this.deltaX = this.fromX;
