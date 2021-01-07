@@ -1,6 +1,8 @@
 package warcraftTD;
 
+import warcraftTD.hud.InterfaceEndGame;
 import warcraftTD.hud.InterfaceGame;
+import warcraftTD.hud.InterfacePause;
 import warcraftTD.hud.MainMenu;
 import warcraftTD.libs.StdDraw;
 import warcraftTD.monsters.Monster;
@@ -12,10 +14,12 @@ import warcraftTD.utils.Wallet;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class WorldGame extends World {
@@ -23,12 +27,18 @@ public class WorldGame extends World {
   private List<Monster> monsters = new ArrayList<Monster>();
   private int totalMonsterAmount;
 
-
+  private boolean needKeyRelease;
+  private boolean pause;
   // l'ensemble des cases du chemin
   private List<Position> paths;
 
+  private Image pauseBackground;
+  private Image levelBackground;
+
   // L'interface du jeu
   private InterfaceGame HUD;
+  private InterfacePause hudPause;
+  private InterfaceEndGame hudEnd;
 
   // le porte monnaie du joueur
   private Wallet player_wallet;
@@ -56,6 +66,12 @@ public class WorldGame extends World {
   List<Wave> waves;
 
   String musicPath;
+
+  private StateGame currentStateGame;
+
+  private enum StateGame{
+    Game, Pause, End
+  }
 
   /**
    * Initialisation du monde en fonction de la largeur, la hauteur et le nombre de cases données
@@ -154,6 +170,21 @@ public class WorldGame extends World {
       this.totalMonsterAmount = this.waves.get(0).monsterAmount();
     }
 
+    this.needKeyRelease = false;
+    this.pause = false;
+    this.initTerrain();
+    this.currentStateGame = StateGame.Game;
+  }
+
+  public void initTerrain(){
+    this.drawBackground();
+    if (this.displayWater) {
+      this.drawWater();
+    }
+    this.drawPath();
+    StdDraw.show();
+    StdDraw.save("images/currentlevel.png");
+    this.levelBackground = StdDraw.pictureNget(0.5,0.5,"images/currentlevel.png",1.0,1.0);
   }
 
   /**
@@ -347,7 +378,17 @@ public class WorldGame extends World {
    */
   @Override
   public void drawInfos() {
-    this.HUD.updateInterface(StdDraw.mouseX(), StdDraw.mouseY(), this.getDelta_time());
+    switch(currentStateGame){
+      case Game:
+        this.HUD.updateInterface(StdDraw.mouseX(), StdDraw.mouseY(), this.getDelta_time());
+        break;
+      case Pause:
+        this.hudPause.updateInterface(StdDraw.mouseX(), StdDraw.mouseY(), this.getDelta_time());
+        break;
+      case End:
+        this.hudEnd.updateInterface(StdDraw.mouseX(), StdDraw.mouseY(), this.getDelta_time());
+        break;
+    }
   }
 
   /**
@@ -422,8 +463,7 @@ public class WorldGame extends World {
     }
   }
 
-
-  public void updateWave() {
+  public void updateWave() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     if (this.waves.size() > 0) {
       Wave currentWave = this.waves.get(0);
       if (currentWave.getCurrentTimeBeforeStartingSpawn() > 0) {
@@ -440,26 +480,35 @@ public class WorldGame extends World {
     }
   }
 
+  public void drawLevel(){
+    StdDraw.picture(0.5, 0.5, "images/currentlevel.png", 1.0, 1.0);
+  }
+
   /**
    * Met à jour toutes les informations du plateau de jeu ainsi que les déplacements des monstres et les attaques des tours.
    *
    * @return les points de vie restants du joueur
    */
   @Override
-  public int update() {
-    this.drawBackground();
-    if (this.displayWater) {
-      this.drawWater();
+  public int update() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    switch(currentStateGame){
+      case Game:
+        this.drawLevel();
+        this.updateWave();
+        this.updateMonsters();
+        this.updateTowers();
+        this.drawMouse();
+        this.drawInfos();
+        break;
+      case Pause:
+      case End:
+        StdDraw.picture(0.5, 0.5, "images/pauseTemporaryFile.png", 1.0, 1.0);
+        StdDraw.picture(0.5, 0.5, "images/blurtest.png", 1.0, 1.0);
+        this.drawInfos();
+        break;
     }
-    this.drawPath();
-    this.updateWave();
-    this.updateMonsters();
-    this.updateTowers();
-    this.drawMouse();
-    this.drawInfos();
     return this.life;
   }
-
 
   /**
    * Vérifie lorsque l'utilisateur clique sur sa souris qu'il peut:
@@ -476,6 +525,15 @@ public class WorldGame extends World {
     double normalizedY = (int) (y / this.getSquareHeight()) * this.getSquareHeight() + this.getSquareHeight() / 2;
     Position p = new Position(normalizedX, normalizedY);
     Position mousep = new Position((int) ((normalizedX * this.getNbSquareX())), (int) ((normalizedY * this.getNbSquareY())));
+
+    switch (currentStateGame) {
+      case Pause:
+        this.hudPause.onClick(x,y, mouseButton);
+        return;
+      case End:
+        this.hudEnd.onClick(x, y, mouseButton);
+        break;
+    }
 
     if (this.HUD.onClick(x, y, mouseButton)) return;
 
@@ -519,6 +577,25 @@ public class WorldGame extends World {
     this.setNeedReleaseMouse(true);
   }
 
+  public void pressingEscape() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    this.needKeyRelease = true;
+    if(this.currentStateGame == StateGame.Game){
+
+       this.currentStateGame = StateGame.Pause;
+
+      if(this.hudPause==null) this.hudPause = new InterfacePause(this);
+      this.hudPause.getBox().showBox(0.8,0.0,1.5);
+      StdDraw.save("images/pauseTemporaryFile.png");
+      this.pauseBackground = StdDraw.pictureNget(0.5,0.5,"images/pauseTemporaryFile.png",1.0,1.0);
+
+    } else exitPause();
+  }
+
+  public void exitPause(){
+    this.currentStateGame = StateGame.Game;
+    if(this.pauseBackground!=null) this.pauseBackground.flush();
+  }
+
   /**
    * Récupère la touche entrée au clavier ainsi que la position de la souris et met à jour le plateau en fonction de ces interractions
    */
@@ -533,6 +610,32 @@ public class WorldGame extends World {
     }
 
     super.run();
+  }
+
+  public void endGame(boolean win) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    StdDraw.save("images/pauseTemporaryFile.png");
+    this.pauseBackground = StdDraw.pictureNget(0.5,0.5,"images/pauseTemporaryFile.png",1.0,1.0);
+    this.hudEnd = new InterfaceEndGame(this, win);
+    this.hudEnd.getBox().showBox(0.8,0.0,1.0);
+    this.currentStateGame = StateGame.End;
+  }
+
+  @Override
+  public void endWorld() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    if(this.levelBackground!=null) this.levelBackground.flush();
+    if(this.pauseBackground!=null) this.pauseBackground.flush();
+    super.endWorld();
+  }
+
+  @Override
+  public void updateEvent() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    if (StdDraw.isKeyPressed(27)) {
+      if(!needKeyRelease) pressingEscape();
+    } else if(this.needKeyRelease) this.needKeyRelease = false;
+    if(currentStateGame == StateGame.Game){
+      if(this.life<=0) endGame(false);
+      if(this.waves.size()==0) endGame(this.life>0);
+    }
   }
 
   public List<Monster> getMonsters() {
