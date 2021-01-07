@@ -10,21 +10,37 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Un élément d'interface capable de grouper plusieurs autre éléments d'interface
+ * les éléments appartenant au GroupBox se positionne alors relativement à celui-ci
+ */
 public class GroupBox extends ClickableElement {
+  /** liste des éléments appartenant au groupe */
   private final List<RelativeHUD_Element> listHUDElements;
+  /** liste des éléments à supprimer du groupe à la prochaine update */
   private List<RelativeHUD_Element> garbage;
-  private double deltax;
-  private double deltay;
-  private double fromy;
-  private double fromx;
-  private boolean forward_anim;
+  /** décalage horizontal actuel de position */
+  private double deltaX;
+  /** décalage vertical actuel de position */
+  private double deltaY;
+  /** décalage vertical initial d'appartion de la box */
+  private double fromY;
+  /** décalage horizontal initial d'appartion de la box */
+  private double fromX;
+  /** Spéicie si l'animation d'apparition est dans le sens normal */
+  private boolean forwardAnim;
+  /** vitesse de l'animation d'apparition de la GroupBox */
   private double speed;
+  /** Spécifie si la box est mouvement */
   private boolean moving;
-
+  /** Position initiale de la GroupBox */
   private final Position initialPos;
+  /** Chemin vers l'image de fond de la box */
   private String background = "";
 
-
+  /**
+   *
+   */
   class RelativeHUD_Element {
     private Element element;
     private Position relativepos;
@@ -54,8 +70,8 @@ public class GroupBox extends ClickableElement {
   public GroupBox(Position position, double width, double height, Interface parent, String background) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     super(position, width, height, parent);
     this.initialPos = position;
-    this.deltax = 0.0;
-    this.deltay = 0.0;
+    this.deltaX = 0.0;
+    this.deltaY = 0.0;
     this.speed = 0.5;
     this.background = background;
     this.setVisible(false);
@@ -84,20 +100,20 @@ public class GroupBox extends ClickableElement {
   public void update(double mouseX, double mouseY, double deltaTime) {
     if (this.isVisible()) {
 
-      if (this.deltay > 0.0) {
-        this.deltay -= this.speed * deltaTime;
-        if(this.deltay<0.0) this.deltay = 0.0;
+      if (this.deltaY > 0.0) {
+        this.deltaY -= this.speed * deltaTime;
+        if(this.deltaY <0.0) this.deltaY = 0.0;
       }
-      if (this.deltax > 0.0){
-        this.deltax -= this.speed * deltaTime;
-        if(this.deltax<0.0) this.deltax = 0.0;
+      if (this.deltaX > 0.0){
+        this.deltaX -= this.speed * deltaTime;
+        if(this.deltaX <0.0) this.deltaX = 0.0;
       }
 
-      if (this.forward_anim)
-        this.setPosition(new Position(this.initialPos.getX() - this.deltax, this.initialPos.getY() - this.deltay));
+      if (this.forwardAnim)
+        this.setPosition(new Position(this.initialPos.getX() - this.deltaX, this.initialPos.getY() - this.deltaY));
       else {
-        this.setPosition(new Position(this.initialPos.getX() - (this.fromx - this.deltax), this.initialPos.getY() - (this.fromy - this.deltay)));
-        if (this.deltax <= 0.0 && this.deltay <= 0.0) this.setVisible(false);
+        this.setPosition(new Position(this.initialPos.getX() - (this.fromX - this.deltaX), this.initialPos.getY() - (this.fromY - this.deltaY)));
+        if (this.deltaX <= 0.0 && this.deltaY <= 0.0) this.setVisible(false);
       }
       if(!this.background.equals("")) StdDraw.picture(this.getPosition().getX(), this.getPosition().getY(), this.background, this.getWidth(), this.getHeight());
 
@@ -105,14 +121,14 @@ public class GroupBox extends ClickableElement {
       RelativeHUD_Element el;
       while (i.hasNext()) {
         el = i.next();
-        if(this.deltay > 0.0 || this.deltax > 0.0) el.element.setPosition(new Position((this.getPosition().getX() - (this.getWidth() / 2) + el.relativepos.getX() * this.getWidth()), (this.getPosition().getY() - (this.getHeight() / 2) + el.relativepos.getY() * this.getHeight())));
+        if(this.deltaY > 0.0 || this.deltaX > 0.0) el.element.setPosition(new Position((this.getPosition().getX() - (this.getWidth() / 2) + el.relativepos.getX() * this.getWidth()), (this.getPosition().getY() - (this.getHeight() / 2) + el.relativepos.getY() * this.getHeight())));
         else if(this.moving) {
           el.element.setPosition(new Position((this.getPosition().getX() - (this.getWidth() / 2) + el.relativepos.getX() * this.getWidth()), (this.getPosition().getY() - (this.getHeight() / 2) + el.relativepos.getY() * this.getHeight())));
         }
         el.element.update(mouseX, mouseY, deltaTime);
       }
 
-      if(this.moving && !(this.deltay > 0.0 || this.deltax > 0.0)) this.moving = false;
+      if(this.moving && !(this.deltaY > 0.0 || this.deltaX > 0.0)) this.moving = false;
 
       if(this.garbage.size()>0){
         i = this.garbage.iterator();
@@ -155,31 +171,31 @@ public class GroupBox extends ClickableElement {
   }
 
   public void showBox(double fromy, double fromx) {
-    this.deltax = fromx;
-    this.deltay = fromy;
-    this.fromy = fromy;
-    this.fromx = fromx;
+    this.deltaX = fromx;
+    this.deltaY = fromy;
+    this.fromY = fromy;
+    this.fromX = fromx;
     this.setVisible(true);
-    this.forward_anim = true;
-    if(deltax==0.0 && deltay==0.0) initialUpdateRelativePosition();
+    this.forwardAnim = true;
+    if(deltaX ==0.0 && deltaY ==0.0) initialUpdateRelativePosition();
     else this.moving = true;
   }
 
   public void showBox(double fromy, double fromx, double speed) {
     this.speed = speed;
-    this.deltax = fromx;
-    this.deltay = fromy;
-    this.fromy = fromy;
-    this.fromx = fromx;
+    this.deltaX = fromx;
+    this.deltaY = fromy;
+    this.fromY = fromy;
+    this.fromX = fromx;
     this.setVisible(true);
-    this.forward_anim = true;
-    if(deltax==0.0 && deltay==0.0) initialUpdateRelativePosition();
+    this.forwardAnim = true;
+    if(deltaX ==0.0 && deltaY ==0.0) initialUpdateRelativePosition();
     else this.moving = true;
   }
 
   public void HideBox() {
-    this.forward_anim = false;
-    this.deltax = this.fromx;
-    this.deltay = this.fromy;
+    this.forwardAnim = false;
+    this.deltaX = this.fromX;
+    this.deltaY = this.fromY;
   }
 }

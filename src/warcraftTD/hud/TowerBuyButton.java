@@ -28,7 +28,7 @@ public class TowerBuyButton extends Button {
 
   @Override
   public ActionElement onClick(double MouseX, double MouseY) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-    if (this.isVisible() && this.isEnabled() && this.isClickable() && this.getHitBox().isHit(MouseX, MouseY)) {
+    if (this.isVisible() && this.isEnabled() && this.getHitBox().isHit(MouseX, MouseY)) {
       ((InterfaceGame)this.getParent()).startBuilding(this.towerClass);
       this.getClickSound().play(0.6);
       return new ActionElement(this, "cancel");
