@@ -15,150 +15,168 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Interface utilisateur pour l'éditeur de niveau
+ */
 public class InterfaceEditor extends Interface{
+    /** Référence vers le monde d'édition */
     private WorldEditor world;
-
-    private Button settingsBtn;
-    private Button waveBtn;
-    private Button exitBtn;
-    private Button saveBtn;
-
-    private Text lifeText;
+    /** Vies avec lesquels le joueur commence pour ce niveau */
     private int lifeInitial;
-
-    private Text moneyText;
+    /** Argent avec lequel le joueur commence pour ce niveau */
     private int moneyInitial;
 
+    /**
+     *  ################ Affichage de la toolBar de base
+     */
+
+    /** Boutons pour affiches le panel d'options du niveau */
+    private Button settingsBtn;
+    /** Bouton pour afficher le panel des vagues de monstres */
+    private Button waveBtn;
+    /** Bouton pour quitter le level editor */
+    private Button exitBtn;
+    /** Bouton pour sauvegarder son niveau actuel */
+    private Button saveBtn;
+
+    /**
+     *  ################ Affichage du Panel des options
+     */
+
+    /** Texte affichant les vies initiales du niveau */
+    private Text lifeText;
+    /** Texte affichant l'argent initiale du niveau */
+    private Text moneyText;
+    /** Texte affichant la largeur du niveau */
     private Text widthText;
+    /** Texte affichant la hauteur du niveau */
     private Text heightText;
-
+    /** Bouton pour créer de nouveau chemins (activé uniquement si il y a deja un spawn de posé) */
     private Button pathButton;
-    private GroupBox settingsBox;
-    private GroupBox waveBox;
-    private List<Button> listWaveButton;
-    private List<Text> listTextWave;
-    private List<Button> monstersButton;
-    private List<Button> listQueueButton;
-    private List<List<QueueMonster>> listQueue;
-    private int pageWave;
-    private Text pageWaveText;
-    private int pageQueue;
-    private Text pageQueueText;
-
-    private Text timeQueueMonster;
-
-    private Button selectedWave;
-    private Button selectedQueueInstance;
-    private Button selectedMonster;
-
+    /** Texte indiquant comment quitter le mode construction */
     private final Text buildingText;
+    /** GroupBox du panel options */
+    private GroupBox settingsBox;
+
+    /** Type de construction actuellement */
     private TypeBuildEditor buildingType;
 
+    /**
+     *  ################ Affichage du Panel des vagues
+     */
+
+    /** GroupBox du panel des vagues */
+    private GroupBox waveBox;
+    /** List des boutons associés à chaque vague  */
+    private List<Button> listWaveButton;
+    /** List des Textes de numéros de vague associer à chaque bouton  */
+    private List<Text> listTextWave;
+    /** List des boutons de selection de monstre  */
+    private List<Button> monstersButton;
+    /** List des boutons de queue de Monstres pour la vague séléctionnées */
+    private List<Button> listQueueButton;
+    /** List des QueueMonster pour chaque vague */
+    private List<List<QueueMonster>> listQueue;
+    /** Texte affichant la page actuelle des vagues */
+    private Text pageWaveText;
+    /** Texte affichant la page actuelle des queues Monster */
+    private Text pageQueueText;
+    /** Texte affichant la durée d'attente pour le monstre de la queueMonster séléctionné */
+    private Text timeQueueMonster;
+    /** Bouton de la vague actuellement séléctionnée */
+    private Button selectedWave;
+    /** Bouton de QueueMonster actuellement séléctionnée */
+    private Button selectedQueueInstance;
+    /** Bouton de Monstre actuellement séléctionnée */
+    private Button selectedMonster;
+
+    /** numéro de page des vagues actuellement */
+    private int pageWave;
+    /** numéro de page des queueMonsters actuellement */
+    private int pageQueue;
+
+    /**
+     * Enum pour chaque type de construction pour l'édition du terrain
+     */
     public enum TypeBuildEditor{
         Spawn, Path, RemovePath, None
     }
 
+    /**
+     * Associe un monstre à un temps d'attente avant qu'il ne spawn dans la vague
+     */
     private class QueueMonster{
+        /** un id de monstre */
         private int monster;
+        /** temps d'attente avant spawn */
         private double timeBeforeSpawning;
 
+        /**
+         * Modifie l'id du monstre actuel de la QueueMonster
+         * @param monster le nouveau monstre
+         */
         public void setMonster(int monster) {
             this.monster = monster;
         }
 
+        /**
+         * Récupère l'id du monstre de la QueueMonster
+         * @return le monstre de la QueueMonster
+         */
         public int getMonster() {
             return this.monster;
         }
 
+        /**
+         * Récupère le temps d'attente avant le spawn du monstre
+         * @return le temps d'attente avant le spawn du monstre
+         */
         public double getTimeBeforeSpawning() {
             return this.timeBeforeSpawning;
         }
 
+        /**
+         * Modifie le temps d'attente avant le spawn du monstre
+         * @param timeBeforeSpawning le nouveau temps d'attente
+         */
         public void setTimeBeforeSpawning(double timeBeforeSpawning) {
             this.timeBeforeSpawning = timeBeforeSpawning;
         }
 
+        /**
+         * Initialise la QueueMonster
+         * @param monster un id de monstre
+         * @param timeBeforeSpawning temps d'attente
+         */
         public QueueMonster(int monster, double timeBeforeSpawning) {
             this.monster = monster;
             this.timeBeforeSpawning = timeBeforeSpawning;
         }
     }
 
+    /**
+     * Récupère le bouton de construction de chemin
+     * @return le bouton de construction de chemin
+     */
+    public Button getPathButton() {
+        return this.pathButton;
+    }
+
+    /**
+     * Récupère le type de construction actuellement
+     * @return le type de construction actuellement
+     */
     public TypeBuildEditor getBuildingType() {
         return this.buildingType;
     }
 
-    public void setSelectedWave(Button selectedWave) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-        if(this.selectedWave!=null) this.selectedWave.setEnabled(true);
-        this.selectedWave = selectedWave;
-        this.setSelectedQueueInstance(null);
-        if(this.selectedWave!=null) {
-            this.selectedWave.setEnabled(false);
-            this.refreshQueueButtons();
-        }
-        switchPageQueue(1);
-    }
-
-    public void refreshQueueButtons() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-        int i = this.listWaveButton.indexOf(this.selectedWave);
-        if(i==-1) return;
-        for(Button btn : this.listQueueButton){
-            this.waveBox.removeHUDElement(btn);
-        }
-        this.listQueueButton = new ArrayList<Button>();
-        for(QueueMonster queue : this.listQueue.get(i)){
-            ButtonQueueEditor btnq = new ButtonQueueEditor(new Position(0.0,0.0),0.13,0.05,"images/largeButton_empty.png", "images/largeButton_empty_hover.png","selectQueue",this, "images/enemies/"+queue.getMonster()+"/die-0.png", queue.getTimeBeforeSpawning());
-            generateButtonQueue(btnq);
-        }
-    }
-
-    public void generateButtonQueue(Button btn){
-        int i = this.listWaveButton.indexOf(this.selectedWave);
-        if(i==-1) return;
-        int j = this.listQueueButton.size();
-        double delta_y = 0.05;
-        btn.setPosition(new Position(0.55, 0.68-delta_y*(j%7)));
-        this.listQueueButton.add(btn);
-        this.waveBox.addHUDElement(btn);
-        int page = j/7 + 1;
-        if(page!=pageQueue){
-            this.listQueueButton.get(j).setVisible(false);
-        }
-    }
-
-    public void setSelectedQueueInstance(Button selectedQueueInstance) {
-        if(this.selectedQueueInstance!=null) this.selectedQueueInstance.setEnabled(true);
-        this.selectedQueueInstance = selectedQueueInstance;
-        if(this.selectedQueueInstance!=null){
-            this.selectedQueueInstance.setEnabled(false);
-            for(Button btn : this.monstersButton){
-                btn.setEnabled(true);
-            }
-            int i = this.listQueueButton.indexOf(this.selectedQueueInstance);
-            int j = this.listQueue.get(this.listWaveButton.indexOf(this.selectedWave)).get(i).getMonster();
-            double time = this.listQueue.get(this.listWaveButton.indexOf(this.selectedWave)).get(i).getTimeBeforeSpawning();
-            this.setSelectedMonster(this.monstersButton.get(j-1));
-            this.timeQueueMonster.setText(time+"");
-        } else {
-            for(Button btn : this.monstersButton){
-                btn.setEnabled(false);
-            }
-        }
-    }
-
-    public void setSelectedMonster(Button selectedMonster) {
-        if(this.selectedMonster!=null) this.selectedMonster.setEnabled(true);
-        this.selectedMonster = selectedMonster;
-        if(this.selectedMonster!=null){
-            this.selectedMonster.setEnabled(false);
-            int i = this.monstersButton.indexOf(this.selectedMonster);
-            ((ButtonQueueEditor)this.selectedQueueInstance).setImagePath("images/enemies/"+(i+1)+"/die-0.png");
-            int iw = this.listWaveButton.indexOf(this.selectedWave);
-            int iq = this.listQueueButton.indexOf(this.selectedQueueInstance);
-            this.listQueue.get(iw).get(iq).setMonster(i+1);
-        }
-    }
-
+    /**
+     * Initialise une interface d'éditeur de level
+     * @param world le world d'édition
+     * @throws UnsupportedAudioFileException
+     * @throws IOException
+     * @throws LineUnavailableException
+     */
     public InterfaceEditor(WorldEditor world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         this.world = world;
 
@@ -279,18 +297,125 @@ public class InterfaceEditor extends Interface{
         this.waveBox.addHUDElement(this.timeQueueMonster);
     }
 
+    /**
+     * Modifie le bouton de vague séléctionnée
+     * @param selectedWave nouvelle vague à séléctionner
+     * @throws UnsupportedAudioFileException
+     * @throws IOException
+     * @throws LineUnavailableException
+     */
+    public void setSelectedWave(Button selectedWave) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        if(this.selectedWave!=null) this.selectedWave.setEnabled(true);
+        this.selectedWave = selectedWave;
+        this.setSelectedQueueInstance(null);
+        if(this.selectedWave!=null) {
+            this.selectedWave.setEnabled(false);
+            this.refreshQueueButtons();
+        }
+        switchPageQueue(1);
+    }
+
+    /**
+     * Actualise l'apparence des Boutons de QueueMonsters (vague management)
+     * @throws UnsupportedAudioFileException
+     * @throws IOException
+     * @throws LineUnavailableException
+     */
+    public void refreshQueueButtons() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        int i = this.listWaveButton.indexOf(this.selectedWave);
+        if(i==-1) return;
+        for(Button btn : this.listQueueButton){
+            this.waveBox.removeHUDElement(btn);
+        }
+        this.listQueueButton = new ArrayList<Button>();
+        for(QueueMonster queue : this.listQueue.get(i)){
+            ButtonQueueEditor btnq = new ButtonQueueEditor(new Position(0.0,0.0),0.13,0.05,"images/largeButton_empty.png", "images/largeButton_empty_hover.png","selectQueue",this, "images/enemies/"+queue.getMonster()+"/die-0.png", queue.getTimeBeforeSpawning());
+            generateButtonQueue(btnq);
+        }
+    }
+
+    /**
+     * Ajoute un nouveau bouton de QueueMonster pour la vague actuelle
+     * @param btn le bouton
+     */
+    public void generateButtonQueue(Button btn){
+        int i = this.listWaveButton.indexOf(this.selectedWave);
+        if(i==-1) return;
+        int j = this.listQueueButton.size();
+        double delta_y = 0.05;
+        btn.setPosition(new Position(0.55, 0.68-delta_y*(j%7)));
+        this.listQueueButton.add(btn);
+        this.waveBox.addHUDElement(btn);
+        int page = j/7 + 1;
+        if(page!=pageQueue){
+            this.listQueueButton.get(j).setVisible(false);
+        }
+    }
+
+    /**
+     * Modifie le bouton de QueueMonster séléctionnée
+     * @param selectedQueueInstance le bouton
+     */
+    public void setSelectedQueueInstance(Button selectedQueueInstance) {
+        if(this.selectedQueueInstance!=null) this.selectedQueueInstance.setEnabled(true);
+        this.selectedQueueInstance = selectedQueueInstance;
+        if(this.selectedQueueInstance!=null){
+            this.selectedQueueInstance.setEnabled(false);
+            for(Button btn : this.monstersButton){
+                btn.setEnabled(true);
+            }
+            int i = this.listQueueButton.indexOf(this.selectedQueueInstance);
+            int j = this.listQueue.get(this.listWaveButton.indexOf(this.selectedWave)).get(i).getMonster();
+            double time = this.listQueue.get(this.listWaveButton.indexOf(this.selectedWave)).get(i).getTimeBeforeSpawning();
+            this.setSelectedMonster(this.monstersButton.get(j-1));
+            this.timeQueueMonster.setText(time+"");
+        } else {
+            for(Button btn : this.monstersButton){
+                btn.setEnabled(false);
+            }
+        }
+    }
+
+    /**
+     * Modifie le bouton de Monstre séléctionnée
+     * @param selectedMonster le bouton
+     */
+    public void setSelectedMonster(Button selectedMonster) {
+        if(this.selectedMonster!=null) this.selectedMonster.setEnabled(true);
+        this.selectedMonster = selectedMonster;
+        if(this.selectedMonster!=null){
+            this.selectedMonster.setEnabled(false);
+            int i = this.monstersButton.indexOf(this.selectedMonster);
+            ((ButtonQueueEditor)this.selectedQueueInstance).setImagePath("images/enemies/"+(i+1)+"/die-0.png");
+            int iw = this.listWaveButton.indexOf(this.selectedWave);
+            int iq = this.listQueueButton.indexOf(this.selectedQueueInstance);
+            this.listQueue.get(iw).get(iq).setMonster(i+1);
+        }
+    }
+
+    /**
+     * Lance l'édition du terrain / la construction
+     * @param type le type de construction
+     */
     public void startBuilding(TypeBuildEditor type){
         this.settingsBox.HideBox();
         this.buildingText.setVisible(true);
         this.buildingType = type;
     }
 
+    /**
+     * Stop l'édition du terrain / le mode construction
+     */
     public void stopBuilding(){
         this.settingsBox.showBox(0.0,0.0);
         this.buildingText.setVisible(false);
         this.buildingType = TypeBuildEditor.None;
     }
 
+    /**
+     * Change la visibilité de la toolbar
+     * @param visible nouvelle visibilité
+     */
     public void toggleBottomToolbar(boolean visible){
         this.settingsBtn.setVisible(visible);
         this.waveBtn.setVisible(visible);
@@ -298,6 +423,9 @@ public class InterfaceEditor extends Interface{
         this.exitBtn.setVisible(visible);
     }
 
+    /**
+     * Actualise la position des boutons des vagues
+     */
     public void refreshPositionWavesButton(){
         double delta_x = 0.063;
         double delta_y = 0.12;
@@ -317,6 +445,9 @@ public class InterfaceEditor extends Interface{
         }
     }
 
+    /**
+     * Actualise les positions des boutons des QueuesMonster
+     */
     public void refreshPositionQueueButton(){
         double delta_y = 0.05;
         for(int i = 0;i < this.listQueueButton.size();i++){
@@ -331,6 +462,10 @@ public class InterfaceEditor extends Interface{
         }
     }
 
+    /**
+     * Change la page actuelle des boutons de vagues
+     * @param page la nouvelle page
+     */
     public void switchPageWave(int page){
         if(page > (this.listWaveButton.size()-1)/15 + 1) return;
         else if (page<1) return;
@@ -351,6 +486,10 @@ public class InterfaceEditor extends Interface{
         this.pageWaveText.setText("p "+this.pageWave+"/"+((this.listWaveButton.size()-1)/15 + 1));
     }
 
+    /**
+     * Change la page actuelle des boutons de QueuesMonster
+     * @param page la nouvelle page
+     */
     public void switchPageQueue(int page){
         if(page > (this.listQueueButton.size()-1)/7 + 1) return;
         else if (page<1) return;
@@ -369,6 +508,11 @@ public class InterfaceEditor extends Interface{
         this.pageQueueText.setText("p "+this.pageQueue+"/"+((this.listQueueButton.size()-1)/7 + 1));
     }
 
+    /**
+     * Ajoute un nouveau bouton dans les boutons de vagues
+     * @param btn le bouton
+     * @return Le bouton est ajouté
+     */
     public boolean addingWaveButton(Button btn){
         int i = this.listWaveButton.size();
         if(i==60) return false;
@@ -392,6 +536,11 @@ public class InterfaceEditor extends Interface{
         return true;
     }
 
+    /**
+     * Ajoute un nouveau bouton dans les boutons de QueueMonster
+     * @param btn le bouton
+     * @return Le bouton est ajouté
+     */
     public boolean addingQueueButton(Button btn){
         int i = this.listWaveButton.indexOf(this.selectedWave);
         if(i==-1) return false;
@@ -408,6 +557,16 @@ public class InterfaceEditor extends Interface{
         return true;
     }
 
+    /**
+     * Méthode appelé par le world quand la souris est préssée
+     * @param mouseX la position horizontale de la souris
+     * @param mouseY la position verticale de la souris
+     * @param mouseButton le bouton de la souris préssée
+     * @return le clique sur l'interface à réaliser une action
+     * @throws UnsupportedAudioFileException
+     * @throws IOException
+     * @throws LineUnavailableException
+     */
     @Override
     public Boolean onClick(double mouseX, double mouseY, int mouseButton) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         if(mouseButton==3 && !buildingType.equals(TypeBuildEditor.None)){
@@ -418,10 +577,14 @@ public class InterfaceEditor extends Interface{
         return super.onClick(mouseX, mouseY, mouseButton);
     }
 
-    public Button getPathButton() {
-        return this.pathButton;
-    }
-
+    /**
+     * Réalise une action sur l'interface
+     * @param action l'action à réaliser
+     * @param from l'élément d'où vient l'action à réaliser
+     * @throws IOException
+     * @throws LineUnavailableException
+     * @throws UnsupportedAudioFileException
+     */
     @Override
     public void makeAction(String action, Element from) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         switch (action) {
@@ -697,6 +860,10 @@ public class InterfaceEditor extends Interface{
         }
     }
 
+    /**
+     * Récupère le chemin du terrain sous forme de chaine de caractères
+     * @return le chemin du terrain sous forme de chaine de caractères
+     */
     public String getPathTextSave(){
         String text = "PATH=";
         Position previous = null;
@@ -719,6 +886,12 @@ public class InterfaceEditor extends Interface{
         return text+count+dirText[dir];
     }
 
+    /**
+     * Récupère l'index de la direction entre 2 positions
+     * @param previous 1ère position
+     * @param p position suivante
+     * @return l'index de la direction entre 2 positions
+     */
     public int getDirText(Position previous, Position p){
         if(previous.getY()<p.getY()) return 1;
         else if(previous.getY()>p.getY()) return 2;
@@ -726,6 +899,10 @@ public class InterfaceEditor extends Interface{
         else return 4;
     }
 
+    /**
+     * Récupère les listes de vagues sous forme de chaine de caractères
+     * @return les listes de vagues sous forme de chaine de caractères
+     */
     public String getWaveTextSave(){
         String text = "WAVES=";
         boolean first = true;
@@ -744,6 +921,10 @@ public class InterfaceEditor extends Interface{
         return text;
     }
 
+    /**
+     * Récupère le padding du terrain sous forme de chaine de caractères
+     * @return le padding du terrain sous forme de chaine de caractères
+     */
     public String getPaddingTextSave(){
         String text = "PADDING=";
         int maxX = 0;
