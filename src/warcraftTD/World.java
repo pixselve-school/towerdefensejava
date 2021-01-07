@@ -136,7 +136,7 @@ public abstract class World {
 
     public abstract void drawPath();
 
-    public abstract int update();
+    public abstract int update() throws UnsupportedAudioFileException, IOException, LineUnavailableException;
 
     public abstract void mouseClick(double x, double y, int mouseButton) throws UnsupportedAudioFileException, IOException, LineUnavailableException;
 
