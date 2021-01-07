@@ -666,6 +666,7 @@ public class InterfaceEditor extends Interface{
                 this.world.setNeedReleaseMouse(true);
                 break;
             case "saveMap":
+                if(this.world.getPaths().size()<2) return;
                 JFileChooser fileChooser = new JFileChooser();
                 fileChooser.setDialogTitle("Specify a file to save");
                 FileNameExtensionFilter filter = new FileNameExtensionFilter("Tower Defense Level", "tdl", "tdl");
