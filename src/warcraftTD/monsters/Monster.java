@@ -1,6 +1,9 @@
 package warcraftTD.monsters;
 
 import warcraftTD.WorldGame;
+import warcraftTD.particules.EntityParticules;
+import warcraftTD.particules.ImageParticule;
+import warcraftTD.particules.RandomParticuleGenerator;
 import warcraftTD.utils.Position;
 import warcraftTD.utils.Vector;
 
@@ -29,6 +32,7 @@ public abstract class Monster {
   }
   private boolean isReadyToBeRemoved;
   private final int goldWhenDead;
+  private final EntityParticules entityParticules;
 
   public Monster(Position p, WorldGame world, int health, int goldWhenDead, double speed) {
     this.position = p;
@@ -41,6 +45,7 @@ public abstract class Monster {
     this.undergoingEffects = new HashMap<>();
     this.isReadyToBeRemoved = false;
     this.goldWhenDead = goldWhenDead;
+    this.entityParticules = new EntityParticules();
   }
 
   public Monster(int health, int goldWhenDead, double speed, List<Position> path) {
@@ -53,6 +58,7 @@ public abstract class Monster {
     this.undergoingEffects = new HashMap<>();
     this.isReadyToBeRemoved = false;
     this.goldWhenDead = goldWhenDead;
+    this.entityParticules = new EntityParticules();
   }
 
   /**
@@ -71,12 +77,12 @@ public abstract class Monster {
 
     Effect poisonEffect = this.undergoingEffects.get("poison");
     if (poisonEffect != null) {
+      this.entityParticules.addGenerator(new RandomParticuleGenerator(this.position, 1, 0.3, 0.03, new ImageParticule(1, 0.01, 0.1, "images/poison.png")));
       if (poisonEffect.getTimeTracking() >= 1.0) {
         this.health += poisonEffect.getHealthAdd();
         poisonEffect.resetTimeTracking();
       }
     }
-
 
     Position newPosition = new Position(this.position.getX() + this.speed * speedModifier * delta_time * this.vector.normal().getX(), this.position.getY() + this.speed * speedModifier * delta_time * this.vector.normal().getY());
 
@@ -104,6 +110,7 @@ public abstract class Monster {
     this.updateEffectsDuration(deltaTime);
     this.move(deltaTime);
     this.draw(deltaTime);
+    this.entityParticules.updateGenerators(deltaTime);
   }
 
 
