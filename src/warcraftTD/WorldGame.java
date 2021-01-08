@@ -127,8 +127,9 @@ public class WorldGame extends World {
     this.drawPath();
 
     StdDraw.show();
-    StdDraw.save("images/currentlevel.png");
-    this.levelBackground = StdDraw.pictureNget(0.5, 0.5, "images/currentlevel.png", 1.0, 1.0);
+
+    StdDraw.save("temporary/currentlevel.png");
+    this.levelBackground = StdDraw.pictureNget(0.5,0.5,"temporary/currentlevel.png",1.0,1.0);
   }
 
 
@@ -388,8 +389,10 @@ public class WorldGame extends World {
     }
   }
 
-  public void drawLevel() {
-    StdDraw.picture(0.5, 0.5, "images/currentlevel.png", 1.0, 1.0);
+
+  public void drawLevel(){
+    StdDraw.picture(0.5, 0.5, "temporary/currentlevel.png", 1.0, 1.0);
+
   }
 
   /**
@@ -411,7 +414,7 @@ public class WorldGame extends World {
         break;
       case Pause:
       case End:
-        StdDraw.picture(0.5, 0.5, "images/pauseTemporaryFile.png", 1.0, 1.0);
+        StdDraw.picture(0.5, 0.5, "temporary/pauseTemporaryFile.png", 1.0, 1.0);
         StdDraw.picture(0.5, 0.5, "images/blurtest.png", 1.0, 1.0);
         this.drawInfos();
         break;
@@ -492,12 +495,14 @@ public class WorldGame extends World {
 
       this.currentStateGame = StateGame.Pause;
 
-      if (this.hudPause == null) this.hudPause = new InterfacePause(this);
-      this.hudPause.getBox().showBox(0.8, 0.0, 1.5);
-      StdDraw.save("images/pauseTemporaryFile.png");
-      this.pauseBackground = StdDraw.pictureNget(0.5, 0.5, "images/pauseTemporaryFile.png", 1.0, 1.0);
 
-    } else exitPause();
+      if(this.hudPause==null) this.hudPause = new InterfacePause(this);
+      this.hudPause.getBox().showBox(0.8,0.0,1.5);
+      StdDraw.save("temporary/pauseTemporaryFile.png");
+      this.pauseBackground = StdDraw.pictureNget(0.5,0.5,"temporary/pauseTemporaryFile.png",1.0,1.0);
+
+
+    } else if(this.currentStateGame == StateGame.Pause) exitPause();
   }
 
   public void exitPause() {
