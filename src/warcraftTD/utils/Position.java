@@ -2,6 +2,8 @@ package warcraftTD.utils;
 
 import warcraftTD.WorldGame;
 
+import java.util.Objects;
+
 public class Position implements Comparable<Position> {
   private double x;
   private double y;
@@ -83,5 +85,10 @@ public class Position implements Comparable<Position> {
         return 0;
       }
     }
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.getX(), this.getY());
   }
 }

@@ -12,6 +12,7 @@ import warcraftTD.utils.Position;
 import warcraftTD.utils.Sound;
 import warcraftTD.utils.TowerDataStruct;
 import warcraftTD.utils.Wallet;
+import warcraftTD.world.*;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -19,8 +20,8 @@ import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class WorldGame extends World {
@@ -72,9 +73,11 @@ public class WorldGame extends World {
 
   private StateGame currentStateGame;
 
-  private enum StateGame{
+  private enum StateGame {
     Game, Pause, End
   }
+
+  TreeMap<Position, Tile> positionTileMap;
 
   public WorldGame(int nbSquareX, int nbSquareY, int money, int health, boolean displayWater, String musicPath, List<Position> path, List<Wave> waves, MainMenu menu) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     super(1200, 800, menu);
@@ -111,36 +114,119 @@ public class WorldGame extends World {
 
     this.needKeyRelease = false;
     this.pause = false;
+
+    this.positionTileMap = new TreeMap<>();
+
     this.initTerrain();
     this.currentStateGame = StateGame.Game;
   }
 
-  public void initTerrain(){
+  public void initTerrain() {
+    this.generatePath();
     this.drawBackground();
-    if (this.displayWater) {
-      this.drawWater();
-    }
     this.drawPath();
+
     StdDraw.show();
+
     StdDraw.save("temporary/currentlevel.png");
     this.levelBackground = StdDraw.pictureNget(0.5,0.5,"temporary/currentlevel.png",1.0,1.0);
   }
+
+
+  public void generatePath() {
+    for (int i = 0; i < this.getNbSquareX(); i++) {
+      for (int j = 0; j < this.getNbSquareY(); j++) {
+        final Position position = new Position(i, j);
+
+        if (this.displayWater && ((i == 0 || i == this.getNbSquareX() - 1) || (j == 0 || j == this.getNbSquareY() - 1))) {
+          final Water water = new Water(position.getWorldPosition(this), this.getSquareHeight(), this.getSquareWidth());
+//          water.setDebug(true);
+          this.positionTileMap.put(position, water);
+          this.updateTile(position, true);
+        } else if (this.paths.contains(position)) {
+          final Pathway pathway = new Pathway(position.getWorldPosition(this), this.getSquareHeight(), this.getSquareWidth());
+
+          this.positionTileMap.put(position, pathway);
+          this.updateTile(position, true);
+
+        } else {
+          final Grass grass = new Grass(position.getWorldPosition(this), this.getSquareHeight(), this.getSquareWidth());
+          double random = Math.random();
+          if (random > 0.95) {
+            grass.replaceContains(new Flower(FlowerType.RED, grass));
+          } else if (random > 0.90) {
+            grass.replaceContains(new Flower(FlowerType.BLUE, grass));
+          } else if (random > 0.85) {
+            grass.replaceContains(new Flower(FlowerType.WHITE, grass));
+          } else if (random > 0.80) {
+            grass.replaceContains(new Flower(FlowerType.YELLOW, grass));
+          } else if (random > 0.75) {
+            grass.replaceContains(new Flower(FlowerType.BUSH, grass));
+          } else if (random > 0.70) {
+            grass.replaceContains(new Tree());
+          }
+          this.positionTileMap.put(position, grass);
+        }
+      }
+    }
+
+  }
+
+
+  public boolean isPositionInView(Position position) {
+    return position.getX() >= 0 && position.getX() < this.getNbSquareX() && position.getY() >= 0 && position.getY() < this.getNbSquareY();
+  }
+
+  public void updateTile(Position position, boolean cascade) {
+    Tile tile = this.positionTileMap.get(position);
+
+    final double x = position.getX();
+    final double y = position.getY();
+
+    final Position topPosition = new Position(x, y + 1);
+    Tile top = this.positionTileMap.get(topPosition);
+    final Position bottomPosition = new Position(x, y - 1);
+    Tile bottom = this.positionTileMap.get(bottomPosition);
+    final Position leftPosition = new Position(x - 1, y);
+    Tile left = this.positionTileMap.get(leftPosition);
+    final Position rightPosition = new Position(x + 1, y);
+    Tile right = this.positionTileMap.get(rightPosition);
+    tile.setDirectionValue(0);
+    if (!this.isPositionInView(topPosition) || top != null && top.getClass() == tile.getClass()) {
+      tile.setDirectionValue(tile.getDirectionValue() + 1);
+      if (cascade && top != null) {
+        this.updateTile(topPosition, false);
+      }
+    }
+    if (!this.isPositionInView(bottomPosition) || bottom != null && bottom.getClass() == tile.getClass()) {
+      tile.setDirectionValue(tile.getDirectionValue() + 8);
+      if (cascade && bottom != null) {
+        this.updateTile(bottomPosition, false);
+      }
+    }
+    if (!this.isPositionInView(leftPosition) || left != null && left.getClass() == tile.getClass()) {
+      tile.setDirectionValue(tile.getDirectionValue() + 2);
+      if (cascade && left != null) {
+        this.updateTile(leftPosition, false);
+      }
+    }
+    if (!this.isPositionInView(rightPosition) || right != null && right.getClass() == tile.getClass()) {
+      tile.setDirectionValue(tile.getDirectionValue() + 4);
+      if (cascade && right != null) {
+        this.updateTile(rightPosition, false);
+      }
+    }
+  }
+
 
   /**
    * Définit le décors du plateau de jeu.
    */
   @Override
   public void drawBackground() {
-    //StdDraw.setPenColor(StdDraw.LIGHT_GREEN);
-//    StdDraw.picture(0.5, 0.5, "images/fondtest_complet.jpg", 1.0, 1.0);
-
-    for (int i = 0; i < this.getNbSquareX(); i++) {
-      for (int j = 0; j < this.getNbSquareY(); j++) {
-        StdDraw.picture(i * this.getSquareWidth() + this.getSquareWidth() / 2, j * this.getSquareHeight() + this.getSquareHeight() / 2, "images/tiles/grass.png", this.getSquareWidth() + 0.001, this.getSquareHeight() + 0.001);
-      }
+    for (Map.Entry<Position, Tile> tileEntry : this.positionTileMap.entrySet()) {
+      tileEntry.getValue().update(0);
     }
-
-
   }
 
   /**
@@ -148,131 +234,15 @@ public class WorldGame extends World {
    */
   @Override
   public void drawPath() {
-    List<Position> positions = this.paths;
-    for (int i = 0, positionsSize = positions.size(); i < positionsSize; i++) {
-      Position path = positions.get(i).getWorldPosition(this);
 
-      double coorX = path.getX();
-      double coorY = path.getY();
-//      Divide the tile by 4 smaller tiles
-      Position topLeft = new Position(coorX - this.getSquareWidth() / 4, coorY + this.getSquareHeight() / 4);
-      Position topRight = new Position(coorX + this.getSquareWidth() / 4, coorY + this.getSquareHeight() / 4);
-      Position bottomLeft = new Position(coorX - this.getSquareWidth() / 4, coorY - this.getSquareHeight() / 4);
-      Position bottomRight = new Position(coorX + this.getSquareWidth() / 4, coorY - this.getSquareHeight() / 4);
+  }
 
-      if (i - 1 >= 0 && i + 1 < positionsSize) {
-        Position previousPath = positions.get(i - 1).getWorldPosition(this);
-        Position nextPath = positions.get(i + 1).getWorldPosition(this);
 
-        if (previousPath.getX() == path.getX() && path.getX() == nextPath.getX()) {
-//        Aligned vertically
-          StdDraw.picture(topLeft.getX(), topLeft.getY(), "images/tiles/left.png", this.getSquareWidth() / 2 , this.getSquareHeight() / 2);
-          StdDraw.picture(topRight.getX(), topRight.getY(), "images/tiles/right.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-          StdDraw.picture(bottomLeft.getX(), bottomLeft.getY(), "images/tiles/left.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-          StdDraw.picture(bottomRight.getX(), bottomRight.getY(), "images/tiles/right.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-        } else if (previousPath.getY() == path.getY() && path.getY() == nextPath.getY()) {
-//        Aligned horizontally
-          StdDraw.picture(topLeft.getX(), topLeft.getY(), "images/tiles/top.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-          StdDraw.picture(topRight.getX(), topRight.getY(), "images/tiles/top.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-          StdDraw.picture(bottomLeft.getX(), bottomLeft.getY(), "images/tiles/bottom.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-          StdDraw.picture(bottomRight.getX(), bottomRight.getY(), "images/tiles/bottom.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-        } else {
-          if (path.getX() < previousPath.getX() && path.getY() > nextPath.getY() || path.getX() < nextPath.getX() && path.getY() > previousPath.getY()) {
-              /*
-              Corner type:
+  public void updateTileEntities(double deltaTime) {
 
-              * --
-              |
-
-               */
-            StdDraw.picture(topLeft.getX(), topLeft.getY(), "images/tiles/top-left.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-            StdDraw.picture(topRight.getX(), topRight.getY(), "images/tiles/top.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-            StdDraw.picture(bottomLeft.getX(), bottomLeft.getY(), "images/tiles/left.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-            StdDraw.picture(bottomRight.getX(), bottomRight.getY(), "images/tiles/bottom-right-corner.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-          } else if (path.getX() > previousPath.getX() && path.getY() > nextPath.getY() || path.getX() > nextPath.getX() && path.getY() > previousPath.getY()) {
-              /*
-              Corner type:
-
-              -- *
-                 |
-
-               */
-            StdDraw.picture(topLeft.getX(), topLeft.getY(), "images/tiles/top.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-            StdDraw.picture(topRight.getX(), topRight.getY(), "images/tiles/top-right.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-            StdDraw.picture(bottomLeft.getX(), bottomLeft.getY(), "images/tiles/bottom-left-corner.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-            StdDraw.picture(bottomRight.getX(), bottomRight.getY(), "images/tiles/right.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-          } else if (path.getX() < previousPath.getX() && path.getY() < nextPath.getY() || path.getX() < nextPath.getX() && path.getY() < previousPath.getY()) {
-              /*
-              Corner type:
-
-              |
-              * --
-
-               */
-            StdDraw.picture(topLeft.getX(), topLeft.getY(), "images/tiles/left.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-            StdDraw.picture(topRight.getX(), topRight.getY(), "images/tiles/top-right-corner.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-            StdDraw.picture(bottomLeft.getX(), bottomLeft.getY(), "images/tiles/bottom-left.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-            StdDraw.picture(bottomRight.getX(), bottomRight.getY(), "images/tiles/bottom.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-          } else {
-              /*
-              Corner type:
-
-                 |
-              -- *
-
-               */
-            StdDraw.picture(topLeft.getX(), topLeft.getY(), "images/tiles/top-left-corner.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-            StdDraw.picture(topRight.getX(), topRight.getY(), "images/tiles/right.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-            StdDraw.picture(bottomLeft.getX(), bottomLeft.getY(), "images/tiles/bottom.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-            StdDraw.picture(bottomRight.getX(), bottomRight.getY(), "images/tiles/bottom-right.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-          }
-        }
-
-      } else {
-        Position previousOrNext = null;
-        if (i - 1 >= 0) {
-          previousOrNext = positions.get(i - 1).getWorldPosition(this);
-        } else if (i + 1 < positionsSize) {
-          previousOrNext = positions.get(i + 1).getWorldPosition(this);
-        }
-
-        if (previousOrNext == null) {
-//          Non connected path. Should not happen
-          StdDraw.picture(topLeft.getX(), topLeft.getY(), "images/tiles/top-left.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-          StdDraw.picture(topRight.getX(), topRight.getY(), "images/tiles/top-right.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-          StdDraw.picture(bottomLeft.getX(), bottomLeft.getY(), "images/tiles/bottom-left.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-          StdDraw.picture(bottomRight.getX(), bottomRight.getY(), "images/tiles/bottom-right.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-        } else {
-          if (previousOrNext.getY() == path.getY()) {
-            if (previousOrNext.getX() > path.getX()) {
-              StdDraw.picture(topLeft.getX(), topLeft.getY(), "images/tiles/top-left.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-              StdDraw.picture(topRight.getX(), topRight.getY(), "images/tiles/top.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-              StdDraw.picture(bottomLeft.getX(), bottomLeft.getY(), "images/tiles/bottom-left.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-              StdDraw.picture(bottomRight.getX(), bottomRight.getY(), "images/tiles/bottom.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-            } else {
-              StdDraw.picture(topLeft.getX(), topLeft.getY(), "images/tiles/top.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-              StdDraw.picture(topRight.getX(), topRight.getY(), "images/tiles/top-right.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-              StdDraw.picture(bottomLeft.getX(), bottomLeft.getY(), "images/tiles/bottom.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-              StdDraw.picture(bottomRight.getX(), bottomRight.getY(), "images/tiles/bottom-right.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-            }
-          } else {
-            if (previousOrNext.getY() > path.getY()) {
-              StdDraw.picture(topLeft.getX(), topLeft.getY(), "images/tiles/left.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-              StdDraw.picture(topRight.getX(), topRight.getY(), "images/tiles/right.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-              StdDraw.picture(bottomLeft.getX(), bottomLeft.getY(), "images/tiles/bottom-left.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-              StdDraw.picture(bottomRight.getX(), bottomRight.getY(), "images/tiles/bottom-right.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-            } else {
-              StdDraw.picture(topLeft.getX(), topLeft.getY(), "images/tiles/top-left.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-              StdDraw.picture(topRight.getX(), topRight.getY(), "images/tiles/top-right.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-              StdDraw.picture(bottomLeft.getX(), bottomLeft.getY(), "images/tiles/left.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-              StdDraw.picture(bottomRight.getX(), bottomRight.getY(), "images/tiles/right.png", this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-            }
-          }
-        }
-      }
+    for (Map.Entry<Position, Tile> tileEntry : this.positionTileMap.descendingMap().entrySet()) {
+      tileEntry.getValue().updateContainsEntity(deltaTime);
     }
-
-
   }
 
   /**
@@ -317,7 +287,7 @@ public class WorldGame extends World {
    */
   @Override
   public void drawInfos() {
-    switch(currentStateGame){
+    switch (currentStateGame) {
       case Game:
         this.HUD.updateInterface(StdDraw.mouseX(), StdDraw.mouseY(), this.getDeltaTime());
         break;
@@ -376,7 +346,7 @@ public class WorldGame extends World {
 
   public void updateProgressBar() {
     Wave currentWave = this.waves.get(0);
-    this.HUD.setWaveEnemyProgress((100 * (this.amountAliveMonsters()+currentWave.monsterAmount()) / (double) this.totalMonsterAmount));
+    this.HUD.setWaveEnemyProgress((100 * (this.amountAliveMonsters() + currentWave.monsterAmount()) / (double) this.totalMonsterAmount));
   }
 
   private int amountAliveMonsters() {
@@ -419,8 +389,10 @@ public class WorldGame extends World {
     }
   }
 
+
   public void drawLevel(){
     StdDraw.picture(0.5, 0.5, "temporary/currentlevel.png", 1.0, 1.0);
+
   }
 
   /**
@@ -430,11 +402,12 @@ public class WorldGame extends World {
    */
   @Override
   public int update() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-    switch(currentStateGame){
+    switch (currentStateGame) {
       case Game:
         this.drawLevel();
         this.updateWave();
         this.updateMonsters();
+        this.updateTileEntities(this.getDeltaTime());
         this.updateTowers();
         this.drawMouse();
         this.drawInfos();
@@ -467,7 +440,7 @@ public class WorldGame extends World {
 
     switch (currentStateGame) {
       case Pause:
-        this.hudPause.onClick(x,y, mouseButton);
+        this.hudPause.onClick(x, y, mouseButton);
         return;
       case End:
         this.hudEnd.onClick(x, y, mouseButton);
@@ -478,7 +451,7 @@ public class WorldGame extends World {
 
     if (this.building_class != null && !this.isNeedReleaseMouse()) {
       if (!(this.paths.contains(mousep) || this.list_tower.containsKey(mousep))) {
-        int price = this.listTowerData.get(this.listTowerData.indexOf(new TowerDataStruct("","","",0,this.building_class))).price;
+        int price = this.listTowerData.get(this.listTowerData.indexOf(new TowerDataStruct("", "", "", 0, this.building_class))).price;
         if (this.player_wallet.pay(price)) {
           try {
             Constructor cons = this.building_class.getConstructor(Position.class, double.class, double.class, WorldGame.class);
@@ -518,21 +491,23 @@ public class WorldGame extends World {
 
   public void pressingEscape() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     this.needKeyRelease = true;
-    if(this.currentStateGame == StateGame.Game){
+    if (this.currentStateGame == StateGame.Game) {
 
-       this.currentStateGame = StateGame.Pause;
+      this.currentStateGame = StateGame.Pause;
+
 
       if(this.hudPause==null) this.hudPause = new InterfacePause(this);
       this.hudPause.getBox().showBox(0.8,0.0,1.5);
       StdDraw.save("temporary/pauseTemporaryFile.png");
       this.pauseBackground = StdDraw.pictureNget(0.5,0.5,"temporary/pauseTemporaryFile.png",1.0,1.0);
 
+
     } else if(this.currentStateGame == StateGame.Pause) exitPause();
   }
 
-  public void exitPause(){
+  public void exitPause() {
     this.currentStateGame = StateGame.Game;
-    if(this.pauseBackground!=null) this.pauseBackground.flush();
+    if (this.pauseBackground != null) this.pauseBackground.flush();
   }
 
   /**
@@ -553,16 +528,16 @@ public class WorldGame extends World {
 
   public void endGame(boolean win) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     StdDraw.save("images/pauseTemporaryFile.png");
-    this.pauseBackground = StdDraw.pictureNget(0.5,0.5,"images/pauseTemporaryFile.png",1.0,1.0);
+    this.pauseBackground = StdDraw.pictureNget(0.5, 0.5, "images/pauseTemporaryFile.png", 1.0, 1.0);
     this.hudEnd = new InterfaceEndGame(this, win);
-    this.hudEnd.getBox().showBox(0.8,0.0,1.0);
+    this.hudEnd.getBox().showBox(0.8, 0.0, 1.0);
     this.currentStateGame = StateGame.End;
   }
 
   @Override
   public void endWorld() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-    if(this.levelBackground!=null) this.levelBackground.flush();
-    if(this.pauseBackground!=null) this.pauseBackground.flush();
+    if (this.levelBackground != null) this.levelBackground.flush();
+    if (this.pauseBackground != null) this.pauseBackground.flush();
     this.music.stop();
     super.endWorld();
   }
@@ -570,11 +545,11 @@ public class WorldGame extends World {
   @Override
   public void updateEvent() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     if (StdDraw.isKeyPressed(27)) {
-      if(!needKeyRelease) pressingEscape();
-    } else if(this.needKeyRelease) this.needKeyRelease = false;
-    if(currentStateGame == StateGame.Game){
-      if(this.life<=0) endGame(false);
-      if(this.waves.size()==0) endGame(this.life>0);
+      if (!needKeyRelease) pressingEscape();
+    } else if (this.needKeyRelease) this.needKeyRelease = false;
+    if (currentStateGame == StateGame.Game) {
+      if (this.life <= 0) endGame(false);
+      if (this.waves.size() == 0) endGame(this.life > 0);
     }
   }
 
