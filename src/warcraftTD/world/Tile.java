@@ -1,7 +1,11 @@
 package warcraftTD.world;
 
-import warcraftTD.libs.StdDraw;
+import warcraftTD.particules.EntityParticules;
+import warcraftTD.particules.RandomParticuleGenerator;
+import warcraftTD.particules.SquareParticule;
 import warcraftTD.utils.Position;
+
+import java.awt.*;
 
 abstract public class Tile {
   private final Position position;
@@ -10,6 +14,14 @@ abstract public class Tile {
   private boolean selected;
   private boolean debug;
   private int directionValue;
+  private Entity contains;
+
+
+  public EntityParticules getEntityParticules() {
+    return this.entityParticules;
+  }
+
+  private final EntityParticules entityParticules;
 
   /**
    * Create a tile
@@ -30,6 +42,8 @@ abstract public class Tile {
     this.width = width;
     this.selected = false;
     this.debug = false;
+    this.contains = null;
+    this.entityParticules = new EntityParticules();
   }
 
 
@@ -45,7 +59,14 @@ abstract public class Tile {
    *
    * @param deltaTime The game delta time
    */
-  public abstract void updateContainsEntity(double deltaTime);
+  public void updateContainsEntity(double deltaTime) {
+    this.entityParticules.updateGenerators(deltaTime);
+    if (this.contains != null) {
+      this.contains.update(deltaTime, this);
+    }
+  }
+
+  ;
 
   /**
    * Get the tile position
@@ -99,42 +120,31 @@ abstract public class Tile {
   }
 
   /**
+   * Executed when a tile is clicked
+   */
+  public abstract void onClick(double x, double y);
+
+  /**
    * Check if a tile can be build on
    *
    * @return True if the tile can be build on
    */
   public abstract boolean isBuildable();
 
+  public Entity getContains() {
+    return this.contains;
+  }
 
-  public static void main(String[] args) {
-    double deltaTime = 0;
-    Tile tile = new Pathway(new Position(0.4, 0.4), 0.1, 0.1);
-    Tile tile2 = new Pathway(new Position(0.6, 0.4), 0.1, 0.1);
-    Tile tile3 = new Pathway(new Position(0.4, 0.6), 0.1, 0.1);
-    Tile tile4 = new Pathway(new Position(0.6, 0.6), 0.1, 0.1);
-    tile.setDirectionValue(2);
-    tile2.setDirectionValue(2);
-    tile3.setDirectionValue(2);
-    tile4.setDirectionValue(2);
+  public void replaceContains(Entity entity) {
+    this.replaceContains(entity, false);
+  }
 
-
-    StdDraw.setCanvasSize(1200, 800);
-    StdDraw.enableDoubleBuffering();
-
-    while (true) {
-      long time_nano = System.nanoTime();
-
-      StdDraw.clear();
-      tile.update(deltaTime);
-      tile2.update(deltaTime);
-      tile3.update(deltaTime);
-      tile4.update(deltaTime);
-      StdDraw.show();
-      StdDraw.pause(20);
-
-      int ms = (int) (System.nanoTime() - time_nano) / 1000000;
-      int fps = 1000 / ms;
-      deltaTime = 1.0 / fps;
+  public void replaceContains(Entity entity, boolean particules) {
+    if (this.isBuildable()) {
+      if (particules) {
+        this.entityParticules.addGenerator(new RandomParticuleGenerator(this.getPosition(), 1, 0.01, this.getHeight() / 2, new SquareParticule(1, 0.01, 0.1, new Color(92, 158, 79))));
+      }
+      this.contains = entity;
     }
   }
 }

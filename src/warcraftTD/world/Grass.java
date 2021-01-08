@@ -7,9 +7,6 @@ import java.awt.*;
 
 public class Grass extends Tile {
 
-
-  Entity contains;
-
   /**
    * Create a grass tile
    *
@@ -19,7 +16,6 @@ public class Grass extends Tile {
    */
   public Grass(Position position, double height, double width) {
     super(position, height, width);
-    this.contains = null;
   }
 
   /**
@@ -45,15 +41,12 @@ public class Grass extends Tile {
     }
   }
 
+
   /**
-   * Update the tile contains entity if exists
-   *
-   * @param deltaTime The game delta time
+   * Executed when a tile is clicked
    */
-  public void updateContainsEntity(double deltaTime) {
-    if (!this.isBuildable()) {
-      this.contains.update(deltaTime, this);
-    }
+  public void onClick(double x, double y) {
+
   }
 
   /**
@@ -62,19 +55,6 @@ public class Grass extends Tile {
    * @return True if the tile can be build on
    */
   public boolean isBuildable() {
-    return this.contains == null;
-  }
-
-  public Entity getContains() {
-    return this.contains;
-  }
-
-  public void deleteContains() {
-    this.contains = null;
-  }
-
-
-  public void replaceContains(Entity entity) {
-    this.contains = entity;
+    return this.getContains() == null;
   }
 }
