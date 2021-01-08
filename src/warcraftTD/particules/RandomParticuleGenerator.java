@@ -10,8 +10,31 @@ public class RandomParticuleGenerator extends ParticuleGenerator {
     this.radius = radius;
   }
 
+
+  /**
+   * Create a random particule generator
+   *
+   * @param position   The generator center position
+   * @param duration   The generator duration life in seconds
+   * @param spawnSpeed The generator spawn speed (seconds / particules)
+   * @param radius     The generator spawning radius
+   * @param particle   The particule the generator will always spawn (if not change)
+   */
   public RandomParticuleGenerator(Position position, double duration, double spawnSpeed, double radius, Particule particle) {
     super(position, duration, spawnSpeed, particle);
+    this.radius = radius;
+  }
+
+  /**
+   * Create a random particule generator
+   *
+   * @param position   The generator center position
+   * @param spawnSpeed The generator spawn speed (seconds / particules)
+   * @param radius     The generator spawning radius
+   * @param particle   The particule the generator will always spawn (if not change)
+   */
+  public RandomParticuleGenerator(Position position, double spawnSpeed, double radius, Particule particle) {
+    super(position, spawnSpeed, particle);
     this.radius = radius;
   }
 
