@@ -7,6 +7,8 @@ import warcraftTD.towers.projectiles.Projectile;
 import warcraftTD.utils.Position;
 import warcraftTD.utils.Sound;
 import warcraftTD.utils.Vector;
+import warcraftTD.world.Entity;
+import warcraftTD.world.Tile;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -15,7 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-abstract public class Tower {
+abstract public class Tower extends Entity {
 
   public boolean isTargetFlyingMonster() {
     return this.targetFlyingMonster;
@@ -219,18 +221,23 @@ abstract public class Tower {
     this.targetFlyingMonster = true;
   }
 
-  public void Update(double delta_time) {
-    if (this.animationy > 0.0) {
-      StdDraw.picture(this.position.getX(), this.position.getY(), "images/black_hover.png", this.width / (3 + this.animationy * (1 / this.animationymax)), this.height / (1.3 + this.animationy * (1 / this.animationymax)));
-      StdDraw.picture(this.position.getX(), this.position.getY() + this.animationy, this.sprite, this.width, this.height);
-      this.animationy -= 0.8 * delta_time;
-    } else {
-      StdDraw.picture(this.position.getX(), this.position.getY(), this.sprite, this.width, this.height);
 
-      this.ProjectilesManagement(delta_time);
-      this.AttackManagement(delta_time);
+  public void update(double deltaTime, Tile tile) {
+    Position position = tile.getPosition();
+    if (this.animationy > 0.0) {
+      StdDraw.pictureHeight(this.position.getX(), this.position.getY(), "images/black_hover.png", this.width / (3 + this.animationy * (1 / this.animationymax)));
+
+      StdDraw.picture(this.position.getX(), this.position.getY() + this.animationy, this.sprite, this.height * 1.25);
+      this.animationy -= 0.8 * deltaTime;
+    } else {
+      StdDraw.pictureHeight(position.getX(), position.getY(), this.sprite, this.height * 1.25);
+
+      this.ProjectilesManagement(deltaTime);
+      this.AttackManagement(deltaTime);
     }
   }
+
+
 
   public void hoveredVisual(){
     if (!(this.animationy > 0.0)) {
