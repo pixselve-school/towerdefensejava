@@ -23,9 +23,15 @@ public class Wave {
   }
 
 
+  public Wave(double startDelay) {
+    this.monsterQueue = new LinkedList<>();
+    this.timeBeforeStartingSpawn = startDelay;
+    this.timeTracking = 0.0;
+  }
+
   public Wave() {
     this.monsterQueue = new LinkedList<>();
-    this.timeBeforeStartingSpawn = 20;
+    this.timeBeforeStartingSpawn = 5;
     this.timeTracking = 0.0;
   }
 

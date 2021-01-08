@@ -83,8 +83,15 @@ public class Level {
 
     List<Position> pathPositionsInWorld = this.pathPositions.stream().map(position -> new Position(position.getX() * this.getSquareWidth() + this.getSquareWidth() / 2, position.getY() * this.getSquareHeight() + this.getSquareHeight() / 2)).collect(Collectors.toCollection(LinkedList::new));
 
-    for (WaveData waveDatum : this.waveData) {
-      Wave wave = new Wave();
+
+    for (int i = 0; i < this.waveData.size(); i++) {
+      WaveData waveDatum = this.waveData.get(i);
+      Wave wave;
+      if (i == 0) {
+        wave = new Wave(20);
+      } else {
+        wave = new Wave();
+      }
       for (WaveData.MonsterData monster : waveDatum.monsters) {
         switch (monster.id) {
           default:
@@ -121,6 +128,8 @@ public class Level {
       }
       this.waves.add(wave);
     }
+
+
 
   }
 
