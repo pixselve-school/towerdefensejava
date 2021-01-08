@@ -33,6 +33,8 @@ public class WorldGame extends World {
   // l'ensemble des cases du chemin
   private List<Position> paths;
 
+  private Sound music;
+
   private Image pauseBackground;
   private Image levelBackground;
 
@@ -540,8 +542,8 @@ public class WorldGame extends World {
   public void run() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
 
     try {
-      Sound gameMusic = new Sound(this.musicPath, true);
-      gameMusic.play(0.25);
+      this.music = new Sound(this.musicPath, true);
+      this.music.play(0.25);
     } catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
       e.printStackTrace();
     }
@@ -561,6 +563,7 @@ public class WorldGame extends World {
   public void endWorld() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     if(this.levelBackground!=null) this.levelBackground.flush();
     if(this.pauseBackground!=null) this.pauseBackground.flush();
+    this.music.stop();
     super.endWorld();
   }
 
