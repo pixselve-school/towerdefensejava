@@ -162,4 +162,8 @@ public class WorldEditor extends World{
                 break;
         }
     }
+
+    public void singleMouseClick(double x, double y, int mouseButton) {
+
+    }
 }
