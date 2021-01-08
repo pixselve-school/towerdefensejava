@@ -53,13 +53,17 @@ public abstract class ParticuleGenerator {
     return this.duration - this.timeTracking > 0;
   }
 
+  public int particuleAmount() {
+    return this.particles.size();
+  }
+
   public void generateAndDrawParticules(double deltaTime, Particule particule) {
     if (particule != null) {
 
       this.timeTracking += deltaTime;
       if (this.isAlive() || this.particles.size() > 0) {
         this.spawnTracking += deltaTime;
-        if (this.spawnTracking >= this.spawnSpeed) {
+        if (this.isAlive() && this.spawnTracking >= this.spawnSpeed) {
           this.generateParticle(particule);
           this.spawnTracking = 0;
         }
