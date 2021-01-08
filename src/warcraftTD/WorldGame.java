@@ -420,21 +420,19 @@ public class WorldGame extends World {
     if (this.HUD.onClick(x, y, mouseButton)) return;
 
 
+    Tile tile = this.positionTileMap.get(tilePosition);
 
     if (this.building_class != null && !this.isNeedReleaseMouse()) {
-      if (!(this.paths.contains(mousep) || this.list_tower.containsKey(mousep))) {
+
+      if (tile != null && tile.isBuildable()) {
         int price = this.listTowerData.get(this.listTowerData.indexOf(new TowerDataStruct("", "", "", 0, this.building_class))).price;
         if (this.player_wallet.pay(price)) {
           try {
             Constructor cons = this.building_class.getConstructor(Position.class, double.class, double.class, WorldGame.class);
             Tower t = (Tower) cons.newInstance(new Position(normalizedX, normalizedY), this.getSquareWidth(), this.getSquareHeight(), this);
+            tile.replaceContains(t, true);
 
-            Tile tile = this.positionTileMap.get(tilePosition);
-            if (tile.isBuildable()) {
-              ((Grass) tile).replaceContains(t);
-            }
 
-//            this.list_tower.put(new Position((int) ((normalizedX * this.getNbSquareX())), (int) ((normalizedY * this.getNbSquareY()))), t);
             Sound soundTower = new Sound("music/putTower.wav", false);
             soundTower.play(0.5);
           } catch (NoSuchMethodException e) {
@@ -449,6 +447,8 @@ public class WorldGame extends World {
           }
         }
       }
+
+
     } else if (!this.isNeedReleaseMouse()) {
 
       Tower towerUnderMouse = this.list_tower.get(mousep);
