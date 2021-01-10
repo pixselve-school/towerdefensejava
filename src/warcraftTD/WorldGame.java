@@ -395,7 +395,7 @@ public class WorldGame extends World {
       case Pause:
       case End:
         StdDraw.picture(0.5, 0.5, "temporary/pauseTemporaryFile.png", 1.0, 1.0);
-        StdDraw.picture(0.5, 0.5, "images/blurtest.png", 1.0, 1.0);
+        //StdDraw.picture(0.5, 0.5, "images/blurtest.png", 1.0, 1.0);
         this.drawInfos();
         break;
     }
@@ -552,8 +552,8 @@ public class WorldGame extends World {
   }
 
   public void endGame(boolean win) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-    StdDraw.save("images/pauseTemporaryFile.png");
-    this.pauseBackground = StdDraw.pictureNget(0.5, 0.5, "images/pauseTemporaryFile.png", 1.0, 1.0);
+    StdDraw.save("temporary/pauseTemporaryFile.png");
+    this.pauseBackground = StdDraw.pictureNget(0.5, 0.5, "temporary/pauseTemporaryFile.png", 1.0, 1.0);
     this.hudEnd = new InterfaceEndGame(this, win);
     this.hudEnd.getBox().showBox(0.8, 0.0, 1.0);
     this.currentStateGame = StateGame.End;

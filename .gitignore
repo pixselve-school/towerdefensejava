@@ -97,3 +97,4 @@ hs_err_pid*
 /src/META-INF/MANIFEST.MF
 
 temporary
+/temporary/
