@@ -1,5 +1,6 @@
 package warcraftTD.world;
 
+import warcraftTD.libs.StdDraw;
 import warcraftTD.particules.EntityParticules;
 import warcraftTD.particules.RandomParticuleGenerator;
 import warcraftTD.particules.SquareParticule;
@@ -15,13 +16,7 @@ abstract public class Tile {
   private boolean debug;
   private int directionValue;
   private Entity contains;
-
-
-  public EntityParticules getEntityParticules() {
-    return this.entityParticules;
-  }
-
-  private final EntityParticules entityParticules;
+  private final EntityParticules tileParticules;
 
   /**
    * Create a tile
@@ -43,9 +38,12 @@ abstract public class Tile {
     this.selected = false;
     this.debug = false;
     this.contains = null;
-    this.entityParticules = new EntityParticules();
+    this.tileParticules = new EntityParticules();
   }
 
+  public EntityParticules getTileParticules() {
+    return this.tileParticules;
+  }
 
   /**
    * Update the tile
@@ -54,19 +52,61 @@ abstract public class Tile {
    */
   public abstract void update(double deltaTime);
 
+
+  /**
+   * Draw the static part of the tile
+   */
+  public abstract void drawStaticPart();
+
+  /**
+   * Draw the animated part of the tile
+   *
+   * @param deltaTime The game delta time
+   */
+  public void drawAnimatedPart(double deltaTime) {
+    this.tileParticules.updateGenerators(deltaTime);
+  }
+
+
+  public void drawSettings() {
+    this.drawDebug();
+    this.drawSelected();
+  }
+
+  public void drawDebug() {
+    if (this.debug) {
+      this.drawOverlay(new Color(0, 0, 0, (float) 0.5));
+      StdDraw.setPenColor(Color.white);
+      StdDraw.setFont(new Font("Trebuchet MS", Font.BOLD, 12));
+      StdDraw.text(this.getPosition().getX(), this.getPosition().getY(), this.getClass().getSimpleName() + " - " + this.getDirectionValue() + (this.isSelected() ? " - Selected" : ""));
+    }
+  }
+
+  public void drawSelected() {
+    if (this.selected) {
+      StdDraw.setPenColor(Color.darkGray);
+      StdDraw.setPenRadius(0.003);
+      StdDraw.rectangle(this.getPosition().getX(), this.getPosition().getY(), this.getWidth() / 2, this.getHeight() / 2);
+    }
+  }
+
+  public void drawOverlay(Color color) {
+    StdDraw.setPenColor(color);
+    StdDraw.filledRectangle(this.getPosition().getX(), this.getPosition().getY(), this.getWidth() / 2, this.getHeight() / 2);
+  }
+
   /**
    * Update the tile contains entity if exists
    *
    * @param deltaTime The game delta time
    */
   public void updateContainsEntity(double deltaTime) {
-    this.entityParticules.updateGenerators(deltaTime);
     if (this.contains != null) {
       this.contains.update(deltaTime, this);
+      this.contains.getEntityParticules().updateGenerators(deltaTime);
     }
   }
 
-  ;
 
   /**
    * Get the tile position
@@ -124,6 +164,16 @@ abstract public class Tile {
    */
   public abstract void onClick(double x, double y);
 
+  public void onHover(double x, double y) {
+    this.selected = true;
+    this.setDebug(true);
+  }
+
+  public void onHoverLeave() {
+    this.selected = false;
+    this.setDebug(false);
+  }
+
   /**
    * Check if a tile can be build on
    *
@@ -142,7 +192,7 @@ abstract public class Tile {
   public void replaceContains(Entity entity, boolean particules) {
     if (this.isBuildable()) {
       if (particules) {
-        this.entityParticules.addGenerator(new RandomParticuleGenerator(this.getPosition(), 1, 0.01, this.getHeight() / 2, new SquareParticule(1, 0.01, 0.1, new Color(92, 158, 79))));
+        this.tileParticules.addGenerator(new RandomParticuleGenerator(this.getPosition(), 1, 0.01, this.getHeight() / 2, new SquareParticule(1, 0.01, 0.1, new Color(92, 158, 79))));
       }
       this.contains = entity;
     }

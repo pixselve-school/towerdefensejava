@@ -24,21 +24,13 @@ public class Grass extends Tile {
    * @param deltaTime Game delta time
    */
   public void update(double deltaTime) {
+  }
+
+  /**
+   * Draw the static part of the tile
+   */
+  public void drawStaticPart() {
     StdDraw.picture(this.getPosition().getX(), this.getPosition().getY(), "images/tiles/grass.png", this.getWidth(), this.getHeight());
-
-
-    if (this.isDebug()) {
-      StdDraw.setPenColor(new Color(0, 0, 0, (float) 0.5));
-      StdDraw.filledRectangle(this.getPosition().getX(), this.getPosition().getY(), this.getWidth() / 2, this.getHeight() / 2);
-      StdDraw.setPenColor(Color.white);
-      StdDraw.setFont(new Font("Trebuchet MS", Font.BOLD, 12));
-      StdDraw.text(this.getPosition().getX(), this.getPosition().getY(), "Grass" + (this.isSelected() ? " - Selected" : ""));
-    }
-    if (this.isSelected()) {
-      StdDraw.setPenColor(Color.red);
-      StdDraw.setPenRadius(0.005);
-      StdDraw.rectangle(this.getPosition().getX(), this.getPosition().getY(), this.getWidth() / 2, this.getHeight() / 2);
-    }
   }
 
 

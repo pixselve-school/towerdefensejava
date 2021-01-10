@@ -17,7 +17,6 @@ import warcraftTD.world.*;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.awt.*;
-import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -125,7 +124,6 @@ public class WorldGame extends World {
   public void initTerrain() {
     this.generatePath();
     this.drawBackground();
-    this.drawPath();
 
     StdDraw.show();
 
@@ -226,9 +224,11 @@ public class WorldGame extends World {
   @Override
   public void drawBackground() {
     for (Map.Entry<Position, Tile> tileEntry : this.positionTileMap.entrySet()) {
-      tileEntry.getValue().update(0);
+      tileEntry.getValue().drawStaticPart();
+
     }
   }
+
 
   /**
    * Initialise le chemin sur la position du point de départ des monstres. Cette fonction permet d'afficher une route qui sera différente du décors.
@@ -239,11 +239,24 @@ public class WorldGame extends World {
   }
 
   public void updateTileEntities(double deltaTime) {
-
     for (Map.Entry<Position, Tile> tileEntry : this.positionTileMap.descendingMap().entrySet()) {
+      tileEntry.getValue().update(deltaTime);
       tileEntry.getValue().updateContainsEntity(deltaTime);
     }
   }
+
+  public void drawTileAnimation(double deltaTime) {
+    for (Map.Entry<Position, Tile> tileEntry : this.positionTileMap.descendingMap().entrySet()) {
+      tileEntry.getValue().drawAnimatedPart(deltaTime);
+    }
+  }
+
+  public void drawTileSettings() {
+    for (Map.Entry<Position, Tile> tileEntry : this.positionTileMap.descendingMap().entrySet()) {
+      tileEntry.getValue().drawSettings();
+    }
+  }
+
 
 
   /**
@@ -366,14 +379,17 @@ public class WorldGame extends World {
    */
   @Override
   public int update() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-    switch (currentStateGame) {
+    switch (this.currentStateGame) {
       case Game:
         this.drawLevel();
         this.updateWave();
         this.updateMonsters();
         this.updateTileEntities(this.getDeltaTime());
+        this.drawTileAnimation(this.getDeltaTime());
+        this.drawTileSettings();
         this.updateTowers();
         this.drawMouse();
+        this.mouseHover();
         this.drawInfos();
         break;
       case Pause:
@@ -387,6 +403,25 @@ public class WorldGame extends World {
   }
 
 
+
+
+  Tile selectedTile;
+  public void mouseHover() {
+    final double mouseX = StdDraw.mouseX();
+    final double mouseY = StdDraw.mouseY();
+    Position tilePosition = new Position((int) Math.floor( mouseX * this.getNbSquareX()), (int) Math.floor( mouseY * this.getNbSquareY()));
+    Tile tile = this.positionTileMap.get(tilePosition);
+    if (tile != null && tile != this.selectedTile) {
+      if (this.selectedTile != null) {
+        this.selectedTile.onHoverLeave();
+      }
+      this.selectedTile = tile;
+      this.selectedTile.onHover(mouseX, mouseY);
+    } else if (tile == null && this.selectedTile != null) {
+      this.selectedTile.onHoverLeave();
+      this.selectedTile = null;
+    }
+  }
 
 
   /**

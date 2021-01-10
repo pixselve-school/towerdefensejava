@@ -1436,15 +1436,20 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
     if (ws <= 1 && hs <= 1) pixel(x, y);
     else {
       offscreen.drawImage(image, (int) Math.round(xs - ws / 2.0),
-              (int) Math.round(ys - hs / 2.0),
-              (int) Math.round(ws),
-              (int) Math.round(hs), null);
+          (int) Math.round(ys - hs / 2.0),
+          (int) Math.round(ws),
+          (int) Math.round(hs), null);
     }
     draw();
     return image;
   }
 
+
   public static void pictureHeight(double x, double y, String filename, double height) {
+    pictureHeight(x, y, filename, height, Align.CENTER);
+  }
+
+  public static void pictureHeight(double x, double y, String filename, double height, Align align) {
     Image image = getImage(filename);
     if (height < 0) throw new IllegalArgumentException("height  is negative: " + height);
     double xs = scaleX(x);
@@ -1458,10 +1463,19 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 
     if (ws <= 1 && hs <= 1) pixel(x, y);
     else {
-      offscreen.drawImage(image, (int) Math.round(xs - ws / 2.0),
-          (int) Math.round(ys - hs / 2.0),
-          (int) Math.round(ws),
-          (int) Math.round(hs), null);
+
+      if (align == Align.CENTER) {
+        offscreen.drawImage(image, (int) Math.round(xs - ws / 2.0),
+            (int) Math.round(ys - hs / 2.0),
+            (int) Math.round(ws),
+            (int) Math.round(hs), null);
+      } else {
+        offscreen.drawImage(image, (int) Math.round(xs - ws / 2.0),
+            (int) Math.round(ys - hs * 0.75),
+            (int) Math.round(ws),
+            (int) Math.round(hs), null);
+      }
+
     }
     draw();
   }
