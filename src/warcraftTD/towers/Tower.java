@@ -1,6 +1,7 @@
 package warcraftTD.towers;
 
 import warcraftTD.WorldGame;
+import warcraftTD.libs.Align;
 import warcraftTD.libs.StdDraw;
 import warcraftTD.monsters.Monster;
 import warcraftTD.towers.projectiles.Projectile;
@@ -225,12 +226,12 @@ abstract public class Tower extends Entity {
   public void update(double deltaTime, Tile tile) {
     Position position = tile.getPosition();
     if (this.animationy > 0.0) {
-      StdDraw.pictureHeight(this.position.getX(), this.position.getY(), "images/black_hover.png", this.width / (3 + this.animationy * (1 / this.animationymax)));
+      StdDraw.pictureHeight(position.getX(), position.getY(), "images/black_hover.png", this.width / (3 + this.animationy * (1 / this.animationymax)), Align.BOTTOM);
 
-      StdDraw.picture(this.position.getX(), this.position.getY() + this.animationy, this.sprite, this.height * 1.25);
+      StdDraw.pictureHeight(position.getX(), position.getY() + this.animationy, this.sprite, this.height * 1.25, Align.BOTTOM);
       this.animationy -= 0.8 * deltaTime;
     } else {
-      StdDraw.pictureHeight(position.getX(), position.getY(), this.sprite, this.height * 1.25);
+      StdDraw.pictureHeight(position.getX(), position.getY(), this.sprite, this.height * 1.25, Align.BOTTOM);
 
       this.ProjectilesManagement(deltaTime);
       this.AttackManagement(deltaTime);
