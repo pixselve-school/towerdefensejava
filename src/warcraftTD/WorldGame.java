@@ -17,6 +17,7 @@ import warcraftTD.world.*;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -237,7 +238,6 @@ public class WorldGame extends World {
 
   }
 
-
   public void updateTileEntities(double deltaTime) {
 
     for (Map.Entry<Position, Tile> tileEntry : this.positionTileMap.descendingMap().entrySet()) {
@@ -245,42 +245,6 @@ public class WorldGame extends World {
     }
   }
 
-  /**
-   * Affiche un contour d'eau
-   */
-  public void drawWater() {
-    for (int x = 0; x < this.getNbSquareX(); x++) {
-      for (int y = 0; y < this.getNbSquareY(); y++) {
-        if (y == 0) {
-          if (x == 0) {
-            StdDraw.picture(x * this.getSquareWidth() + this.getSquareWidth() / 2, y * this.getSquareHeight() + this.getSquareHeight() / 2, "images/tiles/water/bottom-left.png", this.getSquareWidth() + 0.001, this.getSquareHeight() + 0.001);
-          } else if (x == this.getNbSquareX() - 1) {
-            StdDraw.picture(x * this.getSquareWidth() + this.getSquareWidth() / 2, y * this.getSquareHeight() + this.getSquareHeight() / 2, "images/tiles/water/bottom-right.png", this.getSquareWidth() + 0.001, this.getSquareHeight() + 0.001);
-          } else {
-            StdDraw.picture(x * this.getSquareWidth() + this.getSquareWidth() / 2, y * this.getSquareHeight() + this.getSquareHeight() / 2, "images/tiles/water/bottom.png", this.getSquareWidth() + 0.001, this.getSquareHeight() + 0.001);
-          }
-
-
-        } else if (y == this.getNbSquareY() - 1) {
-          if (x == 0) {
-            StdDraw.picture(x * this.getSquareWidth() + this.getSquareWidth() / 2, y * this.getSquareHeight() + this.getSquareHeight() / 2, "images/tiles/water/top-left.png", this.getSquareWidth() + 0.001, this.getSquareHeight() + 0.001);
-          } else if (x == this.getNbSquareX() - 1) {
-            StdDraw.picture(x * this.getSquareWidth() + this.getSquareWidth() / 2, y * this.getSquareHeight() + this.getSquareHeight() / 2, "images/tiles/water/top-right.png", this.getSquareWidth() + 0.001, this.getSquareHeight() + 0.001);
-          } else {
-            StdDraw.picture(x * this.getSquareWidth() + this.getSquareWidth() / 2, y * this.getSquareHeight() + this.getSquareHeight() / 2, "images/tiles/water/top.png", this.getSquareWidth() + 0.001, this.getSquareHeight() + 0.001);
-          }
-        } else {
-          if (x == 0) {
-            StdDraw.picture(x * this.getSquareWidth() + this.getSquareWidth() / 2, y * this.getSquareHeight() + this.getSquareHeight() / 2, "images/tiles/water/left.png", this.getSquareWidth() + 0.001, this.getSquareHeight() + 0.001);
-          } else if (x == this.getNbSquareX() - 1) {
-            StdDraw.picture(x * this.getSquareWidth() + this.getSquareWidth() / 2, y * this.getSquareHeight() + this.getSquareHeight() / 2, "images/tiles/water/right.png", this.getSquareWidth() + 0.001, this.getSquareHeight() + 0.001);
-          }
-        }
-
-      }
-
-    }
-  }
 
   /**
    * Affiche certaines informations sur l'écran telles que les points de vie du joueur ou son or
@@ -366,10 +330,10 @@ public class WorldGame extends World {
       towerUnderMouse.hoveredVisual();
     }
 
-    for (Map.Entry<Position, Tower> entry : this.list_tower.entrySet()) {
-      Tower value = entry.getValue();
-      value.Update(this.getDeltaTime());
-    }
+//    for (Map.Entry<Position, Tower> entry : this.list_tower.entrySet()) {
+//      Tower value = entry.getValue();
+//      value.update(this.getDeltaTime());
+//    }
   }
 
   public void updateWave() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
@@ -422,6 +386,9 @@ public class WorldGame extends World {
     return this.life;
   }
 
+
+
+
   /**
    * Vérifie lorsque l'utilisateur clique sur sa souris qu'il peut:
    * - Ajouter une tour à la position indiquée par la souris.
@@ -433,10 +400,16 @@ public class WorldGame extends World {
    */
   @Override
   public void mouseClick(double x, double y, int mouseButton) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+
+
     double normalizedX = (int) (x / this.getSquareWidth()) * this.getSquareWidth() + this.getSquareWidth() / 2;
     double normalizedY = (int) (y / this.getSquareHeight()) * this.getSquareHeight() + this.getSquareHeight() / 2;
-    Position p = new Position(normalizedX, normalizedY);
+
+
     Position mousep = new Position((int) ((normalizedX * this.getNbSquareX())), (int) ((normalizedY * this.getNbSquareY())));
+
+    Position tilePosition = new Position((int) Math.floor( x * this.getNbSquareX()), (int) Math.floor( y * this.getNbSquareY()));
+
 
     switch (currentStateGame) {
       case Pause:
@@ -449,14 +422,20 @@ public class WorldGame extends World {
 
     if (this.HUD.onClick(x, y, mouseButton)) return;
 
+
+    Tile tile = this.positionTileMap.get(tilePosition);
+
     if (this.building_class != null && !this.isNeedReleaseMouse()) {
-      if (!(this.paths.contains(mousep) || this.list_tower.containsKey(mousep))) {
+
+      if (tile != null && tile.isBuildable()) {
         int price = this.listTowerData.get(this.listTowerData.indexOf(new TowerDataStruct("", "", "", 0, this.building_class))).price;
         if (this.player_wallet.pay(price)) {
           try {
             Constructor cons = this.building_class.getConstructor(Position.class, double.class, double.class, WorldGame.class);
             Tower t = (Tower) cons.newInstance(new Position(normalizedX, normalizedY), this.getSquareWidth(), this.getSquareHeight(), this);
-            this.list_tower.put(new Position((int) ((normalizedX * this.getNbSquareX())), (int) ((normalizedY * this.getNbSquareY()))), t);
+            tile.replaceContains(t, true);
+
+
             Sound soundTower = new Sound("music/putTower.wav", false);
             soundTower.play(0.5);
           } catch (NoSuchMethodException e) {
@@ -471,11 +450,22 @@ public class WorldGame extends World {
           }
         }
       }
+
+
     } else if (!this.isNeedReleaseMouse()) {
+
       Tower towerUnderMouse = this.list_tower.get(mousep);
       if (towerUnderMouse != null) {
         this.HUD.showUpgradeTowerBox(towerUnderMouse);
       }
+    }
+  }
+
+  public void singleMouseClick(double x, double y, int mouseButton) {
+    Position tilePosition = new Position((int) Math.floor( x * this.getNbSquareX()), (int) Math.floor( y * this.getNbSquareY()));
+    Tile tileClick = this.positionTileMap.get(tilePosition);
+    if (tileClick != null) {
+      tileClick.onClick(x, y);
     }
   }
 

@@ -18,6 +18,7 @@ public abstract class ParticuleGenerator {
   private final double spawnSpeed;
   private final List<Particule> particles;
   private final Particule particule;
+  private final boolean infinite;
 
   protected ParticuleGenerator(Position position, double duration, double spawnSpeed) {
     this.position = position;
@@ -27,6 +28,7 @@ public abstract class ParticuleGenerator {
     this.timeTracking = 0;
     this.spawnTracking = 0;
     this.particule = null;
+    this.infinite = false;
   }
 
   protected ParticuleGenerator(Position position, double duration, double spawnSpeed, Particule particule) {
@@ -37,6 +39,18 @@ public abstract class ParticuleGenerator {
     this.timeTracking = 0;
     this.spawnTracking = 0;
     this.particule = particule;
+    this.infinite = false;
+  }
+
+  protected ParticuleGenerator(Position position, double spawnSpeed, Particule particule) {
+    this.position = position;
+    this.duration = 0;
+    this.spawnSpeed = spawnSpeed;
+    this.particles = new LinkedList<>();
+    this.timeTracking = 0;
+    this.spawnTracking = 0;
+    this.particule = particule;
+    this.infinite = true;
   }
 
   public void addToTimeAlive(double time) {
@@ -50,7 +64,11 @@ public abstract class ParticuleGenerator {
   public abstract void generateParticle(Particule particule);
 
   public boolean isAlive() {
-    return this.duration - this.timeTracking > 0;
+    return this.infinite || this.duration - this.timeTracking > 0;
+  }
+
+  public int particuleAmount() {
+    return this.particles.size();
   }
 
   public void generateAndDrawParticules(double deltaTime, Particule particule) {
@@ -59,7 +77,7 @@ public abstract class ParticuleGenerator {
       this.timeTracking += deltaTime;
       if (this.isAlive() || this.particles.size() > 0) {
         this.spawnTracking += deltaTime;
-        if (this.spawnTracking >= this.spawnSpeed) {
+        if (this.isAlive() && this.spawnTracking >= this.spawnSpeed) {
           this.generateParticle(particule);
           this.spawnTracking = 0;
         }

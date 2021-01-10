@@ -1454,7 +1454,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
     double ratio = imageWidth / imageHeight;
 
     double hs = factorY(height);
-    double ws = factorX(height * ratio);
+    double ws = hs * ratio;
 
     if (ws <= 1 && hs <= 1) pixel(x, y);
     else {

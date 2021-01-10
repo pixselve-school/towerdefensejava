@@ -1,11 +1,21 @@
 package warcraftTD.world;
 
 import warcraftTD.libs.StdDraw;
+import warcraftTD.particules.CircleParticule;
+import warcraftTD.particules.EntityParticules;
+import warcraftTD.particules.RandomParticuleGenerator;
 import warcraftTD.utils.Position;
+import warcraftTD.utils.Sound;
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.awt.*;
+import java.io.IOException;
 
 public class Water extends Tile {
+  Sound clickSound;
+  EntityParticules entityParticules;
+
   /**
    * Create a water tile
    *
@@ -15,6 +25,13 @@ public class Water extends Tile {
    */
   public Water(Position position, double height, double width) {
     super(position, height, width);
+    this.entityParticules = new EntityParticules();
+    try {
+      this.clickSound = new Sound("music/water-splatch.wav", false);
+    } catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
+      e.printStackTrace();
+    }
+
   }
 
   /**
@@ -23,6 +40,8 @@ public class Water extends Tile {
    * @param deltaTime Game delta time
    */
   public void update(double deltaTime) {
+
+
 
     Position topLeft = new Position(this.getPosition().getX() - this.getWidth() / 4, this.getPosition().getY() + this.getHeight() / 4);
     Position topRight = new Position(this.getPosition().getX() + this.getWidth() / 4, this.getPosition().getY() + this.getHeight() / 4);
@@ -152,7 +171,19 @@ public class Water extends Tile {
    * @param deltaTime The game delta time
    */
   public void updateContainsEntity(double deltaTime) {
+    this.entityParticules.updateGenerators(deltaTime);
+  }
 
+  /**
+   * Executed when a tile is clicked
+   */
+  public void onClick(double x, double y) {
+    try {
+      this.entityParticules.addGenerator(new RandomParticuleGenerator(new Position(x, y), 0.5, 0.05, 0.01, new CircleParticule(1, 0.01, 0.05, new Color(64, 130, 189))));
+      this.clickSound.play(0.05);
+    } catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
+      e.printStackTrace();
+    }
   }
 
   /**

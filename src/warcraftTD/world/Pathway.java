@@ -154,6 +154,13 @@ public class Pathway extends Tile {
   public void updateContainsEntity(double deltaTime) { }
 
   /**
+   * Executed when a tile is clicked
+   */
+  public void onClick(double x, double y) {
+
+  }
+
+  /**
    * Check if a tile can be build on
    *
    * @return True if the tile can be build on

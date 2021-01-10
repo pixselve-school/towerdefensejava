@@ -17,13 +17,19 @@ public class EntityParticules {
 
   public void updateGenerators(double deltaTime) {
     Iterator<ParticuleGenerator> particuleGeneratorIterator = this.generators.iterator();
+
     while (particuleGeneratorIterator.hasNext()) {
       ParticuleGenerator particuleGenerator = particuleGeneratorIterator.next();
-      if (!particuleGenerator.isAlive()) {
-        particuleGeneratorIterator.remove();
+
+      if (particuleGenerator.isAlive() || particuleGenerator.particuleAmount() > 0) {
+        particuleGenerator.generateAndDrawParticules(deltaTime);
+        particuleGenerator.addToTimeAlive(deltaTime);
+      } else {
+
+          particuleGeneratorIterator.remove();
+
       }
-      particuleGenerator.generateAndDrawParticules(deltaTime);
-      particuleGenerator.addToTimeAlive(deltaTime);
+
     }
   }
 }
