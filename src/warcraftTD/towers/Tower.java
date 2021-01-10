@@ -9,6 +9,7 @@ import warcraftTD.utils.Position;
 import warcraftTD.utils.Sound;
 import warcraftTD.utils.Vector;
 import warcraftTD.world.Entity;
+import warcraftTD.world.EntityBuildable;
 import warcraftTD.world.Tile;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -209,6 +210,7 @@ abstract public class Tower extends Entity {
   private final Sound shootingSound;
 
   public Tower(Position p, double width, double height, WorldGame world, String soundFilePath) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    super(EntityBuildable.NOTBUILDABLE);
     this.position = p;
     this.width = width;
     this.height = height;
@@ -226,8 +228,7 @@ abstract public class Tower extends Entity {
   public void update(double deltaTime, Tile tile) {
     Position position = tile.getPosition();
     if (this.animationy > 0.0) {
-      StdDraw.pictureHeight(position.getX(), position.getY(), "images/black_hover.png", this.width / (3 + this.animationy * (1 / this.animationymax)), Align.BOTTOM);
-
+      StdDraw.pictureHeight(position.getX(), position.getY()-0.02, "images/black_hover.png", this.width / (2 + this.animationy * (1 / this.animationymax)), Align.BOTTOM, 45);
       StdDraw.pictureHeight(position.getX(), position.getY() + this.animationy, this.sprite, this.height * 1.25, Align.BOTTOM);
       this.animationy -= 0.8 * deltaTime;
     } else {

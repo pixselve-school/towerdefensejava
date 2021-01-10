@@ -47,6 +47,6 @@ public class Grass extends Tile {
    * @return True if the tile can be build on
    */
   public boolean isBuildable() {
-    return this.getContains() == null;
+    return this.getContains() == null || !this.getContains().getBuildable().equals(EntityBuildable.NOTBUILDABLE);
   }
 }

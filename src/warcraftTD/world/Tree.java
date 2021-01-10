@@ -4,6 +4,10 @@ import warcraftTD.libs.Align;
 import warcraftTD.libs.StdDraw;
 
 public class Tree extends Entity {
+  public Tree() {
+    super(EntityBuildable.PAYING);
+  }
+
   /**
    * Update and draw the entity
    *

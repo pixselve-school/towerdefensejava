@@ -4,6 +4,10 @@ import warcraftTD.libs.StdDraw;
 import warcraftTD.particules.EntityParticules;
 import warcraftTD.particules.RandomParticuleGenerator;
 import warcraftTD.particules.SquareParticule;
+import warcraftTD.towers.Arrow;
+import warcraftTD.towers.Bomb;
+import warcraftTD.towers.Ice;
+import warcraftTD.towers.Poison;
 import warcraftTD.utils.Position;
 
 import java.awt.*;
@@ -186,13 +190,13 @@ abstract public class Tile {
   }
 
   public void replaceContains(Entity entity) {
-    this.replaceContains(entity, false);
+    this.replaceContains(entity, false, null);
   }
 
-  public void replaceContains(Entity entity, boolean particules) {
+  public void replaceContains(Entity entity, boolean particules, Color colorParticle) {
     if (this.isBuildable()) {
-      if (particules) {
-        this.tileParticules.addGenerator(new RandomParticuleGenerator(this.getPosition(), 1, 0.01, this.getHeight() / 2, new SquareParticule(1, 0.01, 0.1, new Color(92, 158, 79))));
+      if (particules && colorParticle!=null) {
+        this.tileParticules.addGenerator(new RandomParticuleGenerator(this.getPosition(), 1, 0.01, this.getHeight() / 2, new SquareParticule(1, 0.01, 0.1, colorParticle)));
       }
       this.contains = entity;
     }

@@ -54,6 +54,8 @@ public class WorldGame extends World {
   // le nom de la tour en construction
   private Class building_class = null;
 
+  warcraftTD.utils.Cursor buildingCursor;
+
   // Position par laquelle les monstres vont venir
   private Position spawn;
 
@@ -66,6 +68,8 @@ public class WorldGame extends World {
   boolean isMonsterActing = false;
 
   boolean displayWater;
+
+  Tile selectedTile;
 
   List<Wave> waves;
 
@@ -94,10 +98,10 @@ public class WorldGame extends World {
     this.player_wallet.addMoney(money);
 
     this.listTowerData = new ArrayList<TowerDataStruct>();
-    this.listTowerData.add(new TowerDataStruct("images/shop_arrowtower.png", "images/shop_arrowtower_hover.png", "turret_arrow", 50, Arrow.class));
-    this.listTowerData.add(new TowerDataStruct("images/shop_bombtower.png", "images/shop_bombtower_hover.png", "turret_bomb", 60, Bomb.class));
-    this.listTowerData.add(new TowerDataStruct("images/shop_icetower.png", "images/shop_icetower_hover.png", "turret_ice", 70, Ice.class));
-    this.listTowerData.add(new TowerDataStruct("images/shop_poisontower.png", "images/shop_poisontower_hover.png", "turret_poison", 80, Poison.class));
+    this.listTowerData.add(new TowerDataStruct("images/shop_arrowtower.png", "images/shop_arrowtower_hover.png", "turret_arrow", 50, Arrow.class, new Color(255, 125, 26)));
+    this.listTowerData.add(new TowerDataStruct("images/shop_bombtower.png", "images/shop_bombtower_hover.png", "turret_bomb", 60, Bomb.class, new Color(0, 0, 0)));
+    this.listTowerData.add(new TowerDataStruct("images/shop_icetower.png", "images/shop_icetower_hover.png", "turret_ice", 70, Ice.class, new Color(124, 220, 209)));
+    this.listTowerData.add(new TowerDataStruct("images/shop_poisontower.png", "images/shop_poisontower_hover.png", "turret_poison", 80, Poison.class, new Color(95, 158, 25)));
 
     this.HUD = new InterfaceGame(this, this.listTowerData);
 
@@ -119,6 +123,8 @@ public class WorldGame extends World {
 
     this.initTerrain();
     this.currentStateGame = StateGame.Game;
+    this.buildingCursor = new warcraftTD.utils.Cursor(this.getSquareWidth()/2, this.getSquareHeight()/2);
+    this.buildingCursor.setColor(new Color(1,0,0));
   }
 
   public void initTerrain() {
@@ -287,11 +293,22 @@ public class WorldGame extends World {
     double normalizedY = (int) (StdDraw.mouseY() / this.getSquareHeight()) * this.getSquareHeight() + this.getSquareHeight() / 2;
     if (this.building_class != null) {
       Position mousep = new Position((int) ((normalizedX * this.getNbSquareX())), (int) ((normalizedY * this.getNbSquareY())));
-      if (this.paths.contains(mousep) || this.list_tower.containsKey(mousep)) {
-        StdDraw.picture(normalizedX, normalizedY, "images/Select_tile_unavailable.png", this.getSquareWidth(), this.getSquareHeight());
-      } else {
-        StdDraw.picture(normalizedX, normalizedY, "images/Select_tile.png", this.getSquareWidth(), this.getSquareHeight());
+      Tile tile = this.positionTileMap.get(mousep);
+      if(this.selectedTile != tile) {
+        this.selectedTile = tile;
+        this.buildingCursor.setColorByTileUnder(this.selectedTile);
       }
+      int price = this.listTowerData.get(this.listTowerData.indexOf(new TowerDataStruct("", "", "", 0, this.building_class, null))).price;
+      if(this.selectedTile.getContains()!=null && this.selectedTile.getContains().getBuildable().equals(EntityBuildable.PAYING)) price +=20;
+
+      this.buildingCursor.update(new Position(normalizedX, normalizedY), this.getDeltaTime());
+
+      StdDraw.setFont(new Font("Arial", Font.BOLD, 40));
+      if(player_wallet.canPay(price)) StdDraw.setPenColor(new Color(255,230,0));
+      else StdDraw.setPenColor(new Color(255,0,0));
+
+      StdDraw.text(normalizedX+0.01, normalizedY+0.07,price+"");
+      StdDraw.picture(normalizedX-0.02, normalizedY+0.075, "images/moneyIcon.png", 0.02, 0.04);
     }
   }
 
@@ -342,11 +359,6 @@ public class WorldGame extends World {
     if (towerUnderMouse != null) {
       towerUnderMouse.hoveredVisual();
     }
-
-//    for (Map.Entry<Position, Tower> entry : this.list_tower.entrySet()) {
-//      Tower value = entry.getValue();
-//      value.update(this.getDeltaTime());
-//    }
   }
 
   public void updateWave() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
@@ -369,7 +381,26 @@ public class WorldGame extends World {
 
   public void drawLevel(){
     StdDraw.picture(0.5, 0.5, "temporary/currentlevel.png", 1.0, 1.0);
-
+    if(building_class!=null){
+      this.positionTileMap.forEach((k, tile) -> {
+        if(tile instanceof Water){
+          tile.drawOverlay(new Color(0,0,0, 100));
+        } else if(tile.getContains() != null){
+          switch (tile.getContains().getBuildable()){
+            case BUILDABLE:
+              tile.drawOverlay(new Color(0,255,0, 100));
+              return;
+            case PAYING:
+              tile.drawOverlay(new Color(255,100,0, 100));
+              return;
+            case NOTBUILDABLE:
+              tile.drawOverlay(new Color(255,0,0, 100));
+              return;
+          }
+        } else if(tile.isBuildable()) tile.drawOverlay(new Color(0,255,0, 100));
+        else tile.drawOverlay(new Color(255,0,0, 100));
+      });
+    }
   }
 
   /**
@@ -389,7 +420,7 @@ public class WorldGame extends World {
         this.drawTileSettings();
         this.updateTowers();
         this.drawMouse();
-        this.mouseHover();
+        //this.mouseHover();
         this.drawInfos();
         break;
       case Pause:
@@ -402,10 +433,6 @@ public class WorldGame extends World {
     return this.life;
   }
 
-
-
-
-  Tile selectedTile;
   public void mouseHover() {
     final double mouseX = StdDraw.mouseX();
     final double mouseY = StdDraw.mouseY();
@@ -463,14 +490,16 @@ public class WorldGame extends World {
     if (this.building_class != null && !this.isNeedReleaseMouse()) {
 
       if (tile != null && tile.isBuildable()) {
-        int price = this.listTowerData.get(this.listTowerData.indexOf(new TowerDataStruct("", "", "", 0, this.building_class))).price;
+        TowerDataStruct td = this.listTowerData.get(this.listTowerData.indexOf(new TowerDataStruct("", "", "", 0, this.building_class, null)));
+        int price = td.price;
+        if(this.selectedTile.getContains()!=null && this.selectedTile.getContains().getBuildable().equals(EntityBuildable.PAYING)) price +=20;
         if (this.player_wallet.pay(price)) {
           try {
             Constructor cons = this.building_class.getConstructor(Position.class, double.class, double.class, WorldGame.class);
             Tower t = (Tower) cons.newInstance(new Position(normalizedX, normalizedY), this.getSquareWidth(), this.getSquareHeight(), this);
-            tile.replaceContains(t, true);
 
-
+            tile.replaceContains(t, true, td.colorParticleSpawn);
+            this.buildingCursor.setColorByTileUnder(this.selectedTile);
             Sound soundTower = new Sound("music/putTower.wav", false);
             soundTower.play(0.5);
           } catch (NoSuchMethodException e) {
