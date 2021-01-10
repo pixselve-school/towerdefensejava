@@ -10,6 +10,7 @@ public class Flower extends Entity {
   private final String path;
 
   public Flower(FlowerType type, Tile tile) {
+    super(EntityBuildable.BUILDABLE);
     switch (type) {
       case BLUE:
         this.getEntityParticules().addGenerator(new RandomParticuleGenerator(tile.getPosition(), 0.5, tile.getHeight() * 0.40, new CircleParticule(1, 0.01, 0.05, new Color(73, 109, 227))));
@@ -33,8 +34,6 @@ public class Flower extends Entity {
         break;
 
     }
-
-
   }
 
   /**

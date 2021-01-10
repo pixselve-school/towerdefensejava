@@ -7,11 +7,12 @@ public abstract class Entity {
   public EntityParticules getEntityParticules() {
     return this.entityParticules;
   }
-
+  private EntityBuildable buildable;
   private final EntityParticules entityParticules;
 
-  protected Entity() {
+  protected Entity(EntityBuildable buildable) {
     this.entityParticules = new EntityParticules();
+    this.buildable = buildable;
   }
 
   /**
@@ -22,5 +23,7 @@ public abstract class Entity {
    */
   public abstract void update(double deltaTime, Tile tile);
 
-
+  public EntityBuildable getBuildable() {
+    return this.buildable;
+  }
 }

@@ -1475,7 +1475,37 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
             (int) Math.round(ws),
             (int) Math.round(hs), null);
       }
+    }
+    draw();
+  }
 
+  public static void pictureHeight(double x, double y, String filename, double height, Align align, double degrees) {
+    Image image = getImage(filename);
+    if (height < 0) throw new IllegalArgumentException("height  is negative: " + height);
+    double xs = scaleX(x);
+    double ys = scaleY(y);
+    double imageWidth = image.getWidth(null);
+    double imageHeight = image.getHeight(null);
+    double ratio = imageWidth / imageHeight;
+
+    double hs = factorY(height);
+    double ws = hs * ratio;
+
+    if (ws <= 1 && hs <= 1) pixel(x, y);
+    else {
+      offscreen.rotate(Math.toRadians(-degrees), xs, ys);
+      if (align == Align.CENTER) {
+        offscreen.drawImage(image, (int) Math.round(xs - ws / 2.0),
+                (int) Math.round(ys - hs / 2.0),
+                (int) Math.round(ws),
+                (int) Math.round(hs), null);
+      } else {
+        offscreen.drawImage(image, (int) Math.round(xs - ws / 2.0),
+                (int) Math.round(ys - hs * 0.75),
+                (int) Math.round(ws),
+                (int) Math.round(hs), null);
+      }
+      offscreen.rotate(Math.toRadians(+degrees), xs, ys);
     }
     draw();
   }
