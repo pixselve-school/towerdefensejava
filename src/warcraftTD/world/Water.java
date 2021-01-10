@@ -14,7 +14,7 @@ import java.io.IOException;
 
 public class Water extends Tile {
   Sound clickSound;
-  EntityParticules entityParticules;
+
 
   /**
    * Create a water tile
@@ -25,7 +25,6 @@ public class Water extends Tile {
    */
   public Water(Position position, double height, double width) {
     super(position, height, width);
-    this.entityParticules = new EntityParticules();
     try {
       this.clickSound = new Sound("music/water-splatch.wav", false);
     } catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
@@ -41,8 +40,12 @@ public class Water extends Tile {
    */
   public void update(double deltaTime) {
 
+  }
 
-
+  /**
+   * Draw the static part of the tile
+   */
+  public void drawStaticPart() {
     Position topLeft = new Position(this.getPosition().getX() - this.getWidth() / 4, this.getPosition().getY() + this.getHeight() / 4);
     Position topRight = new Position(this.getPosition().getX() + this.getWidth() / 4, this.getPosition().getY() + this.getHeight() / 4);
     Position bottomLeft = new Position(this.getPosition().getX() - this.getWidth() / 4, this.getPosition().getY() - this.getHeight() / 4);
@@ -149,37 +152,15 @@ public class Water extends Tile {
         StdDraw.picture(bottomRight.getX(), bottomRight.getY(), "images/tiles/water/empty.png", HALF_WIDTH, HALF_HEIGHT);
         break;
     }
-
-    if (this.isDebug()) {
-      StdDraw.setPenColor(new Color(0, 0, 0, (float) 0.5));
-      StdDraw.filledRectangle(this.getPosition().getX(), this.getPosition().getY(), this.getWidth() / 2, this.getHeight() / 2);
-      StdDraw.setPenColor(Color.white);
-      StdDraw.setFont(new Font("Trebuchet MS", Font.BOLD, 12));
-      StdDraw.text(this.getPosition().getX(), this.getPosition().getY(), "Path" + " - " + this.getDirectionValue() + (this.isSelected() ? " - Selected" : ""));
-    }
-    if (this.isSelected()) {
-      StdDraw.setPenColor(Color.red);
-      StdDraw.setPenRadius(0.005);
-      StdDraw.rectangle(this.getPosition().getX(), this.getPosition().getY(), this.getWidth() / 2, this.getHeight() / 2);
-    }
-
   }
 
-  /**
-   * Update the tile contains entity if exists
-   *
-   * @param deltaTime The game delta time
-   */
-  public void updateContainsEntity(double deltaTime) {
-    this.entityParticules.updateGenerators(deltaTime);
-  }
 
   /**
    * Executed when a tile is clicked
    */
   public void onClick(double x, double y) {
     try {
-      this.entityParticules.addGenerator(new RandomParticuleGenerator(new Position(x, y), 0.5, 0.05, 0.01, new CircleParticule(1, 0.01, 0.05, new Color(64, 130, 189))));
+      this.getTileParticules().addGenerator(new RandomParticuleGenerator(new Position(x, y), 0.5, 0.05, 0.01, new CircleParticule(1, 0.01, 0.05, new Color(64, 130, 189))));
       this.clickSound.play(0.05);
     } catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
       e.printStackTrace();

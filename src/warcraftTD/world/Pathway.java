@@ -23,6 +23,13 @@ public class Pathway extends Tile {
    * @param deltaTime Game delta time
    */
   public void update(double deltaTime) {
+
+  }
+
+  /**
+   * Draw the static part of the tile
+   */
+  public void drawStaticPart() {
     Position topLeft = new Position(this.getPosition().getX() - this.getWidth() / 4, this.getPosition().getY() + this.getHeight() / 4);
     Position topRight = new Position(this.getPosition().getX() + this.getWidth() / 4, this.getPosition().getY() + this.getHeight() / 4);
     Position bottomLeft = new Position(this.getPosition().getX() - this.getWidth() / 4, this.getPosition().getY() - this.getHeight() / 4);
@@ -130,28 +137,8 @@ public class Pathway extends Tile {
         break;
     }
 
-
-    if (this.isDebug()) {
-      StdDraw.setPenColor(new Color(0, 0, 0, (float) 0.5));
-      StdDraw.filledRectangle(this.getPosition().getX(), this.getPosition().getY(), this.getWidth() / 2, this.getHeight() / 2);
-      StdDraw.setPenColor(Color.white);
-      StdDraw.setFont(new Font("Trebuchet MS", Font.BOLD, 12));
-      StdDraw.text(this.getPosition().getX(), this.getPosition().getY(), "Water" + " - " + this.getDirectionValue() + (this.isSelected() ? " - Selected" : ""));
-    }
-    if (this.isSelected()) {
-      StdDraw.setPenColor(Color.red);
-      StdDraw.setPenRadius(0.005);
-      StdDraw.rectangle(this.getPosition().getX(), this.getPosition().getY(), this.getWidth() / 2, this.getHeight() / 2);
-    }
-
   }
 
-  /**
-   * Update the tile contains entity if exists
-   *
-   * @param deltaTime The game delta time
-   */
-  public void updateContainsEntity(double deltaTime) { }
 
   /**
    * Executed when a tile is clicked
