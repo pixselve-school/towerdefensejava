@@ -318,7 +318,7 @@ public class InterfaceGame extends Interface{
       this.upgradeBox.showBox(0.3, 0.0);
       this.shopBtn.setVisible(false);
 
-      this.upgradeSpecialImIcon.setSprite(tower.getSprite_HUD_special());
+      this.upgradeSpecialImIcon.setSprite(tower.getSpriteHUDSpecial());
 
       this.upgradeDamageIm.setSprite("images/level" + this.upgradingTower.getDamage_u().getLevel() + ".png");
       if (tower.getDamage_u().getLevel() != tower.getDamage_u().getMax_level())

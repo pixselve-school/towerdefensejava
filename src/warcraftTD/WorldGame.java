@@ -291,8 +291,9 @@ public class WorldGame extends World {
   public void drawMouse() {
     double normalizedX = (int) (StdDraw.mouseX() / this.getSquareWidth()) * this.getSquareWidth() + this.getSquareWidth() / 2;
     double normalizedY = (int) (StdDraw.mouseY() / this.getSquareHeight()) * this.getSquareHeight() + this.getSquareHeight() / 2;
+    Position mousep = new Position((int) ((normalizedX * this.getNbSquareX())), (int) ((normalizedY * this.getNbSquareY())));
+
     if (this.building_class != null) {
-      Position mousep = new Position((int) ((normalizedX * this.getNbSquareX())), (int) ((normalizedY * this.getNbSquareY())));
       Tile tile = this.positionTileMap.get(mousep);
       if(this.selectedTile != tile) {
         this.selectedTile = tile;
@@ -497,9 +498,9 @@ public class WorldGame extends World {
           try {
             Constructor cons = this.building_class.getConstructor(Position.class, double.class, double.class, WorldGame.class);
             Tower t = (Tower) cons.newInstance(new Position(normalizedX, normalizedY), this.getSquareWidth(), this.getSquareHeight(), this);
-
             tile.replaceContains(t, true, td.colorParticleSpawn);
             this.buildingCursor.setColorByTileUnder(this.selectedTile);
+            this.list_tower.put(mousep, t);
             Sound soundTower = new Sound("music/putTower.wav", false);
             soundTower.play(0.5);
           } catch (NoSuchMethodException e) {
