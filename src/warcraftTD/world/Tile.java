@@ -4,15 +4,12 @@ import warcraftTD.libs.StdDraw;
 import warcraftTD.particules.EntityParticules;
 import warcraftTD.particules.RandomParticuleGenerator;
 import warcraftTD.particules.SquareParticule;
-import warcraftTD.towers.Arrow;
-import warcraftTD.towers.Bomb;
-import warcraftTD.towers.Ice;
-import warcraftTD.towers.Poison;
+import warcraftTD.utils.DrawableEntity;
 import warcraftTD.utils.Position;
 
 import java.awt.*;
 
-abstract public class Tile {
+abstract public class Tile extends DrawableEntity {
   private final Position position;
   private final double height;
   private final double width;
@@ -74,7 +71,10 @@ abstract public class Tile {
 
   public void drawSettings() {
     this.drawDebug();
-    this.drawSelected();
+    if (this.selected) {
+      this.drawSelected();
+    }
+
   }
 
   public void drawDebug() {
@@ -87,11 +87,16 @@ abstract public class Tile {
   }
 
   public void drawSelected() {
-    if (this.selected) {
-      StdDraw.setPenColor(Color.darkGray);
-      StdDraw.setPenRadius(0.003);
-      StdDraw.rectangle(this.getPosition().getX(), this.getPosition().getY(), this.getWidth() / 2, this.getHeight() / 2);
-    }
+
+    this.drawSelected(Color.darkGray, 0.003);
+  }
+
+  public void drawSelected(Color color, double radius) {
+
+    StdDraw.setPenColor(color);
+    StdDraw.setPenRadius(radius);
+    StdDraw.rectangle(this.getPosition().getX(), this.getPosition().getY(), this.getWidth() / 2, this.getHeight() / 2);
+
   }
 
   public void drawOverlay(Color color) {
@@ -170,12 +175,10 @@ abstract public class Tile {
 
   public void onHover(double x, double y) {
     this.selected = true;
-    this.setDebug(true);
   }
 
   public void onHoverLeave() {
     this.selected = false;
-    this.setDebug(false);
   }
 
   /**
@@ -194,11 +197,11 @@ abstract public class Tile {
   }
 
   public void replaceContains(Entity entity, boolean particules, Color colorParticle) {
-    if (this.isBuildable()) {
-      if (particules && colorParticle!=null) {
-        this.tileParticules.addGenerator(new RandomParticuleGenerator(this.getPosition(), 1, 0.01, this.getHeight() / 2, new SquareParticule(1, 0.01, 0.1, colorParticle)));
-      }
-      this.contains = entity;
+    if (particules && colorParticle != null) {
+      this.tileParticules.addGenerator(new RandomParticuleGenerator(this.getPosition(), 1, 0.01, this.getHeight() / 2, new SquareParticule(1, 0.01, 0.1, colorParticle)));
     }
+    this.contains = entity;
+    this.contains.setParentTile(this);
+
   }
 }
