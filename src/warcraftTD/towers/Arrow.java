@@ -9,8 +9,8 @@ import java.io.IOException;
 
 public class Arrow extends Tower {
 
-  public Arrow(Position p, double width, double height, WorldGame world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-    super(p, width, height, world, "music/arrow.wav");
+  public Arrow(double width, double height, WorldGame world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    super(width, height, world, "music/arrow.wav");
 
     this.setSprite("images/tower_arrow.png");
     this.setSprite_hover("images/tower_arrow_hover.png");
@@ -30,7 +30,7 @@ public class Arrow extends Tower {
 
   @Override
   public void shootProjectile(Vector Direction) {
-    warcraftTD.towers.projectiles.Arrow pr = new warcraftTD.towers.projectiles.Arrow(this.getPosition(), Direction, this.getWorld(), (int) this.getDamage_u().getLevel_stat()[this.getDamage_u().getLevel() - 1], (int) this.getSpecial_u().getLevel_stat()[this.getSpecial_u().getLevel() - 1]);
+    warcraftTD.towers.projectiles.Arrow pr = new warcraftTD.towers.projectiles.Arrow(this.getParentTile().getPosition(), Direction, this.getWorld(), (int) this.getDamage_u().getLevel_stat()[this.getDamage_u().getLevel() - 1], (int) this.getSpecial_u().getLevel_stat()[this.getSpecial_u().getLevel() - 1]);
     this.getList_projectile().add(pr);
     try {
       this.getShootingSound().play(0.15);
