@@ -53,13 +53,6 @@ abstract public class Tower extends Entity {
     this.sprite_HUD_special = sprite_HUD_special;
   }
 
-  public Position getPosition() {
-    return this.position;
-  }
-
-  public void setPosition(Position position) {
-    this.position = position;
-  }
 
   public double getWidth() {
     return this.width;
@@ -184,7 +177,6 @@ abstract public class Tower extends Entity {
   private String sprite;
   private String sprite_hover;
   private String sprite_HUD_special;
-  private Position position;
   private double width;
   private double height;
   private double animationy;
@@ -209,9 +201,10 @@ abstract public class Tower extends Entity {
 
   private final Sound shootingSound;
 
-  public Tower(Position p, double width, double height, WorldGame world, String soundFilePath) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+
+
+  public Tower(double width, double height, WorldGame world, String soundFilePath) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     super(EntityBuildable.NOTBUILDABLE);
-    this.position = p;
     this.width = width;
     this.height = height;
     this.animationy = 0.2;
@@ -222,7 +215,10 @@ abstract public class Tower extends Entity {
     this.world = world;
     this.shootingSound = new Sound(soundFilePath, false);
     this.targetFlyingMonster = true;
+
   }
+
+
 
 
   public void update(double deltaTime, Tile tile) {
@@ -232,41 +228,31 @@ abstract public class Tower extends Entity {
       StdDraw.pictureHeight(position.getX(), position.getY() + this.animationy, this.sprite, this.height * 1.25, Align.BOTTOM);
       this.animationy -= 0.8 * deltaTime;
     } else {
-      StdDraw.pictureHeight(position.getX(), position.getY(), this.sprite, this.height * 1.25, Align.BOTTOM);
+      if (this.getParentTile().isSelected()) {
+        StdDraw.setPenColor(new Color(0, 161, 255, 90));
+        StdDraw.filledCircle(this.getParentTile().getPosition().getX(), this.getParentTile().getPosition().getY(), this.range);
+        StdDraw.pictureHeight(position.getX(), position.getY(), this.sprite_hover, this.height * 1.25, Align.BOTTOM);
+      } else {
+        StdDraw.pictureHeight(position.getX(), position.getY(), this.sprite, this.height * 1.25, Align.BOTTOM);
+      }
+
 
       this.ProjectilesManagement(deltaTime);
       this.AttackManagement(deltaTime);
     }
   }
 
-
-
-  public void hoveredVisual(){
-    if (!(this.animationy > 0.0)) {
-      StdDraw.setPenColor(new Color(0, 161, 255, 90));
-      StdDraw.filledCircle(this.position.getX(), this.position.getY(), this.range);
-      StdDraw.picture(this.position.getX(), this.position.getY(), this.sprite_hover, this.width, this.height);
-    }
-  }
-
-  public void upgradingVisual(){
-    if (!(this.animationy > 0.0)) {
-      StdDraw.picture(this.position.getX(), this.position.getY(), this.sprite, this.width, this.height);
-      StdDraw.picture(this.position.getX(), this.position.getY(), "images/Upgrade_tile.png", this.width, this.height);
-    }
-  }
-
   public void AttackManagement(double delta_time) {
     if (this.canAttack) {
       if (this.targetMonster != null) {
-        if (!this.targetMonster.isDead() && this.targetMonster.getPosition().dist(this.position) <= this.range) {
+        if (!this.targetMonster.isDead() && this.targetMonster.getPosition().dist(this.getParentTile().getPosition()) <= this.range) {
           this.shootTargetMonster();
           return;
         }
         this.targetMonster = null;
       }
       for (int i = 0; i < this.world.getMonsters().size(); i++) {
-        if (!this.world.getMonsters().get(i).isDead() && this.world.getMonsters().get(i).getPosition().dist(this.position) <= this.range && (!this.world.getMonsters().get(i).isFlying() || this.targetFlyingMonster)) {
+        if (!this.world.getMonsters().get(i).isDead() && this.world.getMonsters().get(i).getPosition().dist(this.getParentTile().getPosition()) <= this.range && (!this.world.getMonsters().get(i).isFlying() || this.targetFlyingMonster)) {
           this.targetMonster = this.world.getMonsters().get(i);
           break;
         }
@@ -279,7 +265,7 @@ abstract public class Tower extends Entity {
   }
 
   public void shootTargetMonster() {
-    Vector dir = new Vector(this.position, this.targetMonster.getPosition()).normal();
+    Vector dir = new Vector(this.getParentTile().getPosition(), this.targetMonster.getPosition()).normal();
     this.shootProjectile(dir);
     this.canAttack = false;
     this.delayAttack = 1 / this.attackspeed;
