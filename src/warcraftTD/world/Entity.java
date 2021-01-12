@@ -15,10 +15,10 @@ public abstract class Entity {
   }
 
   /**
-   * Update and draw the entity
+   * Actualise la logique de l'entité et affiche son apparence
    *
-   * @param deltaTime The game delta time
-   * @param tile      The tile the entity is attached to
+   * @param deltaTime le temps d'un tick en seconde
+   * @param tile      La Tile attaché à l'entité
    */
   public abstract void update(double deltaTime, Tile tile);
 

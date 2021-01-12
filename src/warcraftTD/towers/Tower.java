@@ -19,157 +19,242 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+/**
+ * Une tour placable sur la carte de jeu, et qui attaque les monstres
+ */
 abstract public class Tower extends Entity {
+  /** le chemin vers l'image d'apparence de la tour */
+  private String sprite;
+  /** le chemin vers l'image d'apparence de la tour quand la souris est dessus */
+  private String spriteHover;
+  /** le chemin vers l'image de l'icon de la capacité spéciale de la tour */
+  private String spriteHUDSpecial;
+  /** La position de la tour */
+  private Position position;
+  /** Largeur de la tour */
+  private double width;
+  /** Hauteur de la tour */
+  private double height;
+  /** Décalage de hauteur d'animation actuellement */
+  private double animationy;
+  /** Décalage de hauteur d'animation maximale */
+  private double animationymax;
+  /** Distance à laquelle la tour tire sur les ennemis (les détecte) */
+  private double range;
+  /** vitesse de tir de la tour (nombre de tirs par secondes) */
+  private double attackspeed;
+  /** spéciife si la tour peut attaquer */
+  private boolean canAttack;
+  /** Comptabilise le delay avant que la tour ne puisse à nouveau attaquer */
+  private double delayAttack;
+  /** Référence vers le monde de jeu */
+  private WorldGame world;
+  /** Le monstre ciblé par la tour actuellement */
+  private Monster targetMonster;
+  /** Liste des projectiles encore sur le terrain que cette tour a tiré */
+  private ArrayList<Projectile> list_projectile;
+  /** Spécifie si la tour peut attaquer les monstres volants */
+  private boolean targetFlyingMonster;
+  /** Stat des Upgrades pour les dégats */
+  private StatUpgrade damage_u;
+  /** Stat des Upgrades pour la distance d'attaque */
+  private StatUpgrade range_u;
+  /** Stat des Upgrades pour la vitesse d'attaque */
+  private StatUpgrade attackspeed_u;
+  /** Stat des Upgrades pour la capacité spéciale */
+  private StatUpgrade special_u;
+  /** Son produit quand la tour tir */
+  private final Sound shootingSound;
 
-  public boolean isTargetFlyingMonster() {
-    return this.targetFlyingMonster;
+  /**
+   * Récupère le son produit quand la tour tir
+   * @return le son produit quand la tour tir
+   */
+  public Sound getShootingSound() {
+    return this.shootingSound;
   }
 
+  /**
+   * Modifie la capacité de la tour à tirer sur les monstres volants
+   * @param targetFlyingMonster la capacité de la tour à tirer sur les monstres volants
+   */
   public void setTargetFlyingMonster(boolean targetFlyingMonster) {
     this.targetFlyingMonster = targetFlyingMonster;
   }
 
+  /**
+   * Récupère le chemin vers l'image d'apparence de la tour
+   * @return le chemin vers l'image d'apparence de la tour
+   */
   public String getSprite() {
     return this.sprite;
   }
 
+  /**
+   * Change le chemin vers l'image d'apparence de la tour
+   * @param sprite le chemin vers l'image d'apparence de la tour
+   */
   public void setSprite(String sprite) {
     this.sprite = sprite;
   }
 
-  public String getSprite_hover() {
-    return this.sprite_hover;
+  /**
+   * Modifie le chemin vers l'image d'apparence de la tour quand la souris est dessus
+   * @param spriteHover le chemin vers l'image d'apparence de la tour quand la souris est dessus
+   */
+  public void setSpriteHover(String spriteHover) {
+    this.spriteHover = spriteHover;
   }
 
-  public void setSprite_hover(String sprite_hover) {
-    this.sprite_hover = sprite_hover;
+  /**
+   * Récupère le chemin vers l'image de l'icon de la capacité spéciale de la tour
+   * @return le chemin vers l'image de l'icon de la capacité spéciale de la tour
+   */
+  public String getSpriteHUDSpecial() {
+    return this.spriteHUDSpecial;
   }
 
-  public String getSprite_HUD_special() {
-    return this.sprite_HUD_special;
+  /**
+   * Modifie le chemin vers l'image de l'icon de la capacité spéciale de la tour
+   * @param spriteHUDSpecial le chemin vers l'image de l'icon de la capacité spéciale de la tour
+   */
+  public void setSpriteHUDSpecial(String spriteHUDSpecial) {
+    this.spriteHUDSpecial = spriteHUDSpecial;
   }
 
-  public void setSprite_HUD_special(String sprite_HUD_special) {
-    this.sprite_HUD_special = sprite_HUD_special;
-  }
 
-
+  /**
+   * Récupère la largeur de la tour
+   * @return la largeur de la tour
+   */
   public double getWidth() {
     return this.width;
   }
 
+  /**
+   * Change la largeur de la tour
+   * @param width la largeur de la tour
+   */
   public void setWidth(double width) {
     this.width = width;
   }
 
+  /**
+   * Récuoère la hauteur de la tour
+   * @return la hauteur de la tour
+   */
   public double getHeight() {
     return this.height;
   }
 
+  /**
+   * Modifie la hauteur de la tour
+   * @param height la hauteur de la tour
+   */
   public void setHeight(double height) {
     this.height = height;
   }
 
-  public double getAnimationy() {
-    return this.animationy;
-  }
-
-  public void setAnimationy(double animationy) {
-    this.animationy = animationy;
-  }
-
-  public double getAnimationymax() {
-    return this.animationymax;
-  }
-
-  public void setAnimationymax(double animationymax) {
-    this.animationymax = animationymax;
-  }
-
-  public double getRange() {
-    return this.range;
-  }
-
+  /**
+   * Modifie la distance à laquelle la tour tire sur les ennemis
+   * @param range la distance à laquelle la tour tire sur les ennemis
+   */
   public void setRange(double range) {
     this.range = range;
   }
 
-  public double getAttackspeed() {
-    return this.attackspeed;
-  }
-
+  /**
+   * Modifie la vitesse d'attaque de la tour
+   * @param attackspeed la vitesse d'attaque de la tour
+   */
   public void setAttackspeed(double attackspeed) {
     this.attackspeed = attackspeed;
   }
 
-  public boolean isCanAttack() {
-    return this.canAttack;
-  }
-
-  public void setCanAttack(boolean canAttack) {
-    this.canAttack = canAttack;
-  }
-
-  public double getDelayAttack() {
-    return this.delayAttack;
-  }
-
-  public void setDelayAttack(double delayAttack) {
-    this.delayAttack = delayAttack;
-  }
-
+  /**
+   * Récupère le monde de jeu
+   * @return le monde de jeu
+   */
   public WorldGame getWorld() {
     return this.world;
   }
 
+  /**
+   * Modifie la référence vers le monde de jeu
+   * @param world la référence vers le monde de jeu
+   */
   public void setWorld(WorldGame world) {
     this.world = world;
   }
 
-  public Monster getTargetMonster() {
-    return this.targetMonster;
-  }
-
-  public void setTargetMonster(Monster targetMonster) {
-    this.targetMonster = targetMonster;
-  }
-
+  /**
+   * Récupère la liste des projectiles sur le terrain tiré par la tour
+   * @return la liste des projectiles sur le terrain tiré par la tour
+   */
   public ArrayList<Projectile> getList_projectile() {
     return this.list_projectile;
   }
 
-  public void setList_projectile(ArrayList<Projectile> list_projectile) {
-    this.list_projectile = list_projectile;
-  }
-
+  /**
+   * Récupère les Stats d'améliorations des dégats
+   * @return les Stats d'améliorations des dégats
+   */
   public StatUpgrade getDamage_u() {
     return this.damage_u;
   }
 
+  /**
+   * Modifie les Stats d'améliorations des dégats
+   * @param damage_u les Stats d'améliorations des dégats
+   */
   public void setDamage_u(StatUpgrade damage_u) {
     this.damage_u = damage_u;
   }
 
+  /**
+   * Récupère les Stats d'améliorations de la distance d'attaque de la tour
+   * @return les Stats d'améliorations de la distance d'attaque de la tour
+   */
   public StatUpgrade getRange_u() {
     return this.range_u;
   }
 
+  /**
+   * Modifie les Stats d'améliorations de la distance d'attaque de la tour
+   * @param range_u les Stats d'améliorations de la distance d'attaque de la tour
+   */
   public void setRange_u(StatUpgrade range_u) {
     this.range_u = range_u;
   }
 
+  /**
+   * Récupère les Stats d'améliorations de la vitesse d'attaque
+   * @return les Stats d'améliorations de la vitesse d'attaque
+   */
   public StatUpgrade getAttackspeed_u() {
     return this.attackspeed_u;
   }
 
+  /**
+   * Modifie les Stats d'améliorations de la vitesse d'attaque
+   * @param attackspeed_u les Stats d'améliorations de la vitesse d'attaque
+   */
   public void setAttackspeed_u(StatUpgrade attackspeed_u) {
     this.attackspeed_u = attackspeed_u;
   }
 
+  /**
+   * Récupère les Stats d'améliorations de la capacité spéciale
+   * @return les Stats d'améliorations de la capacité spéciale
+   */
   public StatUpgrade getSpecial_u() {
     return this.special_u;
   }
 
+  /**
+   * Modifie les Stats d'améliorations de la capacité spéciale
+   * @param special_u les Stats d'améliorations de la capacité spéciale
+   */
   public void setSpecial_u(StatUpgrade special_u) {
     this.special_u = special_u;
   }
@@ -202,8 +287,19 @@ abstract public class Tower extends Entity {
   private final Sound shootingSound;
 
 
-
+  /**
+   * Initialise une tour
+   * @param p la position
+   * @param width la largeur
+   * @param height la hauteur
+   * @param world le monde de jeu
+   * @param soundFilePath le chemin vers le son de tir
+   * @throws UnsupportedAudioFileException
+   * @throws IOException
+   * @throws LineUnavailableException
+   */
   public Tower(double width, double height, WorldGame world, String soundFilePath) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+
     super(EntityBuildable.NOTBUILDABLE);
     this.width = width;
     this.height = height;
@@ -219,7 +315,12 @@ abstract public class Tower extends Entity {
   }
 
 
-
+  /**
+   * Actualise la logique de l'entité et affiche son apparence
+   *
+   * @param deltaTime le temps d'un tick en seconde
+   * @param tile      La Tile attaché à l'entité
+   */
 
   public void update(double deltaTime, Tile tile) {
     Position position = tile.getPosition();
@@ -241,6 +342,12 @@ abstract public class Tower extends Entity {
       this.AttackManagement(deltaTime);
     }
   }
+
+
+  /**
+   * Gère la logique de tir de la tour pour chaque tick
+   * @param delta_time le temps d'un tick en seconde
+   */
 
   public void AttackManagement(double delta_time) {
     if (this.canAttack) {
@@ -264,6 +371,9 @@ abstract public class Tower extends Entity {
     }
   }
 
+  /**
+   * Calcul la trajectoire du projectile, mets un delay avant la prochaine attaque, tir le projectile
+   */
   public void shootTargetMonster() {
     Vector dir = new Vector(this.getParentTile().getPosition(), this.targetMonster.getPosition()).normal();
     this.shootProjectile(dir);
@@ -271,6 +381,10 @@ abstract public class Tower extends Entity {
     this.delayAttack = 1 / this.attackspeed;
   }
 
+  /**
+   * Actualise le positionnement de tous ses projectiles en jeu (les supprime si ils sortent du terrain)
+   * @param delta_time le temps d'un tick en seconde
+   */
   public void ProjectilesManagement(double delta_time) {
     ArrayList<Projectile> removeP = new ArrayList<Projectile>();
     Iterator<Projectile> i = this.list_projectile.iterator();
@@ -284,26 +398,39 @@ abstract public class Tower extends Entity {
     }
   }
 
+  /**
+   * Augmente le niveau d'amélioration des dégats
+   */
   public void upgradeDamage() {
     this.damage_u.setLevel(this.damage_u.getLevel() + 1);
   }
 
+  /**
+   * Augmente le niveau d'amélioration de la vitesse d'attaque
+   */
   public void upgradeAttackSpeed() {
     this.attackspeed_u.setLevel(this.attackspeed_u.getLevel() + 1);
     this.attackspeed = this.attackspeed_u.getLevel_stat()[this.attackspeed_u.getLevel() - 1];
   }
 
+  /**
+   * Augmente le niveau d'amélioration de la distance d'attaque
+   */
   public void upgradeRange() {
     this.range_u.setLevel(this.range_u.getLevel() + 1);
     this.range = this.range_u.getLevel_stat()[this.range_u.getLevel() - 1];
   }
 
+  /**
+   * Augmente le niveau d'amélioration de la capacité spéciale
+   */
   public void upgradeSpecial() {
     this.special_u.setLevel(this.special_u.getLevel() + 1);
-    this.refreshSpecialUpgrade();
   }
 
-  public abstract void refreshSpecialUpgrade();
-
-  public abstract void shootProjectile(Vector Direction);
+  /**
+   * Spawn un projectile dans la Direction donné
+   * @param direction la direction
+   */
+  public abstract void shootProjectile(Vector direction);
 }

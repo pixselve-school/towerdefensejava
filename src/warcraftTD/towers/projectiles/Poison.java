@@ -7,10 +7,23 @@ import warcraftTD.utils.Vector;
 
 import java.awt.*;
 
+/**
+ * Une boule de poison
+ */
 public class Poison extends Projectile {
+  /** Durée en secondes de l'empiosennement */
   int duration;
+  /** Dégat du poison toute les demis seondes */
   int poisondamage;
 
+  /**
+   * Initialise le projectile de poison
+   * @param initialPosition position initiale
+   * @param direction direction du projectile
+   * @param world référence vers le monde de jeu
+   * @param damage les degats
+   * @param poisondamage Dégat du poison
+   */
   public Poison(Position initialPosition, Vector direction, WorldGame world, int damage, int poisondamage) {
     super(initialPosition, direction, world, damage);
     this.sprite = "images/poison.png";
@@ -24,6 +37,11 @@ public class Poison extends Projectile {
     this.colordamage = new Color(0, 105, 30);
   }
 
+  /**
+   * Inflige des degats au monstre et applique la capacité spécial, quand il a collision
+   * @param m le monstre
+   * @return la collision avec le monstre est validé
+   */
   @Override
   public boolean onCollideMonster(Monster m) {
     m.takeDamage(this.damage, this.world, this.colordamage);

@@ -8,19 +8,40 @@ import warcraftTD.utils.Vector;
 
 import java.awt.*;
 
+/**
+ * Projectile tiré par les tours, visant les monstres
+ */
 public abstract class Projectile {
+  /** Direction du projectile */
   private final Vector direction;
+  /** Position actuelle */
   protected Position position;
+  /** Vitesse du projectile */
   protected double speed;
+  /** Degat du projectile */
   protected int damage;
+  /** Chemin vers l'image d'apparence du projectile */
   protected String sprite;
+  /** Spécifie si l'apparence du projectile doit etre tournée dans la direction vers laquelle il se dirige */
   protected boolean rotating;
+  /** La distance à laquelle le projectile touche le monstre */
   protected double hitrange;
+  /** Largeur du projectile */
   protected double width;
+  /** Hauteur du projectile */
   protected double height;
+  /** Référence du monde de jeu */
   protected WorldGame world;
+  /** Couleur du texte de dégats en cas de collsion avec un monstre */
   protected Color colordamage;
 
+  /**
+   * Initialise le projectile
+   * @param initialPosition position initiale
+   * @param direction direction du projectile
+   * @param world référence vers le monde de jeu
+   * @param damage les degats
+   */
   public Projectile(Position initialPosition, Vector direction, WorldGame world, int damage) {
     this.position = new Position(initialPosition);
     this.direction = direction;
@@ -28,6 +49,11 @@ public abstract class Projectile {
     this.damage = damage;
   }
 
+  /**
+   * Actualise le visuel et la logique de collision du projectile
+   * @param delta_time le temps d'un tick en seconde
+   * @return le projectile est encore sur le terrain (pas sorti de l'écran)
+   */
   public boolean Update(double delta_time) {
     if (this.position.getX() < 0.0 || this.position.getX() > 1.0 || this.position.getY() < 0.0 || this.position.getY() > 1.0)
       return false;
@@ -50,5 +76,10 @@ public abstract class Projectile {
     return true;
   }
 
+  /**
+   * Inflige des degats au monstre et applique la capacité spécial, quand il a collision
+   * @param m le monstre
+   * @return la collision avec le monstre est validé
+   */
   public abstract boolean onCollideMonster(Monster m);
 }

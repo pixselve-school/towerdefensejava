@@ -8,12 +8,27 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 
+/**
+ * Une tour tirant des boules de glaces
+ * Capacité spéciale : Ralentissement : un enemi touché par la boule de glace est alors ralenti.
+ * Le ralentissement est plus ou moins important en fonction du niveau d'amélioration
+ */
 public class Ice extends Tower {
+    /**
+   * Initialise la tour de glace
+   * @param p la position
+   * @param width la largeur
+   * @param height la hauteur
+   * @param world le monde de jeu
+   * @throws UnsupportedAudioFileException
+   * @throws IOException
+   * @throws LineUnavailableException
+   */
   public Ice(double width, double height, WorldGame world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     super(width, height, world, "music/snow.wav");
     this.setSprite("images/ice_tower.png");
-    this.setSprite_hover("images/ice_tower_hover.png");
-    this.setSprite_HUD_special("images/ice_upgrade.png");
+    this.setSpriteHover("images/ice_tower_hover.png");
+    this.setSpriteHUDSpecial("images/ice_upgrade.png");
     this.setRange(0.15);
     this.setAttackspeed(2.5);
     this.setDamage_u(new StatUpgrade(6, new int[]{0, 30, 50, 80, 100, 120}, new double[]{5, 6, 7, 8, 9, 10}));
@@ -22,11 +37,10 @@ public class Ice extends Tower {
     this.setSpecial_u(new StatUpgrade(6, new int[]{0, 50, 80, 100, 120, 150}, new double[]{40, 45, 50, 55, 60, 65}));
   }
 
-  @Override
-  public void refreshSpecialUpgrade() {
-
-  }
-
+  /**
+   * Spawn une bombe dans la Direction donné
+   * @param direction la direction
+   */
   @Override
   public void shootProjectile(Vector Direction) {
     warcraftTD.towers.projectiles.Ice pr = new warcraftTD.towers.projectiles.Ice(this.getParentTile().getPosition(), Direction, this.getWorld(), (int) this.getDamage_u().getLevel_stat()[this.getDamage_u().getLevel() - 1], (int) this.getSpecial_u().getLevel_stat()[this.getSpecial_u().getLevel() - 1]);
