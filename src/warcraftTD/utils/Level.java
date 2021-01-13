@@ -27,6 +27,7 @@ public class Level {
   private List<WaveData> waveData;
   private Padding padding;
   private boolean waterActivated;
+  private PlantPresence plants;
 
   public Level(File fileToParse) throws IOException {
     BufferedReader br = new BufferedReader(new FileReader(fileToParse));
@@ -38,6 +39,7 @@ public class Level {
     this.life = 20;
     this.money = 200;
     this.pathPositions = new LinkedList<>();
+    this.plants = PlantPresence.Full;
 
     while ((st = br.readLine()) != null) {
       if (st.matches("^MUSIC_PATH=(.+)\\.wav$")) {
@@ -48,6 +50,8 @@ public class Level {
         this.money = this.parseMoney(this.parseConfig(st));
       } else if (st.matches("^WATER=[10]$")) {
         this.waterActivated = this.parseWaterActivation(this.parseConfig(st));
+      } else if (st.matches("^PLANTS=[012]$")) {
+        this.plants = this.parsePlantPresence(this.parseConfig(st));
       } else if (st.matches("^PADDING=(\\d+,){3}\\d+$")) {
         this.padding = this.parsePadding(this.parseConfig(st));
       } else if (st.matches("^PATH=(\\d+[UDLR])+$")) {
@@ -128,7 +132,6 @@ public class Level {
       }
       this.waves.add(wave);
     }
-
 
 
   }
@@ -250,6 +253,17 @@ public class Level {
     return stringToParse.equals("1");
   }
 
+  private PlantPresence parsePlantPresence(String stringToParse) {
+    switch (stringToParse) {
+      case "0":
+        return PlantPresence.Absent;
+      case "1":
+        return PlantPresence.Small;
+      default:
+        return PlantPresence.Full;
+    }
+  }
+
 
   private static class WaveData {
     public WaveData() {
@@ -289,7 +303,7 @@ public class Level {
   }
 
   public WorldGame getWorld(MainMenu menu) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-    return new WorldGame(this.nbSquareX, this.nbSquareY, this.money, this.life, this.waterActivated, this.musicPath, this.pathPositions, this.waves, menu);
+    return new WorldGame(this.nbSquareX, this.nbSquareY, this.money, this.life, this.waterActivated, this.musicPath, this.pathPositions, this.waves, menu, this.plants);
   }
 
   public static void main(String[] args) throws IOException {
