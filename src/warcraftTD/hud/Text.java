@@ -12,7 +12,7 @@ public class Text extends Element {
   /** le texte à afficher */
   private String text;
   /** la police d'écriture du texte */
-  private final Font font;
+  private Font font;
   /** la couleur du texte */
   private Color color;
 
@@ -22,6 +22,14 @@ public class Text extends Element {
    */
   public Font getFont() {
     return this.font;
+  }
+
+  /**
+   * Modifie la police d'écriture du texte
+   * @return la police d'écriture du texte
+   */
+  public void setFont(Font font) {
+    this.font = font;
   }
 
   /**

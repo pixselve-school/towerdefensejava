@@ -38,6 +38,8 @@ public class GroupBox extends ClickableElement {
   private final Position initialPos;
   /** Chemin vers l'image de fond de la box */
   private String background = "";
+  /** Cancel le click si on clique dans la surface de la box */
+  private boolean consumeClick;
 
   /**
    * Classe associant un élément d'interface à sa position relative par rapport à la groupBox
@@ -96,7 +98,32 @@ public class GroupBox extends ClickableElement {
     this.setVisible(false);
     this.listHUDElements = new ArrayList<RelativeHUD_Element>();
     this.garbage = new ArrayList<RelativeHUD_Element>();
+    this.consumeClick = false;
+  }
 
+  /**
+   * Initialise une GroupBox
+   * @param position la position de l'élément
+   * @param width la largeur de l'élément
+   * @param height la hauteur de l'élément
+   * @param parent l'interface mère de l'élément
+   * @param background le chemin vers l'image de fond
+   * @param consumeClick spécifie si il cancel le clique si on clique sur sa surface
+   * @throws UnsupportedAudioFileException
+   * @throws IOException
+   * @throws LineUnavailableException
+   */
+  public GroupBox(Position position, double width, double height, Interface parent, String background, boolean consumeClick) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    super(position, width, height, parent);
+    this.initialPos = position;
+    this.deltaX = 0.0;
+    this.deltaY = 0.0;
+    this.speed = 0.5;
+    this.background = background;
+    this.setVisible(false);
+    this.listHUDElements = new ArrayList<RelativeHUD_Element>();
+    this.garbage = new ArrayList<RelativeHUD_Element>();
+    this.consumeClick = consumeClick;
   }
 
   /**
@@ -196,7 +223,7 @@ public class GroupBox extends ClickableElement {
         if (action!=null) break;
       }
       if(action==null){
-        return (this.getHitBox().isHit(mouseX, mouseY) ? new ActionElement(this, "cancel") : null);
+        return (this.consumeClick && this.getHitBox().isHit(mouseX, mouseY) ? new ActionElement(this, "cancel") : null);
       }
       return action;
     }

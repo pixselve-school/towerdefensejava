@@ -12,9 +12,9 @@ import java.io.IOException;
  */
 public class Button extends ClickableElement {
   /** Le chemin vers l'image d'apparence du bouton */
-  private final String sprite;
+  private String sprite;
   /** Le chemin vers l'image d'apparence quand il est survolé du bouton */
-  private final String spriteHover;
+  private String spriteHover;
   /** L'action du bouton quand on clique dessus */
   private final String action;
 
@@ -32,6 +32,22 @@ public class Button extends ClickableElement {
    */
   public String getAction() {
     return this.action;
+  }
+
+  /**
+   * Modifie Le chemin vers l'image d'apparence du bouton
+   * @param sprite Le chemin vers l'image d'apparence du bouton
+   */
+  public void setSprite(String sprite) {
+    this.sprite = sprite;
+  }
+
+  /**
+   * Modifie Le chemin vers l'image d'apparence quand il est survolé du bouton
+   * @param spriteHover Le chemin vers l'image d'apparence quand il est survolé du bouton
+   */
+  public void setSpriteHover(String spriteHover) {
+    this.spriteHover = spriteHover;
   }
 
   /**

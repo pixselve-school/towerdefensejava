@@ -80,6 +80,14 @@ public class MainMenu extends Interface {
         super.updateInterface(mouseX, mouseY, deltaTime);
     }
 
+    /**
+     * Demande de consumer le click (éviter de pouvoir rester appuyer)
+     */
+    @Override
+    public void consumeClick() {
+        this.setNeedReleaseMouse(true);
+    }
+
     @Override
     public void makeAction(String action, Element from) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
         switch (action) {

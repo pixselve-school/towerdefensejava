@@ -57,4 +57,12 @@ public class InterfacePause extends Interface {
                 break;
         }
     }
+
+    /**
+     * Demande de consumer le click (éviter de pouvoir rester appuyer)
+     */
+    @Override
+    public void consumeClick() {
+        this.world.setNeedReleaseMouse(true);
+    }
 }

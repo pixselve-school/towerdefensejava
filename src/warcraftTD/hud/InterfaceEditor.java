@@ -38,6 +38,8 @@ public class InterfaceEditor extends Interface{
     private Button exitBtn;
     /** Bouton pour sauvegarder son niveau actuel */
     private Button saveBtn;
+    /** Group Box Building Pannel */
+    private GroupBox groupBoxBuilding;
 
     /**
      *  ################ Affichage du Panel des options
@@ -192,8 +194,7 @@ public class InterfaceEditor extends Interface{
         this.exitBtn = new Button(new Position(0.085, 0.08), 0.15,0.1,"images/mm_button_quit.png","images/mm_button_quit_hover.png","exit", this);
         this.getListElements().add(this.exitBtn);
 
-        this.settingsBox = new GroupBox(new Position(0.88,0.5), 0.32,1.08,this, "images/PanelSettings.png");
-        this.getListElements().add(this.settingsBox);
+        this.settingsBox = new GroupBox(new Position(0.88,0.5), 0.32,1.08,this, "images/editor/PanelSettings.png");
         Button btn = new Button(new Position(0.1, 0.93), 0.06, 0.06, "images/close_button.png", "images/close_button_hover.png", "ClosingSettings", this);
         this.settingsBox.addHUDElement(btn);
 
@@ -226,15 +227,25 @@ public class InterfaceEditor extends Interface{
         this.heightText = new Text(new Position(0.51, 0.475), 0.0, 0.0, new Font("Arial", Font.BOLD, 30),this, this.world.getNbSquareY()+"");
         this.settingsBox.addHUDElement(this.heightText);
 
-        btn = new Button(new Position(0.28, 0.25), 0.06, 0.07, "images/add_firstpath_button.png", "images/add_firstpath_button_hover.png", "AddSpawn", this);
-        this.settingsBox.addHUDElement(btn);
-        this.pathButton = new Button(new Position(0.28, 0.17), 0.06, 0.07, "images/add_path_button.png", "images/add_path_button_hover.png", "AddPath", this);
-        this.settingsBox.addHUDElement(this.pathButton);
+        ComboBox combo = new ComboBox(new Position(0.885, 0.315),0.15, 0.07, this, new String[]{"ON", "OFF"}, "comboBoxWater");
+        this.settingsBox.addHUDElement(combo);
+        combo = new ComboBox(new Position(0.885, 0.15),0.175, 0.07, this, new String[]{"None", "Plants", "Plants & Trees"}, "comboBoxPlants");
+        this.settingsBox.addHUDElement(combo);
+
+        this.groupBoxBuilding = new GroupBox(new Position(0.5,0.5), 1.0,1.0,this, "images/editor/BuildingPanelEditor.png");
+        this.getListElements().add(this.groupBoxBuilding);
+        this.getListElements().add(this.settingsBox);
+        this.groupBoxBuilding.showBox(0.0,0.0);
+
+        btn = new Button(new Position(0.33, 0.93), 0.08, 0.11, "images/editor/AddSpawnButon.png", "images/editor/AddSpawnButon_hover.png", "AddSpawn", this);
+        this.groupBoxBuilding.addHUDElement(btn);
+        this.pathButton = new Button(new Position(0.435, 0.93), 0.08, 0.11, "images/editor/AddPathButon.png", "images/editor/AddPathButon_hover.png", "AddPath", this);
+        this.groupBoxBuilding.addHUDElement(this.pathButton);
         this.pathButton.setEnabled(false);
-        btn = new Button(new Position(0.28, 0.09), 0.06, 0.07, "images/clear_path_button.png", "images/clear_path_button_hover.png", "RemovePath", this);
-        this.settingsBox.addHUDElement(btn);
-        btn = new Button(new Position(0.28, 0.36), 0.06, 0.07, "images/close_button.png", "images/close_button_hover.png", "ClearPath", this);
-        this.settingsBox.addHUDElement(btn);
+        btn = new Button(new Position(0.54, 0.93), 0.08, 0.11, "images/editor/RemovePathButon.png", "images/editor/RemovePathButon_hover.png", "RemovePath", this);
+        this.groupBoxBuilding.addHUDElement(btn);
+        btn = new Button(new Position(0.645, 0.93), 0.08, 0.11, "images/clear_path_button.png", "images/clear_path_button_hover.png", "ClearPath", this);
+        this.groupBoxBuilding.addHUDElement(btn);
 
         this.buildingText = new Text(new Position(0.5, 0.07), 0.0, 0.0, new Font("Arial", Font.BOLD, 40), this, "Right click to cancel !");
         this.buildingText.setVisible(false);
@@ -575,6 +586,14 @@ public class InterfaceEditor extends Interface{
         }
 
         return super.onClick(mouseX, mouseY, mouseButton);
+    }
+
+    /**
+     * Demande de consumer le click (éviter de pouvoir rester appuyer)
+     */
+    @Override
+    public void consumeClick() {
+        this.world.setNeedReleaseMouse(true);
     }
 
     /**
