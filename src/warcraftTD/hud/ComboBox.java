@@ -65,6 +65,10 @@ public class ComboBox extends ClickableElement{
         }
     }
 
+    public String getSelectedChoice(){
+        return this.listPropositions[0];
+    }
+
     @Override
     public void update(double mouseX, double mouseY, double deltaTime) {
         if(this.selected){

@@ -59,6 +59,8 @@ public class InterfaceEditor extends Interface{
     private final Text buildingText;
     /** GroupBox du panel options */
     private GroupBox settingsBox;
+    /** ComboBox pour activer ou désactiver l'eau */
+    private ComboBox comboBoxWater;
 
     /** Type de construction actuellement */
     private TypeBuildEditor buildingType;
@@ -227,9 +229,9 @@ public class InterfaceEditor extends Interface{
         this.heightText = new Text(new Position(0.51, 0.475), 0.0, 0.0, new Font("Arial", Font.BOLD, 30),this, this.world.getNbSquareY()+"");
         this.settingsBox.addHUDElement(this.heightText);
 
-        ComboBox combo = new ComboBox(new Position(0.885, 0.315),0.15, 0.07, this, new String[]{"ON", "OFF"}, "comboBoxWater");
-        this.settingsBox.addHUDElement(combo);
-        combo = new ComboBox(new Position(0.885, 0.15),0.175, 0.07, this, new String[]{"None", "Plants", "Plants & Trees"}, "comboBoxPlants");
+        this.comboBoxWater = new ComboBox(new Position(0.885, 0.315),0.15, 0.07, this, new String[]{"ON", "OFF"}, "comboBoxWater");
+        this.settingsBox.addHUDElement(this.comboBoxWater);
+        ComboBox combo = new ComboBox(new Position(0.885, 0.15),0.175, 0.07, this, new String[]{"None", "Plants", "Plants & Trees"}, "comboBoxPlants");
         this.settingsBox.addHUDElement(combo);
 
         this.groupBoxBuilding = new GroupBox(new Position(0.5,0.5), 1.0,1.0,this, "images/editor/BuildingPanelEditor.png");
@@ -409,18 +411,22 @@ public class InterfaceEditor extends Interface{
      * @param type le type de construction
      */
     public void startBuilding(TypeBuildEditor type){
-        this.settingsBox.HideBox();
+        if(this.settingsBox.isVisible()) this.settingsBox.HideBox();
+        if(this.waveBox.isVisible()) this.waveBox.HideBox();
         this.buildingText.setVisible(true);
         this.buildingType = type;
+        this.groupBoxBuilding.HideBox();
+        this.toggleBottomToolbar(false);
     }
 
     /**
      * Stop l'édition du terrain / le mode construction
      */
     public void stopBuilding(){
-        this.settingsBox.showBox(0.0,0.0);
         this.buildingText.setVisible(false);
         this.buildingType = TypeBuildEditor.None;
+        this.groupBoxBuilding.showBox(0.0,0.0);
+        this.toggleBottomToolbar(true);
     }
 
     /**
@@ -870,7 +876,7 @@ public class InterfaceEditor extends Interface{
                     myWriter.write("MONEY="+this.moneyInitial+"\n");
                     myWriter.write(this.getPathTextSave()+"\n");
                     myWriter.write(this.getPaddingTextSave()+"\n");
-                    myWriter.write("WATER=0\n");
+                    myWriter.write("WATER="+(this.comboBoxWater.getSelectedChoice().equals("ON") ? 1 : 0)+"\n");
                     myWriter.write(this.getWaveTextSave());
                     myWriter.close();
                 }
