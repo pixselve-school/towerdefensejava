@@ -229,7 +229,7 @@ public class InterfaceEditor extends Interface{
         this.heightText = new Text(new Position(0.51, 0.475), 0.0, 0.0, new Font("Arial", Font.BOLD, 30),this, this.world.getNbSquareY()+"");
         this.settingsBox.addHUDElement(this.heightText);
 
-        this.comboBoxWater = new ComboBox(new Position(0.5, 0.33),0.15, 0.07, this, new String[]{"ON", "OFF"}, "comboBoxWater");
+        this.comboBoxWater = new ComboBox(new Position(0.5, 0.33),0.15, 0.07, this, new String[]{"OFF", "ON"}, "comboBoxWater");
         this.settingsBox.addHUDElement(this.comboBoxWater);
         ComboBox combo = new ComboBox(new Position(0.5, 0.18),0.175, 0.07, this, new String[]{"None", "Plants", "Plants & Trees"}, "comboBoxPlants");
         this.settingsBox.addHUDElement(combo);
