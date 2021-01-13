@@ -72,7 +72,7 @@ abstract public class Tile extends DrawableEntity {
   public void drawSettings() {
     this.drawDebug();
     if (this.selected) {
-      this.drawSelected();
+      //this.drawSelected();
     }
 
   }

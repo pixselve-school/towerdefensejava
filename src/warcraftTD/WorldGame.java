@@ -272,14 +272,23 @@ public class WorldGame extends World {
   public void drawMouse() {
     double normalizedX = (int) (StdDraw.mouseX() / this.getSquareWidth()) * this.getSquareWidth() + this.getSquareWidth() / 2;
     double normalizedY = (int) (StdDraw.mouseY() / this.getSquareHeight()) * this.getSquareHeight() + this.getSquareHeight() / 2;
-    Position mousep = new Position((int) ((normalizedX * this.getNbSquareX())), (int) ((normalizedY * this.getNbSquareY())));
+    Position tilePosition = new Position((int) Math.floor(StdDraw.mouseX() * this.getNbSquareX()), (int) Math.floor(StdDraw.mouseY() * this.getNbSquareY()));
+    Tile tile = this.positionTileMap.get(tilePosition);
+
+    if (tile != null && tile != this.selectedTile) {
+      if(this.selectedTile!=null){
+        this.selectedTile.onHoverLeave();
+      }
+      this.selectedTile = tile;
+      this.selectedTile.onHover(0,0);
+      if (this.building_class != null) this.buildingCursor.setColorByTileUnder(tile);
+    } else if (tile == null && this.selectedTile != null) {
+      this.selectedTile.onHoverLeave();
+      this.selectedTile = null;
+    }
 
     if (this.building_class != null) {
-      Tile tile = this.positionTileMap.get(mousep);
-      if (this.selectedTile != tile) {
-        this.selectedTile = tile;
-        this.buildingCursor.setColorByTileUnder(this.selectedTile);
-      }
+
       int price = this.listTowerData.get(this.listTowerData.indexOf(new TowerDataStruct("", "", "", 0, this.building_class, null))).price;
       if (this.selectedTile.getContains() != null && this.selectedTile.getContains().getBuildable().equals(EntityBuildable.PAYING))
         price += 20;
@@ -292,6 +301,7 @@ public class WorldGame extends World {
 
       StdDraw.text(normalizedX + 0.01, normalizedY + 0.07, price + "");
       StdDraw.picture(normalizedX - 0.02, normalizedY + 0.075, "images/moneyIcon.png", 0.02, 0.04);
+
     }
   }
 
@@ -407,7 +417,7 @@ public class WorldGame extends World {
         this.updateWave();
         this.drawTileEntitiesAndMonsters();
         this.updateMonsters();
-        this.mouseHover();
+        this.drawMouse();
         this.drawInfos();
         break;
       case Pause:
@@ -419,27 +429,6 @@ public class WorldGame extends World {
     }
     return this.life;
   }
-
-  public void mouseHover() {
-    final double mouseX = StdDraw.mouseX();
-    final double mouseY = StdDraw.mouseY();
-    Position tilePosition = new Position((int) Math.floor(mouseX * this.getNbSquareX()), (int) Math.floor(mouseY * this.getNbSquareY()));
-    Tile tile = this.positionTileMap.get(tilePosition);
-
-
-    if (tile != null && tile != this.selectedTile) {
-      if (this.selectedTile != null) {
-        this.selectedTile.onHoverLeave();
-      }
-      this.selectedTile = tile;
-      this.selectedTile.onHover(mouseX, mouseY);
-    } else if (tile == null && this.selectedTile != null) {
-      this.selectedTile.onHoverLeave();
-      this.selectedTile = null;
-    }
-
-  }
-
 
   /**
    * Vérifie lorsque l'utilisateur clique sur sa souris qu'il peut:
@@ -480,7 +469,7 @@ public class WorldGame extends World {
 
             tile.replaceContains(t, true, td.colorParticleSpawn);
             this.buildingCursor.setColorByTileUnder(this.selectedTile);
-            this.list_tower.put(mousep, t);
+            this.list_tower.put(tilePosition, t);
             Sound soundTower = new Sound("music/putTower.wav", false);
             soundTower.play(0.5);
           } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
@@ -488,18 +477,13 @@ public class WorldGame extends World {
           }
         }
       }
-
-
-    }
-  }
-
-  public void singleMouseClick(double x, double y, int mouseButton) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-    Position tilePosition = new Position((int) Math.floor(x * this.getNbSquareX()), (int) Math.floor(y * this.getNbSquareY()));
-    Tile tileClick = this.positionTileMap.get(tilePosition);
-    if (tileClick != null) {
-      tileClick.onClick(x, y);
-      if (tileClick.getContains() instanceof  Tower) {
-        this.HUD.showUpgradeTowerBox((Tower) tileClick.getContains());
+    } else {
+      if (tile != null && building_class==null) {
+        tile.onClick(x, y);
+        this.setNeedReleaseMouse(true);
+        if (tile.getContains() instanceof  Tower) {
+          this.HUD.showUpgradeTowerBox((Tower) tile.getContains());
+        }
       }
     }
   }

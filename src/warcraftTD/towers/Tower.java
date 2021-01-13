@@ -258,38 +258,8 @@ abstract public class Tower extends Entity {
   public void setSpecial_u(StatUpgrade special_u) {
     this.special_u = special_u;
   }
-
-  private String sprite;
-  private String sprite_hover;
-  private String sprite_HUD_special;
-  private double width;
-  private double height;
-  private double animationy;
-  private double animationymax;
-  private double range;
-  private double attackspeed; // nombre de tirs par secondes
-  private boolean canAttack;
-  private double delayAttack;
-  private WorldGame world;
-  private Monster targetMonster;
-  private ArrayList<Projectile> list_projectile;
-  private boolean targetFlyingMonster;
-
-  private StatUpgrade damage_u;
-  private StatUpgrade range_u;
-  private StatUpgrade attackspeed_u;
-  private StatUpgrade special_u;
-
-  public Sound getShootingSound() {
-    return this.shootingSound;
-  }
-
-  private final Sound shootingSound;
-
-
   /**
    * Initialise une tour
-   * @param p la position
    * @param width la largeur
    * @param height la hauteur
    * @param world le monde de jeu
@@ -332,7 +302,7 @@ abstract public class Tower extends Entity {
       if (this.getParentTile().isSelected()) {
         StdDraw.setPenColor(new Color(0, 161, 255, 90));
         StdDraw.filledCircle(this.getParentTile().getPosition().getX(), this.getParentTile().getPosition().getY(), this.range);
-        StdDraw.pictureHeight(position.getX(), position.getY(), this.sprite_hover, this.height * 1.25, Align.BOTTOM);
+        StdDraw.pictureHeight(position.getX(), position.getY(), this.spriteHover, this.height * 1.25, Align.BOTTOM);
       } else {
         StdDraw.pictureHeight(position.getX(), position.getY(), this.sprite, this.height * 1.25, Align.BOTTOM);
       }

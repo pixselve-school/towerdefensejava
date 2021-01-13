@@ -18,7 +18,6 @@ public abstract class World {
     private boolean end;
     private double squareWidth;
     private double squareHeight;
-    private boolean wasMouseClicked;
 
     private MainMenu menu;
 
@@ -128,7 +127,6 @@ public abstract class World {
         this.deltaTime = 0.0;
         this.paths = new ArrayList<Position>();
         this.end = false;
-        this.wasMouseClicked = false;
     }
 
     public abstract void drawInfos();
@@ -143,21 +141,11 @@ public abstract class World {
 
     public abstract void mouseClick(double x, double y, int mouseButton) throws UnsupportedAudioFileException, IOException, LineUnavailableException;
 
-    public abstract void singleMouseClick(double x, double y, int mouseButton) throws UnsupportedAudioFileException, IOException, LineUnavailableException;
-
     public void run() throws UnsupportedAudioFileException, IOException, LineUnavailableException{
         while (!this.end) {
             long time_nano = System.nanoTime();
 
             StdDraw.clear();
-
-
-            if (StdDraw.isMousePressed() && !this.wasMouseClicked) {
-                this.wasMouseClicked = true;
-                this.singleMouseClick(StdDraw.mouseX(), StdDraw.mouseY(), StdDraw.mouseButtonPressed());
-            } else if (!StdDraw.isMousePressed() && this.wasMouseClicked) {
-                this.wasMouseClicked = false;
-            }
 
             if (StdDraw.isMousePressed()) {
                 if (!this.needReleaseMouse) {
