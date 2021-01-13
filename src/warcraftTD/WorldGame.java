@@ -80,7 +80,9 @@ public class WorldGame extends World {
 
   TreeMap<Position, Tile> positionTileMap;
 
-  public WorldGame(int nbSquareX, int nbSquareY, int money, int health, boolean displayWater, String musicPath, List<Position> path, List<Wave> waves, MainMenu menu) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+  PlantPresence plantPresence;
+
+  public WorldGame(int nbSquareX, int nbSquareY, int money, int health, boolean displayWater, String musicPath, List<Position> path, List<Wave> waves, MainMenu menu, PlantPresence plantPresence) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     super(1200, 800, menu);
     this.setNbSquareX(nbSquareX);
     this.setNbSquareY(nbSquareY);
@@ -90,6 +92,7 @@ public class WorldGame extends World {
 
     this.life = health;
     this.displayWater = displayWater;
+    this.plantPresence = plantPresence;
 
     this.player_wallet = new Wallet(this);
     this.player_wallet.addMoney(money);
