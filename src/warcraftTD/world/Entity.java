@@ -4,13 +4,12 @@ package warcraftTD.world;
 import warcraftTD.particules.EntityParticules;
 
 public abstract class Entity {
-  public EntityParticules getEntityParticules() {
-    return this.entityParticules;
-  }
-  private EntityBuildable buildable;
-  private final EntityParticules entityParticules;
 
-  protected Entity(EntityBuildable buildable) {
+  private final EntityBuildable buildable;
+  private final EntityParticules entityParticules;
+  private Tile parentTile;
+
+  public Entity(EntityBuildable buildable) {
     this.entityParticules = new EntityParticules();
     this.buildable = buildable;
   }
@@ -25,5 +24,18 @@ public abstract class Entity {
 
   public EntityBuildable getBuildable() {
     return this.buildable;
+  }
+
+
+  public EntityParticules getEntityParticules() {
+    return this.entityParticules;
+  }
+
+  public void setParentTile(Tile parentTile) {
+    this.parentTile = parentTile;
+  }
+
+  public Tile getParentTile() {
+    return this.parentTile;
   }
 }

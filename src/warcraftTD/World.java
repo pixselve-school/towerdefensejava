@@ -121,6 +121,7 @@ public abstract class World {
         this.height = height;
         this.menu = menu;
 
+
         StdDraw.setCanvasSize(width, height);
         StdDraw.enableDoubleBuffering();
 
@@ -142,7 +143,7 @@ public abstract class World {
 
     public abstract void mouseClick(double x, double y, int mouseButton) throws UnsupportedAudioFileException, IOException, LineUnavailableException;
 
-    public abstract void singleMouseClick(double x, double y, int mouseButton);
+    public abstract void singleMouseClick(double x, double y, int mouseButton) throws UnsupportedAudioFileException, IOException, LineUnavailableException;
 
     public void run() throws UnsupportedAudioFileException, IOException, LineUnavailableException{
         while (!this.end) {

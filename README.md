@@ -16,3 +16,20 @@ control, [read the `.lsd` specification sheet](levelSpecification.md) and build 
 ## 👾 Available monsters
 
 The game introduces 10 monsters to you. Check them out on the [monsters details page](monsters.md).
+
+## 📃 Distribution of tasks
+
+### Mael KERICHARD
+* Monsters (Displaying and logic)
+* Animations
+* Particules
+* Level generation (from a `.lsd` file) and displaying
+* Sounds
+
+### Romain BRIEND
+* Interfaces
+* Towers (Displaying and logic)
+* Projectiles (Displaying and logic)
+* Level editor
+* Level loader (from the main menu)
+* Optimization principles 

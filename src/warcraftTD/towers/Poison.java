@@ -14,7 +14,8 @@ import java.io.IOException;
  * Les degats du poison sont augmentés avec le niveau d'amélioration de la capacité.
  */
 public class Poison extends Tower {
-  /**
+
+    /**
    * Initialise la tour de poison
    * @param p la position
    * @param width la largeur
@@ -24,8 +25,10 @@ public class Poison extends Tower {
    * @throws IOException
    * @throws LineUnavailableException
    */
-  public Poison(Position p, double width, double height, WorldGame world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-    super(p, width, height, world, "music/poison.wav");
+  public Poison(double width, double height, WorldGame world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    super(width, height, world, "music/poison.wav");
+
+
     this.setSprite("images/poison_tower.png");
     this.setSpriteHover("images/poison_tower_hover.png");
     this.setSpriteHUDSpecial("images/poison_upgrade.png");
@@ -43,7 +46,7 @@ public class Poison extends Tower {
    */
   @Override
   public void shootProjectile(Vector Direction) {
-    warcraftTD.towers.projectiles.Poison pr = new warcraftTD.towers.projectiles.Poison(this.getPosition(), Direction, this.getWorld(), (int) this.getDamage_u().getLevel_stat()[this.getDamage_u().getLevel() - 1], (int) this.getSpecial_u().getLevel_stat()[this.getSpecial_u().getLevel() - 1]);
+    warcraftTD.towers.projectiles.Poison pr = new warcraftTD.towers.projectiles.Poison(this.getParentTile().getPosition(), Direction, this.getWorld(), (int) this.getDamage_u().getLevel_stat()[this.getDamage_u().getLevel() - 1], (int) this.getSpecial_u().getLevel_stat()[this.getSpecial_u().getLevel() - 1]);
     this.getList_projectile().add(pr);
     try {
       this.getShootingSound().play(0.10);

@@ -15,7 +15,8 @@ import java.io.IOException;
  * A chaque niveau d'amélioration, la zone de dégats est aggrandie
  */
 public class Bomb extends Tower {
-  /**
+
+    /**
    * Initialise la tour de bombe
    * @param p la position
    * @param width la largeur
@@ -25,8 +26,11 @@ public class Bomb extends Tower {
    * @throws IOException
    * @throws LineUnavailableException
    */
-  public Bomb(Position p, double width, double height, WorldGame world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-    super(p, width, height, world, "music/bomb.wav");
+
+  public Bomb(double width, double height, WorldGame world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    super(width, height, world, "music/bomb.wav");
+
+
     this.setSprite("images/bomb_tower.png");
     this.setSpriteHover("images/bomb_tower_hover.png");
     this.setSpriteHUDSpecial("images/bomb_upgrade.png");
@@ -44,8 +48,8 @@ public class Bomb extends Tower {
    * @param direction la direction
    */
   @Override
-  public void shootProjectile(Vector direction) {
-    warcraftTD.towers.projectiles.Bomb pr = new warcraftTD.towers.projectiles.Bomb(this.getPosition(), direction, this.getWorld(), (int) this.getDamage_u().getLevel_stat()[this.getDamage_u().getLevel() - 1], this.getSpecial_u().getLevel_stat()[this.getSpecial_u().getLevel() - 1]);
+  public void shootProjectile(Vector Direction) {
+    warcraftTD.towers.projectiles.Bomb pr = new warcraftTD.towers.projectiles.Bomb(this.getParentTile().getPosition(), Direction, this.getWorld(), (int) this.getDamage_u().getLevel_stat()[this.getDamage_u().getLevel() - 1], this.getSpecial_u().getLevel_stat()[this.getSpecial_u().getLevel() - 1]);
     this.getList_projectile().add(pr);
     try {
       this.getShootingSound().play(0.15);

@@ -8,10 +8,7 @@ import warcraftTD.libs.StdDraw;
 import warcraftTD.monsters.Monster;
 import warcraftTD.monsters.Wave;
 import warcraftTD.towers.*;
-import warcraftTD.utils.Position;
-import warcraftTD.utils.Sound;
-import warcraftTD.utils.TowerDataStruct;
-import warcraftTD.utils.Wallet;
+import warcraftTD.utils.*;
 import warcraftTD.world.*;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -123,8 +120,8 @@ public class WorldGame extends World {
 
     this.initTerrain();
     this.currentStateGame = StateGame.Game;
-    this.buildingCursor = new warcraftTD.utils.Cursor(this.getSquareWidth()/2, this.getSquareHeight()/2);
-    this.buildingCursor.setColor(new Color(1,0,0));
+    this.buildingCursor = new warcraftTD.utils.Cursor(this.getSquareWidth() / 2, this.getSquareHeight() / 2);
+    this.buildingCursor.setColor(new Color(1, 0, 0));
   }
 
   public void initTerrain() {
@@ -134,7 +131,7 @@ public class WorldGame extends World {
     StdDraw.show();
 
     StdDraw.save("temporary/currentlevel.png");
-    this.levelBackground = StdDraw.pictureNget(0.5,0.5,"temporary/currentlevel.png",1.0,1.0);
+    this.levelBackground = StdDraw.pictureNget(0.5, 0.5, "temporary/currentlevel.png", 1.0, 1.0);
   }
 
 
@@ -145,7 +142,6 @@ public class WorldGame extends World {
 
         if (this.displayWater && ((i == 0 || i == this.getNbSquareX() - 1) || (j == 0 || j == this.getNbSquareY() - 1))) {
           final Water water = new Water(position.getWorldPosition(this), this.getSquareHeight(), this.getSquareWidth());
-//          water.setDebug(true);
           this.positionTileMap.put(position, water);
           this.updateTile(position, true);
         } else if (this.paths.contains(position)) {
@@ -174,6 +170,11 @@ public class WorldGame extends World {
         }
       }
     }
+
+    Position spawnPath = this.paths.get(0);
+    Position finishPath = this.paths.get(this.paths.size() - 1);
+    this.positionTileMap.get(spawnPath).replaceContains(new IndestructibleEntity("images/tiles/rock.png", 0.1));
+    this.positionTileMap.get(finishPath).replaceContains(new IndestructibleEntity("images/tiles/house.png", 0.15));
 
   }
 
@@ -244,26 +245,6 @@ public class WorldGame extends World {
 
   }
 
-  public void updateTileEntities(double deltaTime) {
-    for (Map.Entry<Position, Tile> tileEntry : this.positionTileMap.descendingMap().entrySet()) {
-      tileEntry.getValue().update(deltaTime);
-      tileEntry.getValue().updateContainsEntity(deltaTime);
-    }
-  }
-
-  public void drawTileAnimation(double deltaTime) {
-    for (Map.Entry<Position, Tile> tileEntry : this.positionTileMap.descendingMap().entrySet()) {
-      tileEntry.getValue().drawAnimatedPart(deltaTime);
-    }
-  }
-
-  public void drawTileSettings() {
-    for (Map.Entry<Position, Tile> tileEntry : this.positionTileMap.descendingMap().entrySet()) {
-      tileEntry.getValue().drawSettings();
-    }
-  }
-
-
 
   /**
    * Affiche certaines informations sur l'écran telles que les points de vie du joueur ou son or
@@ -295,21 +276,22 @@ public class WorldGame extends World {
 
     if (this.building_class != null) {
       Tile tile = this.positionTileMap.get(mousep);
-      if(this.selectedTile != tile) {
+      if (this.selectedTile != tile) {
         this.selectedTile = tile;
         this.buildingCursor.setColorByTileUnder(this.selectedTile);
       }
       int price = this.listTowerData.get(this.listTowerData.indexOf(new TowerDataStruct("", "", "", 0, this.building_class, null))).price;
-      if(this.selectedTile.getContains()!=null && this.selectedTile.getContains().getBuildable().equals(EntityBuildable.PAYING)) price +=20;
+      if (this.selectedTile.getContains() != null && this.selectedTile.getContains().getBuildable().equals(EntityBuildable.PAYING))
+        price += 20;
 
       this.buildingCursor.update(new Position(normalizedX, normalizedY), this.getDeltaTime());
 
       StdDraw.setFont(new Font("Arial", Font.BOLD, 40));
-      if(player_wallet.canPay(price)) StdDraw.setPenColor(new Color(255,230,0));
-      else StdDraw.setPenColor(new Color(255,0,0));
+      if (player_wallet.canPay(price)) StdDraw.setPenColor(new Color(255, 230, 0));
+      else StdDraw.setPenColor(new Color(255, 0, 0));
 
-      StdDraw.text(normalizedX+0.01, normalizedY+0.07,price+"");
-      StdDraw.picture(normalizedX-0.02, normalizedY+0.075, "images/moneyIcon.png", 0.02, 0.04);
+      StdDraw.text(normalizedX + 0.01, normalizedY + 0.07, price + "");
+      StdDraw.picture(normalizedX - 0.02, normalizedY + 0.075, "images/moneyIcon.png", 0.02, 0.04);
     }
   }
 
@@ -322,8 +304,6 @@ public class WorldGame extends World {
     Monster m;
     while (i.hasNext()) {
       m = i.next();
-      m.update(this.getDeltaTime());
-
       if (m.hasFinishedPath()) {
         this.life -= 1;
         i.remove();
@@ -339,6 +319,28 @@ public class WorldGame extends World {
     }
   }
 
+  public void drawTileEntitiesAndMonsters() {
+    List<DrawableEntity> drawableEntityList = new LinkedList<>(this.monsters);
+    drawableEntityList.addAll(this.positionTileMap.values());
+    drawableEntityList.sort((o1, o2) -> (int) ((o2.getPosition().getY() - o1.getPosition().getY()) * 100));
+    for (DrawableEntity drawableEntity : drawableEntityList) {
+      if (drawableEntity instanceof Tile) {
+        final Tile tile = (Tile) drawableEntity;
+        tile.drawSettings();
+        if (this.HUD.getUpgradingTower() != null && drawableEntity == this.HUD.getUpgradingTower().getParentTile()) {
+          tile.drawSelected(Color.orange, 0.005);
+        }
+        tile.updateContainsEntity(this.getDeltaTime());
+        tile.drawAnimatedPart(this.getDeltaTime());
+
+
+      } else if (drawableEntity instanceof Monster) {
+        ((Monster) drawableEntity).update(this.getDeltaTime());
+      }
+
+    }
+  }
+
   public void updateProgressBar() {
     Wave currentWave = this.waves.get(0);
     this.HUD.setWaveEnemyProgress((100 * (this.amountAliveMonsters() + currentWave.monsterAmount()) / (double) this.totalMonsterAmount));
@@ -348,21 +350,9 @@ public class WorldGame extends World {
     return this.monsters.stream().filter(monster -> !monster.isDead()).collect(Collectors.toCollection(ArrayList::new)).size();
   }
 
-  public void updateTowers() {
-    double normalizedX = (int) (StdDraw.mouseX() / this.getSquareWidth()) * this.getSquareWidth() + this.getSquareWidth() / 2;
-    double normalizedY = (int) (StdDraw.mouseY() / this.getSquareHeight()) * this.getSquareHeight() + this.getSquareHeight() / 2;
-    Position mousep = new Position((int) ((normalizedX * this.getNbSquareX())), (int) ((normalizedY * this.getNbSquareY())));
-    Tower towerUnderMouse = this.list_tower.get(mousep);
 
-    if (this.getHUD().getUpgradingTower() != null) {
-      this.getHUD().getUpgradingTower().upgradingVisual();
-    }
-    if (towerUnderMouse != null) {
-      towerUnderMouse.hoveredVisual();
-    }
-  }
 
-  public void updateWave() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+  public void updateWave() {
     if (this.waves.size() > 0) {
       Wave currentWave = this.waves.get(0);
       if (currentWave.getCurrentTimeBeforeStartingSpawn() > 0) {
@@ -380,26 +370,26 @@ public class WorldGame extends World {
   }
 
 
-  public void drawLevel(){
+  public void drawLevel() {
     StdDraw.picture(0.5, 0.5, "temporary/currentlevel.png", 1.0, 1.0);
-    if(building_class!=null){
+    if (building_class != null) {
       this.positionTileMap.forEach((k, tile) -> {
-        if(tile instanceof Water){
-          tile.drawOverlay(new Color(0,0,0, 100));
-        } else if(tile.getContains() != null){
-          switch (tile.getContains().getBuildable()){
+        if (tile instanceof Water) {
+          tile.drawOverlay(new Color(0, 0, 0, 100));
+        } else if (tile.getContains() != null) {
+          switch (tile.getContains().getBuildable()) {
             case BUILDABLE:
-              tile.drawOverlay(new Color(0,255,0, 100));
+              tile.drawOverlay(new Color(0, 255, 0, 100));
               return;
             case PAYING:
-              tile.drawOverlay(new Color(255,100,0, 100));
+              tile.drawOverlay(new Color(255, 100, 0, 100));
               return;
             case NOTBUILDABLE:
-              tile.drawOverlay(new Color(255,0,0, 100));
+              tile.drawOverlay(new Color(255, 0, 0, 100));
               return;
           }
-        } else if(tile.isBuildable()) tile.drawOverlay(new Color(0,255,0, 100));
-        else tile.drawOverlay(new Color(255,0,0, 100));
+        } else if (tile.isBuildable()) tile.drawOverlay(new Color(0, 255, 0, 100));
+        else tile.drawOverlay(new Color(255, 0, 0, 100));
       });
     }
   }
@@ -415,13 +405,9 @@ public class WorldGame extends World {
       case Game:
         this.drawLevel();
         this.updateWave();
+        this.drawTileEntitiesAndMonsters();
         this.updateMonsters();
-        this.updateTileEntities(this.getDeltaTime());
-        this.drawTileAnimation(this.getDeltaTime());
-        this.drawTileSettings();
-        this.updateTowers();
-        this.drawMouse();
-        //this.mouseHover();
+        this.mouseHover();
         this.drawInfos();
         break;
       case Pause:
@@ -437,8 +423,10 @@ public class WorldGame extends World {
   public void mouseHover() {
     final double mouseX = StdDraw.mouseX();
     final double mouseY = StdDraw.mouseY();
-    Position tilePosition = new Position((int) Math.floor( mouseX * this.getNbSquareX()), (int) Math.floor( mouseY * this.getNbSquareY()));
+    Position tilePosition = new Position((int) Math.floor(mouseX * this.getNbSquareX()), (int) Math.floor(mouseY * this.getNbSquareY()));
     Tile tile = this.positionTileMap.get(tilePosition);
+
+
     if (tile != null && tile != this.selectedTile) {
       if (this.selectedTile != null) {
         this.selectedTile.onHoverLeave();
@@ -449,6 +437,7 @@ public class WorldGame extends World {
       this.selectedTile.onHoverLeave();
       this.selectedTile = null;
     }
+
   }
 
 
@@ -463,15 +452,7 @@ public class WorldGame extends World {
    */
   @Override
   public void mouseClick(double x, double y, int mouseButton) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-
-
-    double normalizedX = (int) (x / this.getSquareWidth()) * this.getSquareWidth() + this.getSquareWidth() / 2;
-    double normalizedY = (int) (y / this.getSquareHeight()) * this.getSquareHeight() + this.getSquareHeight() / 2;
-
-
-    Position mousep = new Position((int) ((normalizedX * this.getNbSquareX())), (int) ((normalizedY * this.getNbSquareY())));
-
-    Position tilePosition = new Position((int) Math.floor( x * this.getNbSquareX()), (int) Math.floor( y * this.getNbSquareY()));
+    Position tilePosition = new Position((int) Math.floor(x * this.getNbSquareX()), (int) Math.floor(y * this.getNbSquareY()));
 
 
     switch (currentStateGame) {
@@ -484,53 +465,42 @@ public class WorldGame extends World {
     }
 
     if (this.HUD.onClick(x, y, mouseButton)) return;
-
-
     Tile tile = this.positionTileMap.get(tilePosition);
-
     if (this.building_class != null && !this.isNeedReleaseMouse()) {
 
       if (tile != null && tile.isBuildable()) {
         TowerDataStruct td = this.listTowerData.get(this.listTowerData.indexOf(new TowerDataStruct("", "", "", 0, this.building_class, null)));
         int price = td.price;
-        if(this.selectedTile.getContains()!=null && this.selectedTile.getContains().getBuildable().equals(EntityBuildable.PAYING)) price +=20;
+        if (this.selectedTile.getContains() != null && this.selectedTile.getContains().getBuildable().equals(EntityBuildable.PAYING))
+          price += 20;
         if (this.player_wallet.pay(price)) {
           try {
-            Constructor cons = this.building_class.getConstructor(Position.class, double.class, double.class, WorldGame.class);
-            Tower t = (Tower) cons.newInstance(new Position(normalizedX, normalizedY), this.getSquareWidth(), this.getSquareHeight(), this);
+            Constructor cons = this.building_class.getConstructor(double.class, double.class, WorldGame.class);
+            Tower t = (Tower) cons.newInstance(this.getSquareWidth(), this.getSquareHeight(), this);
+
             tile.replaceContains(t, true, td.colorParticleSpawn);
             this.buildingCursor.setColorByTileUnder(this.selectedTile);
             this.list_tower.put(mousep, t);
             Sound soundTower = new Sound("music/putTower.wav", false);
             soundTower.play(0.5);
-          } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-          } catch (IllegalAccessException e) {
-            e.printStackTrace();
-          } catch (InstantiationException e) {
-            e.printStackTrace();
-          } catch (InvocationTargetException e) {
-
+          } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
             e.printStackTrace();
           }
         }
       }
 
 
-    } else if (!this.isNeedReleaseMouse()) {
-
-      Tower towerUnderMouse = this.list_tower.get(mousep);
-      if (towerUnderMouse != null) {
-        this.HUD.showUpgradeTowerBox(towerUnderMouse);
-      }
     }
   }
 
-  public void singleMouseClick(double x, double y, int mouseButton) {
-    Position tilePosition = new Position((int) Math.floor( x * this.getNbSquareX()), (int) Math.floor( y * this.getNbSquareY()));
+  public void singleMouseClick(double x, double y, int mouseButton) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    Position tilePosition = new Position((int) Math.floor(x * this.getNbSquareX()), (int) Math.floor(y * this.getNbSquareY()));
     Tile tileClick = this.positionTileMap.get(tilePosition);
     if (tileClick != null) {
       tileClick.onClick(x, y);
+      if (tileClick.getContains() instanceof  Tower) {
+        this.HUD.showUpgradeTowerBox((Tower) tileClick.getContains());
+      }
     }
   }
 
@@ -550,14 +520,13 @@ public class WorldGame extends World {
 
       this.currentStateGame = StateGame.Pause;
 
-
       if(this.hudPause==null) this.hudPause = new InterfacePause(this);
       this.hudPause.getBox().showBox(new Position(0.5,-0.3), new Position(0.5,0.5), 1.2);
       StdDraw.save("temporary/pauseTemporaryFile.png");
-      this.pauseBackground = StdDraw.pictureNget(0.5,0.5,"temporary/pauseTemporaryFile.png",1.0,1.0);
+      this.pauseBackground = StdDraw.pictureNget(0.5, 0.5, "temporary/pauseTemporaryFile.png", 1.0, 1.0);
 
 
-    } else if(this.currentStateGame == StateGame.Pause) exitPause();
+    } else if (this.currentStateGame == StateGame.Pause) exitPause();
   }
 
   public void exitPause() {
