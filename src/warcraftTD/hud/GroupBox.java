@@ -20,24 +20,18 @@ public class GroupBox extends ClickableElement {
   private final List<RelativeHUD_Element> listHUDElements;
   /** liste des éléments à supprimer du groupe à la prochaine update */
   private List<RelativeHUD_Element> garbage;
-  /** décalage horizontal actuel de position */
-  private double deltaX;
-  /** décalage vertical actuel de position */
-  private double deltaY;
-  /** décalage vertical initial d'appartion de la box */
-  private double fromY;
-  /** décalage horizontal initial d'appartion de la box */
-  private double fromX;
-  /** Spéicie si l'animation d'apparition est dans le sens normal */
-  private boolean forwardAnim;
   /** vitesse de l'animation d'apparition de la GroupBox en seconde */
   private double speed;
-  /** Spécifie si la box est mouvement */
-  private boolean moving;
-  /** Position initiale de la GroupBox */
-  private final Position initialPos;
   /** Chemin vers l'image de fond de la box */
   private String background = "";
+  /** Cancel le click si on clique dans la surface de la box */
+  private boolean consumeClick;
+  /** Position de destination quand on affiche la groupbox */
+  private Position destinationAnimation;
+  /** Position de départ quand on affiche la groupbox */
+  private Position startAnimation;
+  /** Spécifie si la groupBox est en train d'être caché */
+  private boolean hiding;
 
   /**
    * Classe associant un élément d'interface à sa position relative par rapport à la groupBox
@@ -88,15 +82,38 @@ public class GroupBox extends ClickableElement {
    */
   public GroupBox(Position position, double width, double height, Interface parent, String background) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     super(position, width, height, parent);
-    this.initialPos = position;
-    this.deltaX = 0.0;
-    this.deltaY = 0.0;
+    this.startAnimation = position;
+    this.destinationAnimation = position;
     this.speed = 0.5;
     this.background = background;
     this.setVisible(false);
     this.listHUDElements = new ArrayList<RelativeHUD_Element>();
     this.garbage = new ArrayList<RelativeHUD_Element>();
+    this.consumeClick = false;
+  }
 
+  /**
+   * Initialise une GroupBox
+   * @param position la position de l'élément
+   * @param width la largeur de l'élément
+   * @param height la hauteur de l'élément
+   * @param parent l'interface mère de l'élément
+   * @param background le chemin vers l'image de fond
+   * @param consumeClick spécifie si il cancel le clique si on clique sur sa surface
+   * @throws UnsupportedAudioFileException
+   * @throws IOException
+   * @throws LineUnavailableException
+   */
+  public GroupBox(Position position, double width, double height, Interface parent, String background, boolean consumeClick) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    super(position, width, height, parent);
+    this.startAnimation = position;
+    this.destinationAnimation = position;
+    this.speed = 0.5;
+    this.background = background;
+    this.setVisible(false);
+    this.listHUDElements = new ArrayList<RelativeHUD_Element>();
+    this.garbage = new ArrayList<RelativeHUD_Element>();
+    this.consumeClick = consumeClick;
   }
 
   /**
@@ -123,6 +140,10 @@ public class GroupBox extends ClickableElement {
     }
   }
 
+  public boolean isMoving(double deltaTime){
+    return this.destinationAnimation.dist(this.getPosition())>this.speed*deltaTime;
+  }
+
   /**
    * Actualise la logique de l'élément et affiche son apparence
    * @param mouseX la position horizontale de la souris
@@ -133,35 +154,30 @@ public class GroupBox extends ClickableElement {
   public void update(double mouseX, double mouseY, double deltaTime) {
     if (this.isVisible()) {
 
-      if (this.deltaY > 0.0) {
-        this.deltaY -= this.speed * deltaTime;
-        if(this.deltaY <0.0) this.deltaY = 0.0;
-      }
-      if (this.deltaX > 0.0){
-        this.deltaX -= this.speed * deltaTime;
-        if(this.deltaX <0.0) this.deltaX = 0.0;
+      boolean needNewPosition = false;
+
+      if(isMoving(deltaTime)){
+        double x = (this.getPosition().getX()==this.destinationAnimation.getX() ? this.getPosition().getX() :(this.getPosition().getX()<this.destinationAnimation.getX() ? this.getPosition().getX()+deltaTime*this.speed : this.getPosition().getX()-deltaTime*this.speed));
+        double y = (this.getPosition().getY()==this.destinationAnimation.getY() ? this.getPosition().getY() :(this.getPosition().getY()<this.destinationAnimation.getY() ? this.getPosition().getY()+deltaTime*this.speed : this.getPosition().getY()-deltaTime*this.speed));
+        this.setPosition(new Position(x, y));
+        if(!isMoving(deltaTime)) {
+          needNewPosition = true;
+          this.setPosition(this.destinationAnimation);
+        }
+      } else if(this.hiding){
+        this.hiding = false;
+        this.setVisible(false);
       }
 
-      if (this.forwardAnim)
-        this.setPosition(new Position(this.initialPos.getX() - this.deltaX, this.initialPos.getY() - this.deltaY));
-      else {
-        this.setPosition(new Position(this.initialPos.getX() - (this.fromX - this.deltaX), this.initialPos.getY() - (this.fromY - this.deltaY)));
-        if (this.deltaX <= 0.0 && this.deltaY <= 0.0) this.setVisible(false);
-      }
       if(!this.background.equals("")) StdDraw.picture(this.getPosition().getX(), this.getPosition().getY(), this.background, this.getWidth(), this.getHeight());
 
       Iterator<RelativeHUD_Element> i = this.listHUDElements.iterator();
       RelativeHUD_Element el;
       while (i.hasNext()) {
         el = i.next();
-        if(this.deltaY > 0.0 || this.deltaX > 0.0) el.element.setPosition(new Position((this.getPosition().getX() - (this.getWidth() / 2) + el.relativepos.getX() * this.getWidth()), (this.getPosition().getY() - (this.getHeight() / 2) + el.relativepos.getY() * this.getHeight())));
-        else if(this.moving) {
-          el.element.setPosition(new Position((this.getPosition().getX() - (this.getWidth() / 2) + el.relativepos.getX() * this.getWidth()), (this.getPosition().getY() - (this.getHeight() / 2) + el.relativepos.getY() * this.getHeight())));
-        }
+        if(isMoving(deltaTime) || needNewPosition) el.element.setPosition(new Position((this.getPosition().getX() - (this.getWidth() / 2) + el.relativepos.getX() * this.getWidth()), (this.getPosition().getY() - (this.getHeight() / 2) + el.relativepos.getY() * this.getHeight())));
         el.element.update(mouseX, mouseY, deltaTime);
       }
-
-      if(this.moving && !(this.deltaY > 0.0 || this.deltaX > 0.0)) this.moving = false;
 
       if(this.garbage.size()>0){
         i = this.garbage.iterator();
@@ -171,7 +187,6 @@ public class GroupBox extends ClickableElement {
         }
         this.garbage = new ArrayList<RelativeHUD_Element>();
       }
-
     }
   }
 
@@ -186,7 +201,7 @@ public class GroupBox extends ClickableElement {
    */
   @Override
   public ActionElement onClick(double mouseX, double mouseY) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-    if (this.isVisible()) {
+    if (this.isVisible() && !this.hiding) {
       Iterator<RelativeHUD_Element> i = this.listHUDElements.iterator();
       RelativeHUD_Element el;
       ActionElement action = null;
@@ -196,7 +211,7 @@ public class GroupBox extends ClickableElement {
         if (action!=null) break;
       }
       if(action==null){
-        return (this.getHitBox().isHit(mouseX, mouseY) ? new ActionElement(this, "cancel") : null);
+        return (this.consumeClick && this.getHitBox().isHit(mouseX, mouseY) ? new ActionElement(this, "cancel") : null);
       }
       return action;
     }
@@ -216,45 +231,34 @@ public class GroupBox extends ClickableElement {
   }
 
   /**
-   * Affiche le groupement d'éléments avec une animation
-   * @param fromy le décalage vertical d'où part l'animation (0 = pas d'animation verticale)
-   * @param fromx le décalage horizontal d'où part l'animation (0 = pas d'animation horizontale)
+   * Affiche le groupement d'éléments avec une animation et une vitesse spécifique
    */
-  public void showBox(double fromy, double fromx) {
-    this.deltaX = fromx;
-    this.deltaY = fromy;
-    this.fromY = fromy;
-    this.fromX = fromx;
+  public void showBox(){
     this.setVisible(true);
-    this.forwardAnim = true;
-    if(deltaX ==0.0 && deltaY ==0.0) initialUpdateRelativePosition();
-    else this.moving = true;
+    this.hiding = false;
+    initialUpdateRelativePosition();
   }
 
   /**
    * Affiche le groupement d'éléments avec une animation et une vitesse spécifique
-   * @param fromy le décalage vertical d'où part l'animation (0 = pas d'animation verticale)
-   * @param fromx le décalage horizontal d'où part l'animation (0 = pas d'animation horizontale)
-   * @param speed la vitesse d'animation
+   * @param from position de départ de l'animation
+   * @param destinationAnimation position de fin d'animation
+   * @param speed vitesse d'animation
    */
-  public void showBox(double fromy, double fromx, double speed) {
+  public void showBox(Position from, Position destinationAnimation, double speed){
+    this.startAnimation = from;
+    this.destinationAnimation = destinationAnimation;
+    this.setPosition(from);
     this.speed = speed;
-    this.deltaX = fromx;
-    this.deltaY = fromy;
-    this.fromY = fromy;
-    this.fromX = fromx;
     this.setVisible(true);
-    this.forwardAnim = true;
-    if(deltaX ==0.0 && deltaY ==0.0) initialUpdateRelativePosition();
-    else this.moving = true;
+    this.hiding = false;
   }
 
   /**
    * Cahce la GroupBox
    */
   public void HideBox() {
-    this.forwardAnim = false;
-    this.deltaX = this.fromX;
-    this.deltaY = this.fromY;
+    this.hiding = true;
+    this.destinationAnimation = this.startAnimation;
   }
 }

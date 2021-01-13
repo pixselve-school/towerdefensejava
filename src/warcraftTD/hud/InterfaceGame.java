@@ -95,7 +95,7 @@ public class InterfaceGame extends Interface{
     this.waveEnnemyBar = new ProgressBar(new Position(0.5, 0.94), 0.3, 0.1, "images/waveprogressbar.png", "images/bar_fill.png", this, 0.062);
     this.getListElements().add(this.waveEnnemyBar);
 
-    this.shopBox = new GroupBox(new Position(0.5, 0.1), 0.75, 0.15, this, "images/background_hor_box.png");
+    this.shopBox = new GroupBox(new Position(0.5, 0.1), 0.75, 0.15, this, "images/background_hor_box.png", true);
     this.getListElements().add(this.shopBox);
     Button closeshop_btn = new Button(new Position(0.97, 0.88), 0.06, 0.06, "images/close_button.png", "images/close_button_hover.png", "ClosingBox", this);
     this.shopBox.addHUDElement(closeshop_btn);
@@ -107,7 +107,7 @@ public class InterfaceGame extends Interface{
       posX+=0.2;
     }
 
-    this.upgradeBox = new GroupBox(new Position(0.5, 0.13), 0.75, 0.25, this, "images/box_upgrade.png");
+    this.upgradeBox = new GroupBox(new Position(0.5, 0.13), 0.75, 0.25, this, "images/box_upgrade.png", true);
     this.getListElements().add(this.upgradeBox);
     Button closeupgrade_btn = new Button(new Position(0.97, 0.85), 0.06, 0.06, "images/close_button.png", "images/close_button_hover.png", "ClosingUpgrade", this);
     this.upgradeBox.addHUDElement(closeupgrade_btn);
@@ -198,6 +198,14 @@ public class InterfaceGame extends Interface{
   }
 
   /**
+   * Demande de consumer le click (éviter de pouvoir rester appuyer)
+   */
+  @Override
+  public void consumeClick() {
+    this.world.setNeedReleaseMouse(true);
+  }
+
+  /**
    * Réalise une action sur l'interface
    * @param action l'action à réaliser
    * @param from l'élément d'où vient l'action à réaliser
@@ -209,7 +217,8 @@ public class InterfaceGame extends Interface{
   public void makeAction(String action, Element from) {
     switch (action) {
       case "Shopping":
-        this.shopBox.showBox(0.3, 0.0);
+        this.shopBox.showBox(new Position(0.5,-0.2), new Position(0.5,0.1), 0.5);
+
         this.world.setNeedReleaseMouse(true);
         this.shopBtn.setVisible(false);
         break;
@@ -315,7 +324,7 @@ public class InterfaceGame extends Interface{
       soundTower.play(0.5);
       this.upgradingTower = tower;
       this.world.setNeedReleaseMouse(true);
-      this.upgradeBox.showBox(0.3, 0.0);
+      this.upgradeBox.showBox(new Position(0.5,-0.2), new Position(0.5,0.1), 0.5);
       this.shopBtn.setVisible(false);
 
       this.upgradeSpecialImIcon.setSprite(tower.getSpriteHUDSpecial());

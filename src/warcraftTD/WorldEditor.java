@@ -4,6 +4,7 @@ import warcraftTD.hud.InterfaceEditor;
 import warcraftTD.hud.MainMenu;
 import warcraftTD.libs.StdDraw;
 import warcraftTD.utils.Position;
+import warcraftTD.world.*;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -11,10 +12,16 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class WorldEditor extends World{
 
     private InterfaceEditor HUD;
+
+    private TreeMap<Position, Tile> positionTileMap;
+
+    private boolean displayWater;
 
     public WorldEditor(int width, int height, MainMenu menu) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         super(width, height, menu);
@@ -26,6 +33,8 @@ public class WorldEditor extends World{
         StdDraw.enableDoubleBuffering();
 
         this.HUD = new InterfaceEditor(this);
+        this.displayWater = false;
+        this.positionTileMap = new TreeMap<>();
     }
 
     public void refreshSquareSize(){

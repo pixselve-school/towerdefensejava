@@ -113,4 +113,9 @@ public abstract class Interface {
         return false;
     }
 
+    /**
+     * Demande de consumer le click (éviter de pouvoir rester appuyer)
+     */
+    public abstract void consumeClick();
+
 }

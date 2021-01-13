@@ -38,6 +38,8 @@ public class InterfaceEditor extends Interface{
     private Button exitBtn;
     /** Bouton pour sauvegarder son niveau actuel */
     private Button saveBtn;
+    /** Group Box Building Pannel */
+    private GroupBox groupBoxBuilding;
 
     /**
      *  ################ Affichage du Panel des options
@@ -57,6 +59,8 @@ public class InterfaceEditor extends Interface{
     private final Text buildingText;
     /** GroupBox du panel options */
     private GroupBox settingsBox;
+    /** ComboBox pour activer ou désactiver l'eau */
+    private ComboBox comboBoxWater;
 
     /** Type de construction actuellement */
     private TypeBuildEditor buildingType;
@@ -192,8 +196,7 @@ public class InterfaceEditor extends Interface{
         this.exitBtn = new Button(new Position(0.085, 0.08), 0.15,0.1,"images/mm_button_quit.png","images/mm_button_quit_hover.png","exit", this);
         this.getListElements().add(this.exitBtn);
 
-        this.settingsBox = new GroupBox(new Position(0.88,0.5), 0.32,1.08,this, "images/PanelSettings.png");
-        this.getListElements().add(this.settingsBox);
+        this.settingsBox = new GroupBox(new Position(0.88,0.5), 0.32,1.08,this, "images/editor/PanelSettings.png");
         Button btn = new Button(new Position(0.1, 0.93), 0.06, 0.06, "images/close_button.png", "images/close_button_hover.png", "ClosingSettings", this);
         this.settingsBox.addHUDElement(btn);
 
@@ -226,15 +229,25 @@ public class InterfaceEditor extends Interface{
         this.heightText = new Text(new Position(0.51, 0.475), 0.0, 0.0, new Font("Arial", Font.BOLD, 30),this, this.world.getNbSquareY()+"");
         this.settingsBox.addHUDElement(this.heightText);
 
-        btn = new Button(new Position(0.28, 0.25), 0.06, 0.07, "images/add_firstpath_button.png", "images/add_firstpath_button_hover.png", "AddSpawn", this);
-        this.settingsBox.addHUDElement(btn);
-        this.pathButton = new Button(new Position(0.28, 0.17), 0.06, 0.07, "images/add_path_button.png", "images/add_path_button_hover.png", "AddPath", this);
-        this.settingsBox.addHUDElement(this.pathButton);
+        this.comboBoxWater = new ComboBox(new Position(0.5, 0.33),0.15, 0.07, this, new String[]{"OFF", "ON"}, "comboBoxWater");
+        this.settingsBox.addHUDElement(this.comboBoxWater);
+        ComboBox combo = new ComboBox(new Position(0.5, 0.18),0.175, 0.07, this, new String[]{"None", "Plants", "Plants & Trees"}, "comboBoxPlants");
+        this.settingsBox.addHUDElement(combo);
+
+        this.groupBoxBuilding = new GroupBox(new Position(0.5,0.5), 1.0,1.0,this, "images/editor/BuildingPanelEditor.png");
+        this.getListElements().add(this.groupBoxBuilding);
+        this.getListElements().add(this.settingsBox);
+        this.groupBoxBuilding.showBox();
+
+        btn = new Button(new Position(0.33, 0.93), 0.08, 0.11, "images/editor/AddSpawnButon.png", "images/editor/AddSpawnButon_hover.png", "AddSpawn", this);
+        this.groupBoxBuilding.addHUDElement(btn);
+        this.pathButton = new Button(new Position(0.435, 0.93), 0.08, 0.11, "images/editor/AddPathButon.png", "images/editor/AddPathButon_hover.png", "AddPath", this);
+        this.groupBoxBuilding.addHUDElement(this.pathButton);
         this.pathButton.setEnabled(false);
-        btn = new Button(new Position(0.28, 0.09), 0.06, 0.07, "images/clear_path_button.png", "images/clear_path_button_hover.png", "RemovePath", this);
-        this.settingsBox.addHUDElement(btn);
-        btn = new Button(new Position(0.28, 0.36), 0.06, 0.07, "images/close_button.png", "images/close_button_hover.png", "ClearPath", this);
-        this.settingsBox.addHUDElement(btn);
+        btn = new Button(new Position(0.54, 0.93), 0.08, 0.11, "images/editor/RemovePathButon.png", "images/editor/RemovePathButon_hover.png", "RemovePath", this);
+        this.groupBoxBuilding.addHUDElement(btn);
+        btn = new Button(new Position(0.645, 0.93), 0.08, 0.11, "images/clear_path_button.png", "images/clear_path_button_hover.png", "ClearPath", this);
+        this.groupBoxBuilding.addHUDElement(btn);
 
         this.buildingText = new Text(new Position(0.5, 0.07), 0.0, 0.0, new Font("Arial", Font.BOLD, 40), this, "Right click to cancel !");
         this.buildingText.setVisible(false);
@@ -398,18 +411,23 @@ public class InterfaceEditor extends Interface{
      * @param type le type de construction
      */
     public void startBuilding(TypeBuildEditor type){
-        this.settingsBox.HideBox();
+        if(this.settingsBox.isVisible()) this.settingsBox.HideBox();
+        if(this.waveBox.isVisible()) this.waveBox.HideBox();
         this.buildingText.setVisible(true);
         this.buildingType = type;
+        this.groupBoxBuilding.HideBox();
+        this.toggleBottomToolbar(false);
     }
 
     /**
      * Stop l'édition du terrain / le mode construction
      */
     public void stopBuilding(){
-        this.settingsBox.showBox(0.0,0.0);
         this.buildingText.setVisible(false);
         this.buildingType = TypeBuildEditor.None;
+        this.groupBoxBuilding.showBox();
+        this.toggleBottomToolbar(true);
+        this.consumeClick();
     }
 
     /**
@@ -578,6 +596,14 @@ public class InterfaceEditor extends Interface{
     }
 
     /**
+     * Demande de consumer le click (éviter de pouvoir rester appuyer)
+     */
+    @Override
+    public void consumeClick() {
+        this.world.setNeedReleaseMouse(true);
+    }
+
+    /**
      * Réalise une action sur l'interface
      * @param action l'action à réaliser
      * @param from l'élément d'où vient l'action à réaliser
@@ -592,7 +618,7 @@ public class InterfaceEditor extends Interface{
                 this.toggleBottomToolbar(false);
                 this.world.setNeedReleaseMouse(true);
 
-                this.settingsBox.showBox(0.0,0.0);
+                this.settingsBox.showBox(new Position(1.3,0.5), new Position(0.88,0.5), 0.5);
                 break;
             case "ClosingSettings":
                 this.toggleBottomToolbar(true);
@@ -698,7 +724,7 @@ public class InterfaceEditor extends Interface{
                 break;
             case "wave":
                 toggleBottomToolbar(false);
-                this.waveBox.showBox(1.0,0.0);
+                this.waveBox.showBox(new Position(0.5, -0.35), new Position(0.5, 0.5), 1.0);
                 this.world.setNeedReleaseMouse(true);
                 break;
             case "addWave":
@@ -851,7 +877,7 @@ public class InterfaceEditor extends Interface{
                     myWriter.write("MONEY="+this.moneyInitial+"\n");
                     myWriter.write(this.getPathTextSave()+"\n");
                     myWriter.write(this.getPaddingTextSave()+"\n");
-                    myWriter.write("WATER=0\n");
+                    myWriter.write("WATER="+(this.comboBoxWater.getSelectedChoice().equals("ON") ? 1 : 0)+"\n");
                     myWriter.write(this.getWaveTextSave());
                     myWriter.close();
                 }
