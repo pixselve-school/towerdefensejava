@@ -122,21 +122,6 @@ abstract public class Tower extends Entity {
     this.spriteHUDSpecial = spriteHUDSpecial;
   }
 
-  /**
-   * Récupère la position de la tour
-   * @return la position de la tour
-   */
-  public Position getPosition() {
-    return this.position;
-  }
-
-  /**
-   * Modifie la position de la tour
-   * @param position la position de la tour
-   */
-  public void setPosition(Position position) {
-    this.position = position;
-  }
 
   /**
    * Récupère la largeur de la tour
@@ -274,6 +259,34 @@ abstract public class Tower extends Entity {
     this.special_u = special_u;
   }
 
+  private String sprite;
+  private String sprite_hover;
+  private String sprite_HUD_special;
+  private double width;
+  private double height;
+  private double animationy;
+  private double animationymax;
+  private double range;
+  private double attackspeed; // nombre de tirs par secondes
+  private boolean canAttack;
+  private double delayAttack;
+  private WorldGame world;
+  private Monster targetMonster;
+  private ArrayList<Projectile> list_projectile;
+  private boolean targetFlyingMonster;
+
+  private StatUpgrade damage_u;
+  private StatUpgrade range_u;
+  private StatUpgrade attackspeed_u;
+  private StatUpgrade special_u;
+
+  public Sound getShootingSound() {
+    return this.shootingSound;
+  }
+
+  private final Sound shootingSound;
+
+
   /**
    * Initialise une tour
    * @param p la position
@@ -285,9 +298,9 @@ abstract public class Tower extends Entity {
    * @throws IOException
    * @throws LineUnavailableException
    */
-  public Tower(Position p, double width, double height, WorldGame world, String soundFilePath) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+  public Tower(double width, double height, WorldGame world, String soundFilePath) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+
     super(EntityBuildable.NOTBUILDABLE);
-    this.position = p;
     this.width = width;
     this.height = height;
     this.animationy = 0.2;
@@ -298,7 +311,9 @@ abstract public class Tower extends Entity {
     this.world = world;
     this.shootingSound = new Sound(soundFilePath, false);
     this.targetFlyingMonster = true;
+
   }
+
 
   /**
    * Actualise la logique de l'entité et affiche son apparence
@@ -306,6 +321,7 @@ abstract public class Tower extends Entity {
    * @param deltaTime le temps d'un tick en seconde
    * @param tile      La Tile attaché à l'entité
    */
+
   public void update(double deltaTime, Tile tile) {
     Position position = tile.getPosition();
     if (this.animationy > 0.0) {
@@ -313,49 +329,37 @@ abstract public class Tower extends Entity {
       StdDraw.pictureHeight(position.getX(), position.getY() + this.animationy, this.sprite, this.height * 1.25, Align.BOTTOM);
       this.animationy -= 0.8 * deltaTime;
     } else {
-      StdDraw.pictureHeight(position.getX(), position.getY(), this.sprite, this.height * 1.25, Align.BOTTOM);
+      if (this.getParentTile().isSelected()) {
+        StdDraw.setPenColor(new Color(0, 161, 255, 90));
+        StdDraw.filledCircle(this.getParentTile().getPosition().getX(), this.getParentTile().getPosition().getY(), this.range);
+        StdDraw.pictureHeight(position.getX(), position.getY(), this.sprite_hover, this.height * 1.25, Align.BOTTOM);
+      } else {
+        StdDraw.pictureHeight(position.getX(), position.getY(), this.sprite, this.height * 1.25, Align.BOTTOM);
+      }
+
 
       this.ProjectilesManagement(deltaTime);
       this.AttackManagement(deltaTime);
     }
   }
 
-  /**
-   * Actualise l'apparence de la tour quand la tour est sous la souris
-   */
-  public void hoveredVisual(){
-    if (!(this.animationy > 0.0)) {
-      StdDraw.setPenColor(new Color(0, 161, 255, 90));
-      StdDraw.filledCircle(this.position.getX(), this.position.getY(), this.range);
-      StdDraw.pictureHeight(position.getX(), position.getY(), this.spriteHover, this.height * 1.25, Align.BOTTOM);
-    }
-  }
-
-  /**
-   * Actualise l'apparence de la tour quand elle est en cours d'amélioration
-   */
-  public void upgradingVisual(){
-    if (!(this.animationy > 0.0)) {
-      StdDraw.picture(this.position.getX(), this.position.getY(), "images/Upgrade_tile.png", this.width, this.height);
-      StdDraw.pictureHeight(position.getX(), position.getY(), this.sprite, this.height * 1.25, Align.BOTTOM);
-    }
-  }
 
   /**
    * Gère la logique de tir de la tour pour chaque tick
    * @param delta_time le temps d'un tick en seconde
    */
+
   public void AttackManagement(double delta_time) {
     if (this.canAttack) {
       if (this.targetMonster != null) {
-        if (!this.targetMonster.isDead() && this.targetMonster.getPosition().dist(this.position) <= this.range) {
+        if (!this.targetMonster.isDead() && this.targetMonster.getPosition().dist(this.getParentTile().getPosition()) <= this.range) {
           this.shootTargetMonster();
           return;
         }
         this.targetMonster = null;
       }
       for (int i = 0; i < this.world.getMonsters().size(); i++) {
-        if (!this.world.getMonsters().get(i).isDead() && this.world.getMonsters().get(i).getPosition().dist(this.position) <= this.range && (!this.world.getMonsters().get(i).isFlying() || this.targetFlyingMonster)) {
+        if (!this.world.getMonsters().get(i).isDead() && this.world.getMonsters().get(i).getPosition().dist(this.getParentTile().getPosition()) <= this.range && (!this.world.getMonsters().get(i).isFlying() || this.targetFlyingMonster)) {
           this.targetMonster = this.world.getMonsters().get(i);
           break;
         }
@@ -371,7 +375,7 @@ abstract public class Tower extends Entity {
    * Calcul la trajectoire du projectile, mets un delay avant la prochaine attaque, tir le projectile
    */
   public void shootTargetMonster() {
-    Vector dir = new Vector(this.position, this.targetMonster.getPosition()).normal();
+    Vector dir = new Vector(this.getParentTile().getPosition(), this.targetMonster.getPosition()).normal();
     this.shootProjectile(dir);
     this.canAttack = false;
     this.delayAttack = 1 / this.attackspeed;

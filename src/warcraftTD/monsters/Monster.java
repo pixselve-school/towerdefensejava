@@ -4,6 +4,7 @@ import warcraftTD.WorldGame;
 import warcraftTD.particules.EntityParticules;
 import warcraftTD.particules.ImageParticule;
 import warcraftTD.particules.RandomParticuleGenerator;
+import warcraftTD.utils.DrawableEntity;
 import warcraftTD.utils.Position;
 import warcraftTD.utils.Vector;
 
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public abstract class Monster {
+public abstract class Monster extends DrawableEntity {
   // Position du monstre à l'instant t
   private Position position;
   // Vitesse du monstre: point / s

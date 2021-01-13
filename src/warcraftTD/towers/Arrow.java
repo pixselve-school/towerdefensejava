@@ -13,6 +13,7 @@ import java.io.IOException;
  * les flèches peuvent traverser un ennemis de plus avant de disparaitre
  */
 public class Arrow extends Tower {
+
   /**
    * Initialise la tour d'archer
    * @param p la position
@@ -23,8 +24,9 @@ public class Arrow extends Tower {
    * @throws IOException
    * @throws LineUnavailableException
    */
-  public Arrow(Position p, double width, double height, WorldGame world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-    super(p, width, height, world, "music/arrow.wav");
+  public Arrow(double width, double height, WorldGame world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    super(width, height, world, "music/arrow.wav");
+
 
     this.setSprite("images/tower_arrow.png");
     this.setSpriteHover("images/tower_arrow_hover.png");
@@ -43,7 +45,8 @@ public class Arrow extends Tower {
    */
   @Override
   public void shootProjectile(Vector direction) {
-    warcraftTD.towers.projectiles.Arrow pr = new warcraftTD.towers.projectiles.Arrow(this.getPosition(), direction, this.getWorld(), (int) this.getDamage_u().getLevel_stat()[this.getDamage_u().getLevel() - 1], (int) this.getSpecial_u().getLevel_stat()[this.getSpecial_u().getLevel() - 1]);
+    warcraftTD.towers.projectiles.Arrow pr = new warcraftTD.towers.projectiles.Arrow(this.getParentTile().getPosition(), direction, this.getWorld(), (int) this.getDamage_u().getLevel_stat()[this.getDamage_u().getLevel() - 1], (int) this.getSpecial_u().getLevel_stat()[this.getSpecial_u().getLevel() - 1]);
+
     this.getList_projectile().add(pr);
     try {
       this.getShootingSound().play(0.15);

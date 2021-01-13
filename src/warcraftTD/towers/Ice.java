@@ -14,7 +14,7 @@ import java.io.IOException;
  * Le ralentissement est plus ou moins important en fonction du niveau d'amélioration
  */
 public class Ice extends Tower {
-  /**
+    /**
    * Initialise la tour de glace
    * @param p la position
    * @param width la largeur
@@ -24,8 +24,8 @@ public class Ice extends Tower {
    * @throws IOException
    * @throws LineUnavailableException
    */
-  public Ice(Position p, double width, double height, WorldGame world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-    super(p, width, height, world, "music/snow.wav");
+  public Ice(double width, double height, WorldGame world) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    super(width, height, world, "music/snow.wav");
     this.setSprite("images/ice_tower.png");
     this.setSpriteHover("images/ice_tower_hover.png");
     this.setSpriteHUDSpecial("images/ice_upgrade.png");
@@ -42,8 +42,8 @@ public class Ice extends Tower {
    * @param direction la direction
    */
   @Override
-  public void shootProjectile(Vector direction) {
-    warcraftTD.towers.projectiles.Ice pr = new warcraftTD.towers.projectiles.Ice(this.getPosition(), direction, this.getWorld(), (int) this.getDamage_u().getLevel_stat()[this.getDamage_u().getLevel() - 1], (int) this.getSpecial_u().getLevel_stat()[this.getSpecial_u().getLevel() - 1]);
+  public void shootProjectile(Vector Direction) {
+    warcraftTD.towers.projectiles.Ice pr = new warcraftTD.towers.projectiles.Ice(this.getParentTile().getPosition(), Direction, this.getWorld(), (int) this.getDamage_u().getLevel_stat()[this.getDamage_u().getLevel() - 1], (int) this.getSpecial_u().getLevel_stat()[this.getSpecial_u().getLevel() - 1]);
     this.getList_projectile().add(pr);
     try {
       this.getShootingSound().play(0.15);
