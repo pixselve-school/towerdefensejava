@@ -60,3 +60,15 @@ monstres associés à un delai d'apparition (en seconde) sous la forme `(ID_DU_M
 underscores (`_`). Le delai est décompté lorsque le monstre précédent est apparu.
 
 Ajoutez à votre fichier `.tdl` : `WAVES=[(1,1)_(5,1)];[(5,1)]`
+
+## Controle de la végétation
+
+Un nombre prenant comme valeur :
+
+* 0 : La végétation sera absente
+* 1 : Des petits buissons et fleurs seront présents
+* 2 : Des petits buissons, fleurs et arbres seront présents
+
+Ce champ est optionnel, la valeur par défaut sera `1`.
+
+Ajoutez à votre fichier `.tdl` : `PLANTS=0` ou `PLANTS=1` ou `PLANTS=2`
