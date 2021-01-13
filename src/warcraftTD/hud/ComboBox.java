@@ -60,6 +60,7 @@ public class ComboBox extends ClickableElement{
             int fontSizeIndex = (sizeText<=8 ? 0 : (sizeText<=16 ? 1 : (sizeText<=30 ? 3 : 2)));
             int fontSize = (fontSizeIndex==0 ? 40 : (fontSizeIndex== 1 ? 20 : (fontSizeIndex==3 ? 10 : 15)));
             if(i!=0) this.listTextHUD[i].setPosition(new Position(this.listButtons[i-1].getPosition().getX(),this.listButtons[i-1].getPosition().getY()-0.005));
+            else this.listTextHUD[i].setPosition(new Position(this.getPosition().getX(),this.getPosition().getY()-0.005));
             this.listTextHUD[i].setFont(new Font("Arial", Font.BOLD, fontSize));
             this.listTextHUD[i].setText(this.listPropositions[i]);
         }
@@ -67,6 +68,16 @@ public class ComboBox extends ClickableElement{
 
     public String getSelectedChoice(){
         return this.listPropositions[0];
+    }
+
+    @Override
+    public void setPosition(Position position) {
+        super.setPosition(position);
+        this.mainButton.setPosition(position);
+        for(int i = 0;i<this.listPropositions.length;i++){
+            if(i!=0) this.listButtons[i-1].setPosition(new Position(this.getPosition().getX(), this.getPosition().getY()-(i)*this.getHeight()*0.85));
+        }
+        refreshPositionFontText();
     }
 
     @Override

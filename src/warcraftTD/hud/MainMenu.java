@@ -50,7 +50,7 @@ public class MainMenu extends Interface {
         this.title = new Image(new Position(0.5,0.85), 0.8,0.25,this, "images/titlegame.png");
         this.getListElements().add(this.title);
 
-        this.groupBox.showBox(0.5,0.0);
+        this.groupBox.showBox(new Position(0.5,-0.25), new Position(0.5,0.5), 0.75);
 
         btn = new Button(new Position(0.105,0.055),0.2,0.1,"images/leveleditor_button.png","images/leveleditor_button_hover.png","leveleditor", this);
         this.getListElements().add(btn);

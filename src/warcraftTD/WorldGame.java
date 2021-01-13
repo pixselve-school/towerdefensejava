@@ -552,7 +552,7 @@ public class WorldGame extends World {
 
 
       if(this.hudPause==null) this.hudPause = new InterfacePause(this);
-      this.hudPause.getBox().showBox(0.8,0.0,1.5);
+      this.hudPause.getBox().showBox(new Position(0.5,-0.3), new Position(0.5,0.5), 1.2);
       StdDraw.save("temporary/pauseTemporaryFile.png");
       this.pauseBackground = StdDraw.pictureNget(0.5,0.5,"temporary/pauseTemporaryFile.png",1.0,1.0);
 
@@ -585,7 +585,7 @@ public class WorldGame extends World {
     StdDraw.save("temporary/pauseTemporaryFile.png");
     this.pauseBackground = StdDraw.pictureNget(0.5, 0.5, "temporary/pauseTemporaryFile.png", 1.0, 1.0);
     this.hudEnd = new InterfaceEndGame(this, win);
-    this.hudEnd.getBox().showBox(0.8, 0.0, 1.0);
+    this.hudEnd.getBox().showBox(new Position(0.5,-0.3), new Position(0.5,0.5), 1.2);
     this.currentStateGame = StateGame.End;
   }
 

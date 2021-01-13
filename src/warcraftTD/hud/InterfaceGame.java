@@ -217,7 +217,8 @@ public class InterfaceGame extends Interface{
   public void makeAction(String action, Element from) {
     switch (action) {
       case "Shopping":
-        this.shopBox.showBox(0.3, 0.0);
+        this.shopBox.showBox(new Position(0.5,-0.2), new Position(0.5,0.1), 0.5);
+
         this.world.setNeedReleaseMouse(true);
         this.shopBtn.setVisible(false);
         break;
@@ -323,7 +324,7 @@ public class InterfaceGame extends Interface{
       soundTower.play(0.5);
       this.upgradingTower = tower;
       this.world.setNeedReleaseMouse(true);
-      this.upgradeBox.showBox(0.3, 0.0);
+      this.upgradeBox.showBox(new Position(0.5,-0.2), new Position(0.5,0.1), 0.5);
       this.shopBtn.setVisible(false);
 
       this.upgradeSpecialImIcon.setSprite(tower.getSpriteHUDSpecial());

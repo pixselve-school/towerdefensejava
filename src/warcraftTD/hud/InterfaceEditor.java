@@ -229,15 +229,15 @@ public class InterfaceEditor extends Interface{
         this.heightText = new Text(new Position(0.51, 0.475), 0.0, 0.0, new Font("Arial", Font.BOLD, 30),this, this.world.getNbSquareY()+"");
         this.settingsBox.addHUDElement(this.heightText);
 
-        this.comboBoxWater = new ComboBox(new Position(0.885, 0.315),0.15, 0.07, this, new String[]{"ON", "OFF"}, "comboBoxWater");
+        this.comboBoxWater = new ComboBox(new Position(0.5, 0.33),0.15, 0.07, this, new String[]{"ON", "OFF"}, "comboBoxWater");
         this.settingsBox.addHUDElement(this.comboBoxWater);
-        ComboBox combo = new ComboBox(new Position(0.885, 0.15),0.175, 0.07, this, new String[]{"None", "Plants", "Plants & Trees"}, "comboBoxPlants");
+        ComboBox combo = new ComboBox(new Position(0.5, 0.18),0.175, 0.07, this, new String[]{"None", "Plants", "Plants & Trees"}, "comboBoxPlants");
         this.settingsBox.addHUDElement(combo);
 
         this.groupBoxBuilding = new GroupBox(new Position(0.5,0.5), 1.0,1.0,this, "images/editor/BuildingPanelEditor.png");
         this.getListElements().add(this.groupBoxBuilding);
         this.getListElements().add(this.settingsBox);
-        this.groupBoxBuilding.showBox(0.0,0.0);
+        this.groupBoxBuilding.showBox();
 
         btn = new Button(new Position(0.33, 0.93), 0.08, 0.11, "images/editor/AddSpawnButon.png", "images/editor/AddSpawnButon_hover.png", "AddSpawn", this);
         this.groupBoxBuilding.addHUDElement(btn);
@@ -425,8 +425,9 @@ public class InterfaceEditor extends Interface{
     public void stopBuilding(){
         this.buildingText.setVisible(false);
         this.buildingType = TypeBuildEditor.None;
-        this.groupBoxBuilding.showBox(0.0,0.0);
+        this.groupBoxBuilding.showBox();
         this.toggleBottomToolbar(true);
+        this.consumeClick();
     }
 
     /**
@@ -617,7 +618,7 @@ public class InterfaceEditor extends Interface{
                 this.toggleBottomToolbar(false);
                 this.world.setNeedReleaseMouse(true);
 
-                this.settingsBox.showBox(0.0,0.0);
+                this.settingsBox.showBox(new Position(1.3,0.5), new Position(0.88,0.5), 0.5);
                 break;
             case "ClosingSettings":
                 this.toggleBottomToolbar(true);
@@ -723,7 +724,7 @@ public class InterfaceEditor extends Interface{
                 break;
             case "wave":
                 toggleBottomToolbar(false);
-                this.waveBox.showBox(1.0,0.0);
+                this.waveBox.showBox(new Position(0.5, -0.35), new Position(0.5, 0.5), 1.0);
                 this.world.setNeedReleaseMouse(true);
                 break;
             case "addWave":
