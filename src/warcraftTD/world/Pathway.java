@@ -14,7 +14,7 @@ public class Pathway extends Tile {
    * @param width    The tile width
    */
   public Pathway(Position position, double height, double width) {
-    super(position, height, width);
+    super(new Position(position.getX() * width + width / 2, position.getY() * height + height / 2), position, height, width);
   }
 
   /**

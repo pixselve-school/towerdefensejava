@@ -8,9 +8,12 @@ import warcraftTD.utils.DrawableEntity;
 import warcraftTD.utils.Position;
 
 import java.awt.*;
+import java.util.Map;
+import java.util.Random;
 
 abstract public class Tile extends DrawableEntity {
   private final Position position;
+  private final Position plainPosition;
   private final double height;
   private final double width;
   private boolean selected;
@@ -26,7 +29,7 @@ abstract public class Tile extends DrawableEntity {
    * @param height   The tile height between 0 and 1
    * @param width    The tile width between 0 and 1
    */
-  public Tile(Position position, double height, double width) {
+  public Tile(Position position, Position plainPosition, double height, double width) {
     if (position.getX() > 1 || position.getX() < 0)
       throw new IllegalArgumentException("Position X should be between 0 and 1");
     if (position.getY() > 1 || position.getY() < 0)
@@ -40,6 +43,7 @@ abstract public class Tile extends DrawableEntity {
     this.debug = false;
     this.contains = null;
     this.tileParticules = new EntityParticules();
+    this.plainPosition = plainPosition;
   }
 
   public EntityParticules getTileParticules() {
@@ -69,6 +73,48 @@ abstract public class Tile extends DrawableEntity {
   }
 
 
+  public static boolean isPositionInView(Position position) {
+    return position.getX() >= 0 && position.getY() >= 0 && position.getX() < 1 && position.getY() < 1;
+  }
+
+  public void updateDirectionValue(Map<Position, Tile> globalTiles, boolean cascade) {
+    final Position topPosition = new Position(this.plainPosition.getX(), this.plainPosition.getY() + 1);
+    Tile topTile = globalTiles.get(topPosition);
+    final Position bottomPosition = new Position(this.plainPosition.getX(), this.plainPosition.getY() - 1);
+    Tile bottomTile = globalTiles.get(bottomPosition);
+    final Position leftPosition = new Position(this.plainPosition.getX() - 1, this.plainPosition.getY());
+    Tile leftTile = globalTiles.get(leftPosition);
+    final Position rightPosition = new Position(this.plainPosition.getX() + 1, this.plainPosition.getY());
+    Tile rightTile = globalTiles.get(rightPosition);
+
+    this.directionValue = 0;
+
+    if (!isPositionInView(topPosition.getWorldPosition(this.height, this.width)) || topTile != null && topTile.getClass() == this.getClass()) {
+      this.directionValue += 1;
+      if (cascade && topTile != null) {
+        topTile.updateDirectionValue(globalTiles, false);
+      }
+    }
+    if (!isPositionInView(bottomPosition.getWorldPosition(this.height, this.width)) || bottomTile != null && bottomTile.getClass() == this.getClass()) {
+      this.directionValue += 8;
+      if (cascade && bottomTile != null) {
+        bottomTile.updateDirectionValue(globalTiles, false);
+      }
+    }
+    if (!isPositionInView(rightPosition.getWorldPosition(this.height, this.width)) || rightTile != null && rightTile.getClass() == this.getClass()) {
+      this.directionValue += 4;
+      if (cascade && rightTile != null) {
+        rightTile.updateDirectionValue(globalTiles, false);
+      }
+    }
+    if (!isPositionInView(leftPosition.getWorldPosition(this.height, this.width)) || leftTile != null && leftTile.getClass() == this.getClass()) {
+      this.directionValue += 2;
+      if (cascade && leftTile != null) {
+        leftTile.updateDirectionValue(globalTiles, false);
+      }
+    }
+  }
+
   public void drawSettings() {
     this.drawDebug();
     if (this.selected) {
@@ -87,7 +133,6 @@ abstract public class Tile extends DrawableEntity {
   }
 
   public void drawSelected() {
-
     this.drawSelected(Color.darkGray, 0.003);
   }
 
@@ -102,6 +147,20 @@ abstract public class Tile extends DrawableEntity {
   public void drawOverlay(Color color) {
     StdDraw.setPenColor(color);
     StdDraw.filledRectangle(this.getPosition().getX(), this.getPosition().getY(), this.getWidth() / 2, this.getHeight() / 2);
+  }
+
+  public void putRandomSmallVegetation() {
+    FlowerType[] flowerTypes = new FlowerType[]{FlowerType.RED, FlowerType.BLUE, FlowerType.BUSH, FlowerType.WHITE};
+    int rnd = new Random().nextInt(flowerTypes.length);
+    if (this.isBuildable()) {
+      this.replaceContains(new Flower(flowerTypes[rnd], this));
+    }
+  }
+
+  public void putRandomTree() {
+    if (this.isBuildable()) {
+      this.replaceContains(new Tree());
+    }
   }
 
   /**

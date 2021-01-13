@@ -141,30 +141,19 @@ public class WorldGame extends World {
         final Position position = new Position(i, j);
 
         if (this.displayWater && ((i == 0 || i == this.getNbSquareX() - 1) || (j == 0 || j == this.getNbSquareY() - 1))) {
-          final Water water = new Water(position.getWorldPosition(this), this.getSquareHeight(), this.getSquareWidth());
+          final Water water = new Water(position, this.getSquareHeight(), this.getSquareWidth());
           this.positionTileMap.put(position, water);
-          this.updateTile(position, true);
         } else if (this.paths.contains(position)) {
-          final Pathway pathway = new Pathway(position.getWorldPosition(this), this.getSquareHeight(), this.getSquareWidth());
 
+          final Pathway pathway = new Pathway(position, this.getSquareHeight(), this.getSquareWidth());
           this.positionTileMap.put(position, pathway);
-          this.updateTile(position, true);
-
         } else {
-          final Grass grass = new Grass(position.getWorldPosition(this), this.getSquareHeight(), this.getSquareWidth());
+          final Grass grass = new Grass(position, this.getSquareHeight(), this.getSquareWidth());
           double random = Math.random();
-          if (random > 0.95) {
-            grass.replaceContains(new Flower(FlowerType.RED, grass));
-          } else if (random > 0.90) {
-            grass.replaceContains(new Flower(FlowerType.BLUE, grass));
-          } else if (random > 0.85) {
-            grass.replaceContains(new Flower(FlowerType.WHITE, grass));
-          } else if (random > 0.80) {
-            grass.replaceContains(new Flower(FlowerType.YELLOW, grass));
-          } else if (random > 0.75) {
-            grass.replaceContains(new Flower(FlowerType.BUSH, grass));
-          } else if (random > 0.70) {
-            grass.replaceContains(new Tree());
+          if (random > 0.90) {
+            grass.putRandomTree();
+          } else if (random > 0.5) {
+            grass.putRandomSmallVegetation();
           }
           this.positionTileMap.put(position, grass);
         }
@@ -176,52 +165,9 @@ public class WorldGame extends World {
     this.positionTileMap.get(spawnPath).replaceContains(new IndestructibleEntity("images/tiles/rock.png", 0.1));
     this.positionTileMap.get(finishPath).replaceContains(new IndestructibleEntity("images/tiles/house.png", 0.15));
 
-  }
 
+    this.positionTileMap.forEach((position, tile) -> tile.updateDirectionValue(this.positionTileMap, false));
 
-  public boolean isPositionInView(Position position) {
-    return position.getX() >= 0 && position.getX() < this.getNbSquareX() && position.getY() >= 0 && position.getY() < this.getNbSquareY();
-  }
-
-  public void updateTile(Position position, boolean cascade) {
-    Tile tile = this.positionTileMap.get(position);
-
-    final double x = position.getX();
-    final double y = position.getY();
-
-    final Position topPosition = new Position(x, y + 1);
-    Tile top = this.positionTileMap.get(topPosition);
-    final Position bottomPosition = new Position(x, y - 1);
-    Tile bottom = this.positionTileMap.get(bottomPosition);
-    final Position leftPosition = new Position(x - 1, y);
-    Tile left = this.positionTileMap.get(leftPosition);
-    final Position rightPosition = new Position(x + 1, y);
-    Tile right = this.positionTileMap.get(rightPosition);
-    tile.setDirectionValue(0);
-    if (!this.isPositionInView(topPosition) || top != null && top.getClass() == tile.getClass()) {
-      tile.setDirectionValue(tile.getDirectionValue() + 1);
-      if (cascade && top != null) {
-        this.updateTile(topPosition, false);
-      }
-    }
-    if (!this.isPositionInView(bottomPosition) || bottom != null && bottom.getClass() == tile.getClass()) {
-      tile.setDirectionValue(tile.getDirectionValue() + 8);
-      if (cascade && bottom != null) {
-        this.updateTile(bottomPosition, false);
-      }
-    }
-    if (!this.isPositionInView(leftPosition) || left != null && left.getClass() == tile.getClass()) {
-      tile.setDirectionValue(tile.getDirectionValue() + 2);
-      if (cascade && left != null) {
-        this.updateTile(leftPosition, false);
-      }
-    }
-    if (!this.isPositionInView(rightPosition) || right != null && right.getClass() == tile.getClass()) {
-      tile.setDirectionValue(tile.getDirectionValue() + 4);
-      if (cascade && right != null) {
-        this.updateTile(rightPosition, false);
-      }
-    }
   }
 
 
@@ -276,11 +222,11 @@ public class WorldGame extends World {
     Tile tile = this.positionTileMap.get(tilePosition);
 
     if (tile != null && tile != this.selectedTile) {
-      if(this.selectedTile!=null){
+      if (this.selectedTile != null) {
         this.selectedTile.onHoverLeave();
       }
       this.selectedTile = tile;
-      this.selectedTile.onHover(0,0);
+      this.selectedTile.onHover(0, 0);
       if (this.building_class != null) this.buildingCursor.setColorByTileUnder(tile);
     } else if (tile == null && this.selectedTile != null) {
       this.selectedTile.onHoverLeave();
@@ -336,14 +282,13 @@ public class WorldGame extends World {
     for (DrawableEntity drawableEntity : drawableEntityList) {
       if (drawableEntity instanceof Tile) {
         final Tile tile = (Tile) drawableEntity;
-        tile.drawSettings();
         if (this.HUD.getUpgradingTower() != null && drawableEntity == this.HUD.getUpgradingTower().getParentTile()) {
           tile.drawSelected(Color.orange, 0.005);
         }
         tile.updateContainsEntity(this.getDeltaTime());
         tile.drawAnimatedPart(this.getDeltaTime());
 
-
+        tile.drawSettings();
       } else if (drawableEntity instanceof Monster) {
         ((Monster) drawableEntity).update(this.getDeltaTime());
       }
@@ -359,7 +304,6 @@ public class WorldGame extends World {
   private int amountAliveMonsters() {
     return this.monsters.stream().filter(monster -> !monster.isDead()).collect(Collectors.toCollection(ArrayList::new)).size();
   }
-
 
 
   public void updateWave() {
@@ -455,8 +399,8 @@ public class WorldGame extends World {
 
     if (this.HUD.onClick(x, y, mouseButton)) return;
     Tile tile = this.positionTileMap.get(tilePosition);
-    if (this.building_class != null && !this.isNeedReleaseMouse()) {
 
+    if (this.building_class != null && !this.isNeedReleaseMouse()) {
       if (tile != null && tile.isBuildable()) {
         TowerDataStruct td = this.listTowerData.get(this.listTowerData.indexOf(new TowerDataStruct("", "", "", 0, this.building_class, null)));
         int price = td.price;
@@ -478,10 +422,10 @@ public class WorldGame extends World {
         }
       }
     } else {
-      if (tile != null && building_class==null) {
+      if (tile != null && building_class == null) {
         tile.onClick(x, y);
         this.setNeedReleaseMouse(true);
-        if (tile.getContains() instanceof  Tower) {
+        if (tile.getContains() instanceof Tower) {
           this.HUD.showUpgradeTowerBox((Tower) tile.getContains());
         }
       }
@@ -504,8 +448,8 @@ public class WorldGame extends World {
 
       this.currentStateGame = StateGame.Pause;
 
-      if(this.hudPause==null) this.hudPause = new InterfacePause(this);
-      this.hudPause.getBox().showBox(new Position(0.5,-0.3), new Position(0.5,0.5), 1.2);
+      if (this.hudPause == null) this.hudPause = new InterfacePause(this);
+      this.hudPause.getBox().showBox(new Position(0.5, -0.3), new Position(0.5, 0.5), 1.2);
       StdDraw.save("temporary/pauseTemporaryFile.png");
       this.pauseBackground = StdDraw.pictureNget(0.5, 0.5, "temporary/pauseTemporaryFile.png", 1.0, 1.0);
 
@@ -538,7 +482,7 @@ public class WorldGame extends World {
     StdDraw.save("temporary/pauseTemporaryFile.png");
     this.pauseBackground = StdDraw.pictureNget(0.5, 0.5, "temporary/pauseTemporaryFile.png", 1.0, 1.0);
     this.hudEnd = new InterfaceEndGame(this, win);
-    this.hudEnd.getBox().showBox(new Position(0.5,-0.3), new Position(0.5,0.5), 1.2);
+    this.hudEnd.getBox().showBox(new Position(0.5, -0.3), new Position(0.5, 0.5), 1.2);
     this.currentStateGame = StateGame.End;
   }
 
