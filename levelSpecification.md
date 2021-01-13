@@ -69,6 +69,6 @@ Un nombre prenant comme valeur :
 * 1 : Des petits buissons et fleurs seront présents
 * 2 : Des petits buissons, fleurs et arbres seront présents
 
-Ce champ est optionnel, la valeur par défaut sera `1`.
+Ce champ est optionnel, la valeur par défaut sera `2`.
 
 Ajoutez à votre fichier `.tdl` : `PLANTS=0` ou `PLANTS=1` ou `PLANTS=2`
