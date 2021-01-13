@@ -154,9 +154,14 @@ public class WorldGame extends World {
           final Grass grass = new Grass(position, this.getSquareHeight(), this.getSquareWidth());
           double random = Math.random();
           if (random > 0.90) {
-            grass.putRandomTree();
+            if (this.plantPresence == PlantPresence.Full) {
+              grass.putRandomTree();
+            }
           } else if (random > 0.5) {
-            grass.putRandomSmallVegetation();
+            if (this.plantPresence == PlantPresence.Full || this.plantPresence == PlantPresence.Small) {
+              grass.putRandomSmallVegetation();
+            }
+
           }
           this.positionTileMap.put(position, grass);
         }
