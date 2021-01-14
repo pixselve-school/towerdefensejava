@@ -44,7 +44,7 @@ public class Wave {
   }
 
   public void addMonster(Monster monster, double timeLeftBeforeSpawning) {
-    this.monsterQueue.addFirst(new QueueInstance(monster, timeLeftBeforeSpawning));
+    this.monsterQueue.addLast(new QueueInstance(monster, timeLeftBeforeSpawning));
   }
 
   public void spawn(WorldGame world, double deltaTime) {
