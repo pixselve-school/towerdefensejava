@@ -16,7 +16,6 @@ public class Arrow extends Tower {
 
   /**
    * Initialise la tour d'archer
-   * @param p la position
    * @param width la largeur
    * @param height la hauteur
    * @param world le monde de jeu

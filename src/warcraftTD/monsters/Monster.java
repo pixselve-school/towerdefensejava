@@ -134,7 +134,7 @@ public abstract class Monster extends DrawableEntity {
   }
 
   public void takeDamage(int damage, WorldGame world, Color colordamage) {
-    world.getHUD().addNotifText(this.position, new Font("Arial", Font.BOLD, 20), -0.1, "" + damage, colordamage);
+    world.getHud().addNotifText(this.position, new Font("Arial", Font.BOLD, 20), -0.1, "" + damage, colordamage);
     this.health -= damage;
   }
 

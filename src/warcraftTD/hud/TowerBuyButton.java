@@ -46,7 +46,7 @@ public class TowerBuyButton extends Button {
   @Override
   public void update(double mouseX, double mouseY, double deltaTime) {
     if (this.isVisible()) {
-      this.setEnabled(((InterfaceGame)this.getParent()).getWorld().getPlayer_wallet().getMoney() >= this.price);
+      this.setEnabled(((InterfaceGame)this.getParent()).getWorld().getPlayerWallet().getMoney() >= this.price);
 
       super.update(mouseX, mouseY, deltaTime);
     }
@@ -62,8 +62,8 @@ public class TowerBuyButton extends Button {
    * @throws LineUnavailableException
    */
   @Override
-  public ActionElement onClick(double MouseX, double MouseY) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-    if (this.isVisible() && this.isEnabled() && this.getHitBox().isHit(MouseX, MouseY)) {
+  public ActionElement onClick(double mouseX, double mouseY) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    if (this.isVisible() && this.isEnabled() && this.getHitBox().isHit(mouseX, mouseY)) {
       ((InterfaceGame)this.getParent()).startBuilding(this.towerClass);
       this.getClickSound().play(0.6);
       return new ActionElement(this, "cancel");

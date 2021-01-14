@@ -18,7 +18,6 @@ public class Bomb extends Tower {
 
     /**
    * Initialise la tour de bombe
-   * @param p la position
    * @param width la largeur
    * @param height la hauteur
    * @param world le monde de jeu
@@ -48,8 +47,8 @@ public class Bomb extends Tower {
    * @param direction la direction
    */
   @Override
-  public void shootProjectile(Vector Direction) {
-    warcraftTD.towers.projectiles.Bomb pr = new warcraftTD.towers.projectiles.Bomb(this.getParentTile().getPosition(), Direction, this.getWorld(), (int) this.getDamage_u().getLevel_stat()[this.getDamage_u().getLevel() - 1], this.getSpecial_u().getLevel_stat()[this.getSpecial_u().getLevel() - 1]);
+  public void shootProjectile(Vector direction) {
+    warcraftTD.towers.projectiles.Bomb pr = new warcraftTD.towers.projectiles.Bomb(this.getParentTile().getPosition(), direction, this.getWorld(), (int) this.getDamage_u().getLevel_stat()[this.getDamage_u().getLevel() - 1], this.getSpecial_u().getLevel_stat()[this.getSpecial_u().getLevel() - 1]);
     this.getList_projectile().add(pr);
     try {
       this.getShootingSound().play(0.15);

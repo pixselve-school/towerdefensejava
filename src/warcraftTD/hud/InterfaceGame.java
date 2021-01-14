@@ -171,7 +171,7 @@ public class InterfaceGame extends Interface{
   @Override
   public void updateInterface(double mouseX, double mouseY, double deltaTime) {
     if (this.devMode) this.fpsText.setText("FPS : " + (int) (1 / deltaTime));
-    this.walletHUD.setText(this.world.getPlayer_wallet().getMoney() + "");
+    this.walletHUD.setText(this.world.getPlayerWallet().getMoney() + "");
     this.lifeText.setText(this.world.getLife() + "");
 
     super.updateInterface(mouseX, mouseY, deltaTime);
@@ -235,7 +235,7 @@ public class InterfaceGame extends Interface{
         break;
       case "UpgradeDamage":
         if (this.upgradingTower != null && this.upgradingTower.getDamage_u().getLevel() != this.upgradingTower.getDamage_u().getMax_level()) {
-          if (this.world.getPlayer_wallet().pay(this.upgradingTower.getDamage_u().getLevel_price()[this.upgradingTower.getDamage_u().getLevel()])) {
+          if (this.world.getPlayerWallet().pay(this.upgradingTower.getDamage_u().getLevel_price()[this.upgradingTower.getDamage_u().getLevel()])) {
             this.upgradingTower.upgradeDamage();
             this.upgradeDamageIm.setSprite("images/level" + this.upgradingTower.getDamage_u().getLevel() + ".png");
             if (this.upgradingTower.getDamage_u().getLevel() != this.upgradingTower.getDamage_u().getMax_level())
@@ -247,7 +247,7 @@ public class InterfaceGame extends Interface{
         break;
       case "UpgradeRange":
         if (this.upgradingTower != null && this.upgradingTower.getRange_u().getLevel() != this.upgradingTower.getRange_u().getMax_level()) {
-          if (this.world.getPlayer_wallet().pay(this.upgradingTower.getRange_u().getLevel_price()[this.upgradingTower.getRange_u().getLevel()])) {
+          if (this.world.getPlayerWallet().pay(this.upgradingTower.getRange_u().getLevel_price()[this.upgradingTower.getRange_u().getLevel()])) {
             this.upgradingTower.upgradeRange();
             this.upgradeRangeIm.setSprite("images/level" + this.upgradingTower.getRange_u().getLevel() + ".png");
             if (this.upgradingTower.getRange_u().getLevel() != this.upgradingTower.getRange_u().getMax_level())
@@ -259,7 +259,7 @@ public class InterfaceGame extends Interface{
         break;
       case "UpgradeAttackSpeed":
         if (this.upgradingTower != null && this.upgradingTower.getAttackspeed_u().getLevel() != this.upgradingTower.getAttackspeed_u().getMax_level()) {
-          if (this.world.getPlayer_wallet().pay(this.upgradingTower.getAttackspeed_u().getLevel_price()[this.upgradingTower.getAttackspeed_u().getLevel()])) {
+          if (this.world.getPlayerWallet().pay(this.upgradingTower.getAttackspeed_u().getLevel_price()[this.upgradingTower.getAttackspeed_u().getLevel()])) {
             this.upgradingTower.upgradeAttackSpeed();
             this.upgradeAttackSpeedIm.setSprite("images/level" + this.upgradingTower.getAttackspeed_u().getLevel() + ".png");
             if (this.upgradingTower.getAttackspeed_u().getLevel() != this.upgradingTower.getAttackspeed_u().getMax_level())
@@ -271,7 +271,7 @@ public class InterfaceGame extends Interface{
         break;
       case "UpgradeSpecial":
         if (this.upgradingTower != null && this.upgradingTower.getSpecial_u().getLevel() != this.upgradingTower.getSpecial_u().getMax_level()) {
-          if (this.world.getPlayer_wallet().pay(this.upgradingTower.getSpecial_u().getLevel_price()[this.upgradingTower.getSpecial_u().getLevel()])) {
+          if (this.world.getPlayerWallet().pay(this.upgradingTower.getSpecial_u().getLevel_price()[this.upgradingTower.getSpecial_u().getLevel()])) {
             this.upgradingTower.upgradeSpecial();
             this.upgradeSpecialIm.setSprite("images/level" + this.upgradingTower.getSpecial_u().getLevel() + ".png");
             if (this.upgradingTower.getSpecial_u().getLevel() != this.upgradingTower.getSpecial_u().getMax_level())

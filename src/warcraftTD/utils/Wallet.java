@@ -27,7 +27,7 @@ public class Wallet {
   public boolean pay(int amount) {
     if (!this.canPay(amount)) return false;
     this.money -= amount;
-    this.world.getHUD().addNotifText(new Position(0.93, 0.65), new Font("Arial", Font.BOLD, 30), 0.25, "- " + amount + " $", new Color(240, 255, 11));
+    this.world.getHud().addNotifText(new Position(0.93, 0.65), new Font("Arial", Font.BOLD, 30), 0.25, "- " + amount + " $", new Color(240, 255, 11));
     return true;
   }
 }

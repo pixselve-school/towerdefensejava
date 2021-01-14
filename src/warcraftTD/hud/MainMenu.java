@@ -15,22 +15,67 @@ import java.io.File;
 
 import java.io.IOException;
 
+/**
+ * Interface du menu principal
+ */
 public class MainMenu extends Interface {
+    /** Group Box contenant les boutons de selection de niveaux */
     private GroupBox groupBox;
+    /** Booléen spécifiant si l'on quitte la boucle principale du menu */
     private boolean quit;
+    /** Temps d'execution d'un tick en seconde */
     private double deltaTime;
+    /** Booléen spécifiaitn si il faut relacher la souris avec de recliquer */
     private boolean needReleaseMouse;
+    /** Animation de fond du menu */
     private Animation background;
+    /** Monde à lancer quand on quitte le menu */
     private World nextWorld;
+    /** Image du titre du jeu */
     private Image title;
+    /** Largeur de la fenetre */
+    private int width;
+    /** Hauteur de la fenetre */
+    private int height;
 
+    /**
+     * Récupère la largeur de la fenetre
+     * @return la largeur de la fenetre
+     */
+    public int getWidth() {
+        return this.width;
+    }
+
+    /**
+     * Récupère la hauteur de la fenetre
+     * @return la hauteur de la fenetre
+     */
+    public int getHeight() {
+        return this.height;
+    }
+
+    /**
+     * Spécifie si on doit relacher la souris avant de recliquer
+     * @param needReleaseMouse un booléen indiquant si on doit relacher la souris avant de recliquer
+     */
     public void setNeedReleaseMouse(boolean needReleaseMouse) {
         this.needReleaseMouse = needReleaseMouse;
     }
 
+    /**
+     * Initialise le menu principal
+     * @param width la largeur de la fenetre
+     * @param height la hauteur de la fenetre
+     * @throws UnsupportedAudioFileException
+     * @throws IOException
+     * @throws LineUnavailableException
+     */
     public MainMenu(int width, int height) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         StdDraw.setCanvasSize(width, height);
         StdDraw.enableDoubleBuffering();
+
+        this.width = width;
+        this.height = height;
 
         this.nextWorld = null;
 
@@ -65,6 +110,10 @@ public class MainMenu extends Interface {
         this.needReleaseMouse = false;
     }
 
+    /**
+     * Charge l'animation de fond en fonction du chemin d'accès des images
+     * @param path chemin d'accès des images
+     */
     public void loadBackground(String path){
         String[] backgroundImages = new String[300];
         for(int i = 0;i<300;i++){
@@ -73,6 +122,12 @@ public class MainMenu extends Interface {
         this.background = new Animation(backgroundImages, 1,1,new Position(0.5,0.5), 24, true);
     }
 
+    /**
+     * Actualise la logique de l'interface et affiche son apparence
+     * @param mouseX la position horizontale de la souris
+     * @param mouseY la position verticale de la souris
+     * @param deltaTime le temps d'un tick en seconde
+     */
     @Override
     public void updateInterface(double mouseX, double mouseY, double deltaTime) {
         this.background.draw(deltaTime);
@@ -88,6 +143,14 @@ public class MainMenu extends Interface {
         this.setNeedReleaseMouse(true);
     }
 
+    /**
+     * Réalise une action sur l'interface
+     * @param action l'action à réaliser
+     * @param from l'élément d'où vient l'action à réaliser
+     * @throws IOException
+     * @throws LineUnavailableException
+     * @throws UnsupportedAudioFileException
+     */
     @Override
     public void makeAction(String action, Element from) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
         switch (action) {
@@ -138,6 +201,12 @@ public class MainMenu extends Interface {
         }
     }
 
+    /**
+     * Lance le menu, lance des mondes quand on quitte le menu
+     * @throws UnsupportedAudioFileException
+     * @throws IOException
+     * @throws LineUnavailableException
+     */
     public void run() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         this.quit = false;
         this.nextWorld = null;
@@ -148,6 +217,12 @@ public class MainMenu extends Interface {
         this.nextWorld.run();
     }
 
+    /**
+     * Lance la boucle principale du menu
+     * @throws UnsupportedAudioFileException
+     * @throws IOException
+     * @throws LineUnavailableException
+     */
     public void startLoop() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         while(!quit){
             long time_nano = System.nanoTime();
