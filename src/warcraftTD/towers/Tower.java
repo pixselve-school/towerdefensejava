@@ -29,8 +29,6 @@ abstract public class Tower extends Entity {
   private String spriteHover;
   /** le chemin vers l'image de l'icon de la capacité spéciale de la tour */
   private String spriteHUDSpecial;
-  /** La position de la tour */
-  private Position position;
   /** Largeur de la tour */
   private double width;
   /** Hauteur de la tour */

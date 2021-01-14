@@ -17,7 +17,6 @@ public class Poison extends Tower {
 
     /**
    * Initialise la tour de poison
-   * @param p la position
    * @param width la largeur
    * @param height la hauteur
    * @param world le monde de jeu
@@ -45,8 +44,8 @@ public class Poison extends Tower {
    * @param direction la direction
    */
   @Override
-  public void shootProjectile(Vector Direction) {
-    warcraftTD.towers.projectiles.Poison pr = new warcraftTD.towers.projectiles.Poison(this.getParentTile().getPosition(), Direction, this.getWorld(), (int) this.getDamage_u().getLevel_stat()[this.getDamage_u().getLevel() - 1], (int) this.getSpecial_u().getLevel_stat()[this.getSpecial_u().getLevel() - 1]);
+  public void shootProjectile(Vector direction) {
+    warcraftTD.towers.projectiles.Poison pr = new warcraftTD.towers.projectiles.Poison(this.getParentTile().getPosition(), direction, this.getWorld(), (int) this.getDamage_u().getLevel_stat()[this.getDamage_u().getLevel() - 1], (int) this.getSpecial_u().getLevel_stat()[this.getSpecial_u().getLevel() - 1]);
     this.getList_projectile().add(pr);
     try {
       this.getShootingSound().play(0.10);
