@@ -303,7 +303,7 @@ public class Level {
   }
 
   public WorldGame getWorld(MainMenu menu) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-    return new WorldGame(this.nbSquareX, this.nbSquareY, this.money, this.life, this.waterActivated, this.musicPath, this.pathPositions, this.waves, menu, this.plants);
+    return new WorldGame(menu.getWidth(), menu.getHeight(), this.nbSquareX, this.nbSquareY, this.money, this.life, this.waterActivated, this.musicPath, this.pathPositions, this.waves, menu, this.plants);
   }
 
   public static void main(String[] args) throws IOException {

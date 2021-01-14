@@ -276,11 +276,6 @@ public abstract class World {
     public abstract void drawBackground();
 
     /**
-     * Méthode responsable d'afficher le chemin
-     */
-    public abstract void drawPath();
-
-    /**
      * Actualise la logique du monde et affiche son apparence et ses éléments
      * @throws UnsupportedAudioFileException
      * @throws IOException

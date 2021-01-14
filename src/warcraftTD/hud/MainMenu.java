@@ -23,6 +23,16 @@ public class MainMenu extends Interface {
     private Animation background;
     private World nextWorld;
     private Image title;
+    private int width;
+    private int height;
+
+    public int getWidth() {
+        return this.width;
+    }
+
+    public int getHeight() {
+        return this.height;
+    }
 
     public void setNeedReleaseMouse(boolean needReleaseMouse) {
         this.needReleaseMouse = needReleaseMouse;
@@ -31,6 +41,9 @@ public class MainMenu extends Interface {
     public MainMenu(int width, int height) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         StdDraw.setCanvasSize(width, height);
         StdDraw.enableDoubleBuffering();
+
+        this.width = width;
+        this.height = height;
 
         this.nextWorld = null;
 

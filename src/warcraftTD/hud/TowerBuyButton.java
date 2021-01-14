@@ -46,7 +46,7 @@ public class TowerBuyButton extends Button {
   @Override
   public void update(double mouseX, double mouseY, double deltaTime) {
     if (this.isVisible()) {
-      this.setEnabled(((InterfaceGame)this.getParent()).getWorld().getPlayer_wallet().getMoney() >= this.price);
+      this.setEnabled(((InterfaceGame)this.getParent()).getWorld().getPlayerWallet().getMoney() >= this.price);
 
       super.update(mouseX, mouseY, deltaTime);
     }

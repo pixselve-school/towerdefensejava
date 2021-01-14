@@ -21,106 +21,160 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Un monde de jeu
+ */
 public class WorldGame extends World {
-  // l'ensemble des monstres, pour gerer (notamment) l'affichage
-  private List<Monster> monsters = new ArrayList<Monster>();
+  /** Liste des monstres en jeu */
+  private List<Monster> monsters;
+  /** Nombre des monstres sur le terrain */
   private int totalMonsterAmount;
-
+  /** Spécifie si on doit relacher la touche échap avant de pouvoir à nouveau l'utiliser */
   private boolean needKeyRelease;
-  private boolean pause;
-  // l'ensemble des cases du chemin
-  private List<Position> paths;
-
+  /** Son pour la musique de fond */
   private Sound music;
-
+  /** Image de fond du menu pause */
   private Image pauseBackground;
+  /** Image de fond du niveau de jeu */
   private Image levelBackground;
-
-  // L'interface du jeu
-  private InterfaceGame HUD;
+  /** L'interface utilisateur de jeu */
+  private InterfaceGame hud;
+  /** L'interface du menu pause */
   private InterfacePause hudPause;
+  /** L'interface pour une fin de partie */
   private InterfaceEndGame hudEnd;
-
-  // le porte monnaie du joueur
-  private Wallet player_wallet;
-
+  /** Porte monnaie du joueur */
+  private Wallet playerWallet;
+  /** Liste des caractéristiques pour chaque type de tours */
   private ArrayList<TowerDataStruct> listTowerData;
-
-  private TreeMap<Position, Tower> list_tower;
-
-  // le nom de la tour en construction
-  private Class building_class = null;
-
+  /** Arbre des tours associés à leur position */
+  private TreeMap<Position, Tower> listTower;
+  /** Classe de la tour en construction actuellement (null si on ne construit pas) */
+  private Class buildingClass;
+  /** Curseur afficher en mode construction */
   warcraftTD.utils.Cursor buildingCursor;
-
-  // Position par laquelle les monstres vont venir
-  private Position spawn;
-
-  // Nombre de points de vie du joueur
-  int life = 20;
-
-  // Commande sur laquelle le joueur appuie (sur le clavier)
-  char key;
-
-  boolean isMonsterActing = false;
-
+  /** Nombre de points de vie du joueur */
+  int life;
+  /** Spécifie si le terrain est entouré d'eau */
   boolean displayWater;
-
+  /** Tuile sous la souris */
   Tile selectedTile;
-
+  /** Liste des différentes vagues de monstres de la partie */
   List<Wave> waves;
-
+  /** Chemin vers la musique du jeu */
   String musicPath;
-
+  /** Etat actuel de la souris (en jeu, en pause, fin de partie) */
   private StateGame currentStateGame;
+  /** Spécifie le degré de spawn des végétation sur la map */
+  PlantPresence plantPresence;
 
+  /** Enum pour spécifier l'état de la partie */
   private enum StateGame {
     Game, Pause, End
   }
 
-  TreeMap<Position, Tile> positionTileMap;
+  /**
+   * Récupère la liste des monstres en jeu
+   * @return la liste des monstres en jeu
+   */
+  public List<Monster> getMonsters() {
+    return this.monsters;
+  }
 
-  PlantPresence plantPresence;
+  /**
+   * Modifie la liste des monstres en jeu
+   * @param monsters la liste des monstres en jeu
+   */
+  public void setMonsters(List<Monster> monsters) {
+    this.monsters = monsters;
+  }
 
-  public WorldGame(int nbSquareX, int nbSquareY, int money, int health, boolean displayWater, String musicPath, List<Position> path, List<Wave> waves, MainMenu menu, PlantPresence plantPresence) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-    super(1200, 800, menu);
+  /**
+   * Récupère l'interface utilisateur de jeu
+   * @return l'interface utilisateur de jeu
+   */
+  public InterfaceGame getHud() {
+    return this.hud;
+  }
+
+  /**
+   * Récupère le porte monnaie du joueur
+   * @return le porte monnaie du joueur
+   */
+  public Wallet getPlayerWallet() {
+    return this.playerWallet;
+  }
+
+  /**
+   * Récupère les vies du joueur
+   * @return les vies du joueur
+   */
+  public int getLife() {
+    return this.life;
+  }
+
+  /**
+   * Ajoute un monstre à la liste des monstres de jeu
+   * @param monster le monstre à ajouter
+   */
+  public void addMonster(Monster monster) {
+    this.monsters.add(monster);
+  }
+
+  /**
+   * Initialise un monde de jeu
+   * @param width la largeur de la fenetre
+   * @param height la hauteur de la fenetre
+   * @param nbSquareX nombre de tuiles horizontalement
+   * @param nbSquareY nombre de tuiles verticalement
+   * @param money argent initial
+   * @param health vies initiales
+   * @param displayWater spécifie si le terrain est entouré d'eau
+   * @param musicPath le chemin vers la musique de fond
+   * @param path liste des positions des chemins
+   * @param waves liste des vagues de monstres
+   * @param menu référence vers le menu principal
+   * @param plantPresence le degré de spawn des végétation sur la map
+   * @throws UnsupportedAudioFileException
+   * @throws IOException
+   * @throws LineUnavailableException
+   */
+  public WorldGame(int width, int height, int nbSquareX, int nbSquareY, int money, int health, boolean displayWater, String musicPath, List<Position> path, List<Wave> waves, MainMenu menu, PlantPresence plantPresence) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    super(width, height, menu);
     this.setNbSquareX(nbSquareX);
     this.setNbSquareY(nbSquareY);
     this.setSquareWidth((double) 1.006 / nbSquareX);
     this.setSquareHeight((double) 1.006 / nbSquareY);
-    this.spawn = new Position(path.get(0).getX() * this.getSquareWidth() + this.getSquareWidth() / 2, path.get(0).getY() * this.getSquareHeight() + this.getSquareHeight() / 2);
 
     this.life = health;
+    this.playerWallet = new Wallet(this);
+    this.playerWallet.addMoney(money);
+
     this.displayWater = displayWater;
     this.plantPresence = plantPresence;
-
-    this.player_wallet = new Wallet(this);
-    this.player_wallet.addMoney(money);
+    this.setPaths(path);
 
     this.listTowerData = new ArrayList<TowerDataStruct>();
     this.listTowerData.add(new TowerDataStruct("images/shop_arrowtower.png", "images/shop_arrowtower_hover.png", "turret_arrow", 50, Arrow.class, new Color(255, 125, 26)));
     this.listTowerData.add(new TowerDataStruct("images/shop_bombtower.png", "images/shop_bombtower_hover.png", "turret_bomb", 60, Bomb.class, new Color(0, 0, 0)));
     this.listTowerData.add(new TowerDataStruct("images/shop_icetower.png", "images/shop_icetower_hover.png", "turret_ice", 70, Ice.class, new Color(124, 220, 209)));
     this.listTowerData.add(new TowerDataStruct("images/shop_poisontower.png", "images/shop_poisontower_hover.png", "turret_poison", 80, Poison.class, new Color(95, 158, 25)));
+    this.listTower = new TreeMap<>();
+    this.buildingClass = null;
 
-    this.HUD = new InterfaceGame(this, this.listTowerData);
+    this.hud = new InterfaceGame(this, this.listTowerData);
+    this.needKeyRelease = false;
 
-    this.list_tower = new TreeMap<>();
-
-    this.paths = path;
-
+    this.monsters =  new ArrayList<Monster>();
     this.waves = waves;
-    this.musicPath = musicPath;
     if (this.waves.size() > 0) {
-      this.HUD.setWaveEnemyProgress(100);
+      this.hud.setWaveEnemyProgress(100);
       this.totalMonsterAmount = this.waves.get(0).monsterAmount();
     }
 
-    this.needKeyRelease = false;
-    this.pause = false;
+    this.musicPath = musicPath;
 
-    this.positionTileMap = new TreeMap<>();
-
+    this.setPositionTileMap(new TreeMap<>());
 
     this.initTerrain();
     this.currentStateGame = StateGame.Game;
@@ -128,6 +182,9 @@ public class WorldGame extends World {
     this.buildingCursor.setColor(new Color(1, 0, 0));
   }
 
+  /**
+   * Génère l'affichage du terrain, le prends en photo pour pouvoir afficher cette photo en fond pendant le jeu
+   */
   public void initTerrain() {
     this.generatePath();
     this.drawBackground();
@@ -138,7 +195,9 @@ public class WorldGame extends World {
     this.levelBackground = StdDraw.pictureNget(0.5, 0.5, "temporary/currentlevel.png", 1.0, 1.0);
   }
 
-
+  /**
+   * Méthode générant les tuiles de jeux
+   */
   public void generatePath() {
     for (int i = 0; i < this.getNbSquareX(); i++) {
       for (int j = 0; j < this.getNbSquareY(); j++) {
@@ -146,11 +205,11 @@ public class WorldGame extends World {
 
         if (this.displayWater && ((i == 0 || i == this.getNbSquareX() - 1) || (j == 0 || j == this.getNbSquareY() - 1))) {
           final Water water = new Water(position, this.getSquareHeight(), this.getSquareWidth());
-          this.positionTileMap.put(position, water);
-        } else if (this.paths.contains(position)) {
+          this.getPositionTileMap().put(position, water);
+        } else if (this.getPaths().contains(position)) {
 
           final Pathway pathway = new Pathway(position, this.getSquareHeight(), this.getSquareWidth());
-          this.positionTileMap.put(position, pathway);
+          this.getPositionTileMap().put(position, pathway);
         } else {
           final Grass grass = new Grass(position, this.getSquareHeight(), this.getSquareWidth());
           double random = Math.random();
@@ -164,42 +223,30 @@ public class WorldGame extends World {
             }
 
           }
-          this.positionTileMap.put(position, grass);
+          this.getPositionTileMap().put(position, grass);
         }
       }
     }
 
-    Position spawnPath = this.paths.get(0);
-    Position finishPath = this.paths.get(this.paths.size() - 1);
-    this.positionTileMap.get(spawnPath).replaceContains(new IndestructibleEntity("images/tiles/rock.png", 0.1));
-    this.positionTileMap.get(finishPath).replaceContains(new IndestructibleEntity("images/tiles/house.png", 0.15));
+    Position spawnPath = this.getPaths().get(0);
+    Position finishPath = this.getPaths().get(this.getPaths().size() - 1);
+    this.getPositionTileMap().get(spawnPath).replaceContains(new IndestructibleEntity("images/tiles/rock.png", 0.1));
+    this.getPositionTileMap().get(finishPath).replaceContains(new IndestructibleEntity("images/tiles/house.png", 0.15));
 
 
-    this.positionTileMap.forEach((position, tile) -> tile.updateDirectionValue(this.positionTileMap, false));
+    this.getPositionTileMap().forEach((position, tile) -> tile.updateDirectionValue(this.getPositionTileMap(), false));
 
   }
 
-
   /**
-   * Définit le décors du plateau de jeu.
+   * Affiche les tuiles de fond en jeu
    */
   @Override
   public void drawBackground() {
-    for (Map.Entry<Position, Tile> tileEntry : this.positionTileMap.entrySet()) {
+    for (Map.Entry<Position, Tile> tileEntry : this.getPositionTileMap().entrySet()) {
       tileEntry.getValue().drawStaticPart();
-
     }
   }
-
-
-  /**
-   * Initialise le chemin sur la position du point de départ des monstres. Cette fonction permet d'afficher une route qui sera différente du décors.
-   */
-  @Override
-  public void drawPath() {
-
-  }
-
 
   /**
    * Affiche certaines informations sur l'écran telles que les points de vie du joueur ou son or
@@ -208,7 +255,7 @@ public class WorldGame extends World {
   public void drawInfos() {
     switch (currentStateGame) {
       case Game:
-        this.HUD.updateInterface(StdDraw.mouseX(), StdDraw.mouseY(), this.getDeltaTime());
+        this.hud.updateInterface(StdDraw.mouseX(), StdDraw.mouseY(), this.getDeltaTime());
         break;
       case Pause:
         this.hudPause.updateInterface(StdDraw.mouseX(), StdDraw.mouseY(), this.getDeltaTime());
@@ -220,15 +267,13 @@ public class WorldGame extends World {
   }
 
   /**
-   * Fonction qui récupère le positionnement de la souris et permet d'afficher une image de tour en temps réél
-   * lorsque le joueur appuie sur une des touches permettant la construction d'une tour.
+   * Méthode responsable d'afficher des éléments sous la souris
    */
   @Override
   public void drawMouse() {
-    double normalizedX = (int) (StdDraw.mouseX() / this.getSquareWidth()) * this.getSquareWidth() + this.getSquareWidth() / 2;
-    double normalizedY = (int) (StdDraw.mouseY() / this.getSquareHeight()) * this.getSquareHeight() + this.getSquareHeight() / 2;
+    Position normalized = this.getTileNormalizedPositionUnderMouse();
     Position tilePosition = this.getTilePositionUnderMouse();
-    Tile tile = this.positionTileMap.get(tilePosition);
+    Tile tile = this.getPositionTileMap().get(tilePosition);
 
     if (tile != null && tile != this.selectedTile) {
       if (this.selectedTile != null) {
@@ -236,33 +281,32 @@ public class WorldGame extends World {
       }
       this.selectedTile = tile;
       this.selectedTile.onHover(0, 0);
-      if (this.building_class != null) this.buildingCursor.setColorByTileUnder(tile);
+      if (this.buildingClass != null) this.buildingCursor.setColorByTileUnder(tile);
     } else if (tile == null && this.selectedTile != null) {
       this.selectedTile.onHoverLeave();
       this.selectedTile = null;
     }
 
-    if (this.building_class != null) {
+    if (this.buildingClass != null) {
 
-      int price = this.listTowerData.get(this.listTowerData.indexOf(new TowerDataStruct("", "", "", 0, this.building_class, null))).price;
+      int price = this.listTowerData.get(this.listTowerData.indexOf(new TowerDataStruct("", "", "", 0, this.buildingClass, null))).price;
       if (this.selectedTile.getContains() != null && this.selectedTile.getContains().getBuildable().equals(EntityBuildable.PAYING))
         price += 20;
 
-      this.buildingCursor.update(new Position(normalizedX, normalizedY), this.getDeltaTime());
+      this.buildingCursor.update(new Position(normalized.getX(), normalized.getY()), this.getDeltaTime());
 
       StdDraw.setFont(new Font("Arial", Font.BOLD, 40));
-      if (player_wallet.canPay(price)) StdDraw.setPenColor(new Color(255, 230, 0));
+      if (playerWallet.canPay(price)) StdDraw.setPenColor(new Color(255, 230, 0));
       else StdDraw.setPenColor(new Color(255, 0, 0));
 
-      StdDraw.text(normalizedX + 0.01, normalizedY + 0.07, price + "");
-      StdDraw.picture(normalizedX - 0.02, normalizedY + 0.075, "images/moneyIcon.png", 0.02, 0.04);
+      StdDraw.text(normalized.getX() + 0.01, normalized.getY() + 0.07, price + "");
+      StdDraw.picture(normalized.getX() - 0.02, normalized.getY() + 0.075, "images/moneyIcon.png", 0.02, 0.04);
 
     }
   }
 
   /**
-   * Pour chaque monstre de la liste de monstres de la vague, utilise la fonction update() qui appelle les fonctions run() et draw() de Monster.
-   * Modifie la position du monstre au cours du temps à l'aide du paramètre nextP.
+   * Actualise et vérifie les états des monstres (mort, finis le chemin etc...)
    */
   public void updateMonsters() {
     Iterator<Monster> i = this.monsters.iterator();
@@ -279,19 +323,22 @@ public class WorldGame extends World {
       }
       if (m.isReadyToBeRemoved()) {
         i.remove();
-        this.player_wallet.addMoney(m.getGoldWhenDead());
+        this.playerWallet.addMoney(m.getGoldWhenDead());
       }
     }
   }
 
+  /**
+   * Actualise la logique et le visuel des entités du jeux
+   */
   public void drawTileEntitiesAndMonsters() {
     List<DrawableEntity> drawableEntityList = new LinkedList<>(this.monsters);
-    drawableEntityList.addAll(this.positionTileMap.values());
+    drawableEntityList.addAll(this.getPositionTileMap().values());
     drawableEntityList.sort((o1, o2) -> (int) ((o2.getPosition().getY() - o1.getPosition().getY()) * 100));
     for (DrawableEntity drawableEntity : drawableEntityList) {
       if (drawableEntity instanceof Tile) {
         final Tile tile = (Tile) drawableEntity;
-        if (this.HUD.getUpgradingTower() != null && drawableEntity == this.HUD.getUpgradingTower().getParentTile()) {
+        if (this.hud.getUpgradingTower() != null && drawableEntity == this.hud.getUpgradingTower().getParentTile()) {
           tile.drawSelected(Color.orange, 0.005);
         }
         tile.updateContainsEntity(this.getDeltaTime());
@@ -305,22 +352,31 @@ public class WorldGame extends World {
     }
   }
 
+  /**
+   * Actualise la bar de progression du jeu
+   */
   public void updateProgressBar() {
     Wave currentWave = this.waves.get(0);
-    this.HUD.setWaveEnemyProgress((100 * (this.amountAliveMonsters() + currentWave.monsterAmount()) / (double) this.totalMonsterAmount));
+    this.hud.setWaveEnemyProgress((100 * (this.amountAliveMonsters() + currentWave.monsterAmount()) / (double) this.totalMonsterAmount));
   }
 
+  /**
+   * Récupère le nombre de monstres en vie
+   * @return le nombre de monstres en vie
+   */
   private int amountAliveMonsters() {
     return this.monsters.stream().filter(monster -> !monster.isDead()).collect(Collectors.toCollection(ArrayList::new)).size();
   }
 
-
+  /**
+   * Actualise l'avancement des vagues de monstres
+   */
   public void updateWave() {
     if (this.waves.size() > 0) {
       Wave currentWave = this.waves.get(0);
       if (currentWave.getCurrentTimeBeforeStartingSpawn() > 0) {
         currentWave.subtractTimeBeforeStartingSpawn(this.getDeltaTime());
-        this.HUD.setWaveEnemyProgress(100 - ((100 * currentWave.getCurrentTimeBeforeStartingSpawn()) / currentWave.getTimeBeforeStartingSpawn()));
+        this.hud.setWaveEnemyProgress(100 - ((100 * currentWave.getCurrentTimeBeforeStartingSpawn()) / currentWave.getTimeBeforeStartingSpawn()));
       } else if (currentWave.finishedSpawning() && this.monsters.size() <= 0) {
         this.waves.remove(0);
         if (this.waves.size() > 0) {
@@ -332,11 +388,13 @@ public class WorldGame extends World {
     }
   }
 
-
+  /**
+   * Affiche le niveau en fond
+   */
   public void drawLevel() {
     StdDraw.picture(0.5, 0.5, "temporary/currentlevel.png", 1.0, 1.0);
-    if (building_class != null) {
-      this.positionTileMap.forEach((k, tile) -> {
+    if (buildingClass != null) {
+      this.getPositionTileMap().forEach((k, tile) -> {
         if (tile instanceof Water) {
           tile.drawOverlay(new Color(0, 0, 0, 100));
         } else if (tile.getContains() != null) {
@@ -358,9 +416,10 @@ public class WorldGame extends World {
   }
 
   /**
-   * Met à jour toutes les informations du plateau de jeu ainsi que les déplacements des monstres et les attaques des tours.
-   *
-   * @return les points de vie restants du joueur
+   * Actualise la logique du monde et affiche son apparence et ses éléments
+   * @throws UnsupportedAudioFileException
+   * @throws IOException
+   * @throws LineUnavailableException
    */
   @Override
   public void update() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
@@ -376,25 +435,23 @@ public class WorldGame extends World {
       case Pause:
       case End:
         StdDraw.picture(0.5, 0.5, "temporary/pauseTemporaryFile.png", 1.0, 1.0);
-        //StdDraw.picture(0.5, 0.5, "images/blurtest.png", 1.0, 1.0);
         this.drawInfos();
         break;
     }
   }
 
   /**
-   * Vérifie lorsque l'utilisateur clique sur sa souris qu'il peut:
-   * - Ajouter une tour à la position indiquée par la souris.
-   * - Améliorer une tour existante.
-   * Puis l'ajouter à la liste des tours
-   *
-   * @param x
-   * @param y
+   * Méthode appelé lorsque l'utilisateur presse la souris
+   * @param x la position horizontale de la souris
+   * @param y la position verticale de la souris
+   * @param mouseButton le bouton de la souris utilisé
+   * @throws UnsupportedAudioFileException
+   * @throws IOException
+   * @throws LineUnavailableException
    */
   @Override
   public void mouseClick(double x, double y, int mouseButton) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     Position tilePosition = this.getTilePositionUnderMouse();
-
 
     switch (currentStateGame) {
       case Pause:
@@ -405,23 +462,23 @@ public class WorldGame extends World {
         break;
     }
 
-    if (this.HUD.onClick(x, y, mouseButton)) return;
-    Tile tile = this.positionTileMap.get(tilePosition);
+    if (this.hud.onClick(x, y, mouseButton)) return;
+    Tile tile = this.getPositionTileMap().get(tilePosition);
 
-    if (this.building_class != null && !this.isNeedReleaseMouse()) {
+    if (this.buildingClass != null && !this.isNeedReleaseMouse()) {
       if (tile != null && tile.isBuildable()) {
-        TowerDataStruct td = this.listTowerData.get(this.listTowerData.indexOf(new TowerDataStruct("", "", "", 0, this.building_class, null)));
+        TowerDataStruct td = this.listTowerData.get(this.listTowerData.indexOf(new TowerDataStruct("", "", "", 0, this.buildingClass, null)));
         int price = td.price;
         if (this.selectedTile.getContains() != null && this.selectedTile.getContains().getBuildable().equals(EntityBuildable.PAYING))
           price += 20;
-        if (this.player_wallet.pay(price)) {
+        if (this.playerWallet.pay(price)) {
           try {
-            Constructor cons = this.building_class.getConstructor(double.class, double.class, WorldGame.class);
+            Constructor cons = this.buildingClass.getConstructor(double.class, double.class, WorldGame.class);
             Tower t = (Tower) cons.newInstance(this.getSquareWidth(), this.getSquareHeight(), this);
 
             tile.replaceContains(t, true, td.colorParticleSpawn);
             this.buildingCursor.setColorByTileUnder(this.selectedTile);
-            this.list_tower.put(tilePosition, t);
+            this.listTower.put(tilePosition, t);
             Sound soundTower = new Sound("music/putTower.wav", false);
             soundTower.play(0.5);
           } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
@@ -430,26 +487,39 @@ public class WorldGame extends World {
         }
       }
     } else {
-      if (tile != null && building_class == null) {
+      if (tile != null && buildingClass == null) {
         tile.onClick(x, y);
         this.setNeedReleaseMouse(true);
         if (tile.getContains() instanceof Tower) {
-          this.HUD.showUpgradeTowerBox((Tower) tile.getContains());
+          this.hud.showUpgradeTowerBox((Tower) tile.getContains());
         }
       }
     }
   }
 
+  /**
+   * Passe en mode construction d'une tour de classe c
+   * @param c la classe de la tour à construire
+   */
   public void startBuilding(Class c) {
-    this.building_class = c;
+    this.buildingClass = c;
     this.setNeedReleaseMouse(true);
   }
 
+  /**
+   * Quitte le mode construction
+   */
   public void stopBuilding() {
-    this.building_class = null;
+    this.buildingClass = null;
     this.setNeedReleaseMouse(true);
   }
 
+  /**
+   * Méthode appelé lorsque la touche échap est préssée
+   * @throws UnsupportedAudioFileException
+   * @throws IOException
+   * @throws LineUnavailableException
+   */
   public void pressingEscape() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     this.needKeyRelease = true;
     if (this.currentStateGame == StateGame.Game) {
@@ -465,13 +535,19 @@ public class WorldGame extends World {
     } else if (this.currentStateGame == StateGame.Pause) exitPause();
   }
 
+  /**
+   * Quitte le menu pause
+   */
   public void exitPause() {
     this.currentStateGame = StateGame.Game;
     if (this.pauseBackground != null) this.pauseBackground.flush();
   }
 
   /**
-   * Récupère la touche entrée au clavier ainsi que la position de la souris et met à jour le plateau en fonction de ces interractions
+   * Lance la boucle de jeu
+   * @throws UnsupportedAudioFileException
+   * @throws IOException
+   * @throws LineUnavailableException
    */
   @Override
   public void run() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
@@ -486,6 +562,13 @@ public class WorldGame extends World {
     super.run();
   }
 
+  /**
+   * Affiche l'interface de fin de partie
+   * @param win le joueur a gagné
+   * @throws UnsupportedAudioFileException
+   * @throws IOException
+   * @throws LineUnavailableException
+   */
   public void endGame(boolean win) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     StdDraw.save("temporary/pauseTemporaryFile.png");
     this.pauseBackground = StdDraw.pictureNget(0.5, 0.5, "temporary/pauseTemporaryFile.png", 1.0, 1.0);
@@ -494,6 +577,12 @@ public class WorldGame extends World {
     this.currentStateGame = StateGame.End;
   }
 
+  /**
+   * Méthode lancant le menu principal
+   * @throws UnsupportedAudioFileException
+   * @throws IOException
+   * @throws LineUnavailableException
+   */
   @Override
   public void endWorld() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     if (this.levelBackground != null) this.levelBackground.flush();
@@ -502,6 +591,12 @@ public class WorldGame extends World {
     super.endWorld();
   }
 
+  /**
+   * Evenement appelé dans la boucle de jeu avant d'update le monde
+   * @throws UnsupportedAudioFileException
+   * @throws IOException
+   * @throws LineUnavailableException
+   */
   @Override
   public void updateEvent() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     if (StdDraw.isKeyPressed(27)) {
@@ -511,98 +606,5 @@ public class WorldGame extends World {
       if (this.life <= 0) endGame(false);
       if (this.waves.size() == 0) endGame(this.life > 0);
     }
-  }
-
-  public List<Monster> getMonsters() {
-    return this.monsters;
-  }
-
-  public void setMonsters(List<Monster> monsters) {
-    this.monsters = monsters;
-  }
-
-  public int getTotalMonsterAmount() {
-    return this.totalMonsterAmount;
-  }
-
-  public void setTotalMonsterAmount(int totalMonsterAmount) {
-    this.totalMonsterAmount = totalMonsterAmount;
-  }
-
-  public List<Position> getPaths() {
-    return this.paths;
-  }
-
-  public void setPaths(List<Position> paths) {
-    this.paths = paths;
-  }
-
-  public InterfaceGame getHUD() {
-    return this.HUD;
-  }
-
-  public void setHUD(InterfaceGame HUD) {
-    this.HUD = HUD;
-  }
-
-  public Wallet getPlayer_wallet() {
-    return this.player_wallet;
-  }
-
-  public void setPlayer_wallet(Wallet player_wallet) {
-    this.player_wallet = player_wallet;
-  }
-
-  public TreeMap<Position, Tower> getList_tower() {
-    return this.list_tower;
-  }
-
-  public void setList_tower(TreeMap<Position, Tower> list_tower) {
-    this.list_tower = list_tower;
-  }
-
-  public Class getBuilding_class() {
-    return this.building_class;
-  }
-
-  public void setBuilding_class(Class building_class) {
-    this.building_class = building_class;
-  }
-
-  public Position getSpawn() {
-    return this.spawn;
-  }
-
-  public void setSpawn(Position spawn) {
-    this.spawn = spawn;
-  }
-
-  public int getLife() {
-    return this.life;
-  }
-
-  public void setLife(int life) {
-    this.life = life;
-  }
-
-  public char getKey() {
-    return this.key;
-  }
-
-  public void setKey(char key) {
-    this.key = key;
-  }
-
-  public boolean isMonsterActing() {
-    return this.isMonsterActing;
-  }
-
-  public void setMonsterActing(boolean monsterActing) {
-    this.isMonsterActing = monsterActing;
-  }
-
-
-  public void addMonster(Monster monster) {
-    this.monsters.add(monster);
   }
 }
