@@ -61,7 +61,8 @@ public class InterfaceEditor extends Interface{
     private GroupBox settingsBox;
     /** ComboBox pour activer ou désactiver l'eau */
     private ComboBox comboBoxWater;
-
+    /** ComboBox pour activer ou désactiver la végétation */
+    private ComboBox comboBoxPlants;
     /** Type de construction actuellement */
     private TypeBuildEditor buildingType;
 
@@ -231,8 +232,8 @@ public class InterfaceEditor extends Interface{
 
         this.comboBoxWater = new ComboBox(new Position(0.5, 0.33),0.15, 0.07, this, new String[]{"OFF", "ON"}, "comboBoxWater");
         this.settingsBox.addHUDElement(this.comboBoxWater);
-        ComboBox combo = new ComboBox(new Position(0.5, 0.18),0.175, 0.07, this, new String[]{"None", "Plants", "Plants & Trees"}, "comboBoxPlants");
-        this.settingsBox.addHUDElement(combo);
+        this.comboBoxPlants = new ComboBox(new Position(0.5, 0.18),0.175, 0.07, this, new String[]{"None", "Plants", "Plants & Trees"}, "comboBoxPlants");
+        this.settingsBox.addHUDElement(this.comboBoxPlants);
 
         this.groupBoxBuilding = new GroupBox(new Position(0.5,0.5), 1.0,1.0,this, "images/editor/BuildingPanelEditor.png");
         this.getListElements().add(this.groupBoxBuilding);
@@ -630,6 +631,7 @@ public class InterfaceEditor extends Interface{
                 if(this.world.getNbSquareX()<50){
                     this.world.setNbSquareX(this.world.getNbSquareX()+1);
                     this.world.refreshSquareSize();
+                    this.world.generatePath();
                     this.widthText.setText(this.world.getNbSquareX()+"");
                 }
                 this.world.setNeedReleaseMouse(true);
@@ -643,6 +645,7 @@ public class InterfaceEditor extends Interface{
                     if(this.world.getNbSquareX()>maxWidth+1) {
                         this.world.setNbSquareX(this.world.getNbSquareX() - 1);
                         this.world.refreshSquareSize();
+                        this.world.generatePath();
                         this.widthText.setText(this.world.getNbSquareX() + "");
                     }
                 }
@@ -652,6 +655,7 @@ public class InterfaceEditor extends Interface{
                 if(this.world.getNbSquareY()<50){
                     this.world.setNbSquareY(this.world.getNbSquareY()+1);
                     this.world.refreshSquareSize();
+                    this.world.generatePath();
                     this.heightText.setText(this.world.getNbSquareY()+"");
                 }
                 this.world.setNeedReleaseMouse(true);
@@ -665,6 +669,7 @@ public class InterfaceEditor extends Interface{
                     if(this.world.getNbSquareY()>maxHeight+1){
                         this.world.setNbSquareY(this.world.getNbSquareY()-1);
                         this.world.refreshSquareSize();
+                        this.world.generatePath();
                         this.heightText.setText(this.world.getNbSquareY()+"");
                     }
 
@@ -700,7 +705,7 @@ public class InterfaceEditor extends Interface{
                 this.world.setNeedReleaseMouse(true);
                 break;
             case "ClearPath":
-                this.world.setPaths(new ArrayList<Position>());
+                this.world.clearPath();
                 this.world.setNeedReleaseMouse(true);
                 this.pathButton.setEnabled(false);
                 break;
@@ -878,7 +883,8 @@ public class InterfaceEditor extends Interface{
                     myWriter.write(this.getPathTextSave()+"\n");
                     myWriter.write(this.getPaddingTextSave()+"\n");
                     myWriter.write("WATER="+(this.comboBoxWater.getSelectedChoice().equals("ON") ? 1 : 0)+"\n");
-                    myWriter.write(this.getWaveTextSave());
+                    myWriter.write(this.getWaveTextSave()+"\n");
+                    myWriter.write("PLANTS="+(this.comboBoxPlants.getSelectedChoice().equals("None") ? 0 : (this.comboBoxPlants.getSelectedChoice().equals("Plants") ? 1 : 2)));
                     myWriter.close();
                 }
                 this.world.setNeedReleaseMouse(true);
