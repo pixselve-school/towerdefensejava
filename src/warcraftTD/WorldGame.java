@@ -227,7 +227,7 @@ public class WorldGame extends World {
   public void drawMouse() {
     double normalizedX = (int) (StdDraw.mouseX() / this.getSquareWidth()) * this.getSquareWidth() + this.getSquareWidth() / 2;
     double normalizedY = (int) (StdDraw.mouseY() / this.getSquareHeight()) * this.getSquareHeight() + this.getSquareHeight() / 2;
-    Position tilePosition = new Position((int) Math.floor(StdDraw.mouseX() * this.getNbSquareX()), (int) Math.floor(StdDraw.mouseY() * this.getNbSquareY()));
+    Position tilePosition = this.getTilePositionUnderMouse();
     Tile tile = this.positionTileMap.get(tilePosition);
 
     if (tile != null && tile != this.selectedTile) {
@@ -363,7 +363,7 @@ public class WorldGame extends World {
    * @return les points de vie restants du joueur
    */
   @Override
-  public int update() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+  public void update() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     switch (this.currentStateGame) {
       case Game:
         this.drawLevel();
@@ -380,7 +380,6 @@ public class WorldGame extends World {
         this.drawInfos();
         break;
     }
-    return this.life;
   }
 
   /**
@@ -394,7 +393,7 @@ public class WorldGame extends World {
    */
   @Override
   public void mouseClick(double x, double y, int mouseButton) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-    Position tilePosition = new Position((int) Math.floor(x * this.getNbSquareX()), (int) Math.floor(y * this.getNbSquareY()));
+    Position tilePosition = this.getTilePositionUnderMouse();
 
 
     switch (currentStateGame) {

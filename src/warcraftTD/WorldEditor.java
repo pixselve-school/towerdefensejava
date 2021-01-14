@@ -11,16 +11,25 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * Un monde d'édition de niveau
+ */
 public class WorldEditor extends World{
-
+    /** L'interface d'édition de niveau */
     private InterfaceEditor HUD;
 
-    private TreeMap<Position, Tile> positionTileMap;
-
+    /**
+     * Initialise un monde d'édition de niveau
+     * @param width largeur de la fenetre
+     * @param height hauteur de la fenetre
+     * @param menu Menu Principal
+     * @throws UnsupportedAudioFileException
+     * @throws IOException
+     * @throws LineUnavailableException
+     */
     public WorldEditor(int width, int height, MainMenu menu) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         super(width, height, menu);
         this.setNbSquareX(11);
@@ -31,88 +40,75 @@ public class WorldEditor extends World{
         StdDraw.enableDoubleBuffering();
 
         this.HUD = new InterfaceEditor(this);
-        this.positionTileMap = new TreeMap<>();
+        this.setPositionTileMap(new TreeMap<>());
         generatePath();
 
         //this.positionTileMap.put(new Position(2,0),new Pathway(new Position(0.16,0.05), 0.1,0.1));
         //this.positionTileMap.get(new Position(2,0)).updateDirectionValue(this.positionTileMap, true);
     }
 
+    /**
+     * Actualise les variables correspondants aux tailles des tuiles
+     */
     public void refreshSquareSize(){
         this.setSquareWidth((double) 1 / this.getNbSquareX());
         this.setSquareHeight((double) 1 / this.getNbSquareY());
     }
 
     /**
-     * Affiche certaines informations sur l'écran telles que les points de vie du joueur ou son or
+     * Méthode responsable de l'affichage des interfaces utilisateurs
      */
     public void drawInfos() {
         this.HUD.updateInterface(StdDraw.mouseX(), StdDraw.mouseY(), this.getDeltaTime());
     }
 
     /**
-     * Fonction qui récupère le positionnement de la souris et permet d'afficher une image de tour en temps réél
-     * lorsque le joueur appuie sur une des touches permettant la construction d'une tour.
+     * Méthode responsable d'afficher des éléments sous la souris
      */
     public void drawMouse() {
-        double normalizedX = (int) (StdDraw.mouseX() / this.getSquareWidth()) * this.getSquareWidth() + this.getSquareWidth() / 2;
-        double normalizedY = (int) (StdDraw.mouseY() / this.getSquareHeight()) * this.getSquareHeight() + this.getSquareHeight() / 2;
-        //Position mousep = new Position((int) ((normalizedX * this.getNbSquareX())), (int) ((normalizedY * this.getNbSquareY())));
-        Position tilePosition = new Position((int) Math.floor(StdDraw.mouseX() * this.getNbSquareX()), (int) Math.floor(StdDraw.mouseY() * this.getNbSquareY()));
+        Position normalized = this.getTileNormalizedPositionUnderMouse();
+        Position tilePosition = this.getTilePositionUnderMouse();
 
         switch (this.HUD.getBuildingType()){
             case None:
                 break;
             case Path:
                 if(!this.getPaths().contains(tilePosition)){
-                    if(((this.getPaths().get(this.getPaths().size()-1).equals(new Position(tilePosition.getX()+1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().get(this.getPaths().size()-1).equals(new Position(tilePosition.getX()-1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().get(this.getPaths().size()-1).equals(new Position(tilePosition.getX(), tilePosition.getY()+1)) ? 1 : 0) + (this.getPaths().get(this.getPaths().size()-1).equals(new Position(tilePosition.getX(), tilePosition.getY()-1)) ? 1 : 0) == 1)){
-                        if(((this.getPaths().contains(new Position(tilePosition.getX()+1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().contains(new Position(tilePosition.getX()-1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().contains(new Position(tilePosition.getX(), tilePosition.getY()+1)) ? 1 : 0) + (this.getPaths().contains(new Position(tilePosition.getX(), tilePosition.getY()-1)) ? 1 : 0) == 1)) {
-                            StdDraw.picture(normalizedX, normalizedY, "images/Select_tile.png", this.getSquareWidth(), this.getSquareHeight());
-                            return;
-                        }
-                    }
-                    if(((this.getPaths().get(0).equals(new Position(tilePosition.getX()+1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().get(0).equals(new Position(tilePosition.getX()-1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().get(0).equals(new Position(tilePosition.getX(), tilePosition.getY()+1)) ? 1 : 0) + (this.getPaths().get(0).equals(new Position(tilePosition.getX(), tilePosition.getY()-1)) ? 1 : 0) == 1)){
-                        if(((this.getPaths().contains(new Position(tilePosition.getX()+1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().contains(new Position(tilePosition.getX()-1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().contains(new Position(tilePosition.getX(), tilePosition.getY()+1)) ? 1 : 0) + (this.getPaths().contains(new Position(tilePosition.getX(), tilePosition.getY()-1)) ? 1 : 0) == 1)) {
-                            StdDraw.picture(normalizedX, normalizedY, "images/Select_tile.png", this.getSquareWidth(), this.getSquareHeight());
-                            return;
-                        }
-                    }
-                    StdDraw.picture(normalizedX, normalizedY, "images/Select_tile_unavailable.png", this.getSquareWidth(), this.getSquareHeight());
+                    int putPossibility = canPutNewPathAtLocation(tilePosition);
+                    if(putPossibility!=0) StdDraw.picture(normalized.getX(), normalized.getY(), "images/Select_tile.png", this.getSquareWidth(), this.getSquareHeight());
+                    else StdDraw.picture(normalized.getX(), normalized.getY(), "images/Select_tile_unavailable.png", this.getSquareWidth(), this.getSquareHeight());
                 } else {
-                    StdDraw.picture(normalizedX, normalizedY, "images/Select_tile_unavailable.png", this.getSquareWidth(), this.getSquareHeight());
+                    StdDraw.picture(normalized.getX(), normalized.getY(), "images/Select_tile_unavailable.png", this.getSquareWidth(), this.getSquareHeight());
                 }
                 break;
             case RemovePath:
                 if(getPaths().size()>0 && (this.getPaths().get(0).equals(tilePosition) || this.getPaths().get(this.getPaths().size()-1).equals(tilePosition))){
-                    StdDraw.picture(normalizedX, normalizedY, "images/Select_tile_unavailable.png", this.getSquareWidth(), this.getSquareHeight());
+                    StdDraw.picture(normalized.getX(), normalized.getY(), "images/Select_tile_unavailable.png", this.getSquareWidth(), this.getSquareHeight());
                 }
                 break;
             case Spawn:
                 if(!this.getPaths().contains(tilePosition)){
-                    StdDraw.picture(normalizedX, normalizedY, "images/Select_tile.png", this.getSquareWidth(), this.getSquareHeight());
+                    StdDraw.picture(normalized.getX(), normalized.getY(), "images/Select_tile.png", this.getSquareWidth(), this.getSquareHeight());
                 }
                 break;
         }
 
     }
 
+    /**
+     * Méthode responsable d'afficher le fond du jeu
+     */
     public void drawBackground() {
-        /*for (int i = 0; i < this.getNbSquareX(); i++) {
-          for (int j = 0; j < this.getNbSquareY(); j++) {
-              StdDraw.setPenColor(StdDraw.LIGHT_GREEN);
-              StdDraw.filledRectangle(i * this.getSquareWidth() + this.getSquareWidth(), j * this.getSquareHeight() + this.getSquareHeight(), this.getSquareWidth() , this.getSquareHeight());
-              StdDraw.setPenColor(StdDraw.DARK_GREEN);
-              StdDraw.rectangle(i * this.getSquareWidth() + this.getSquareWidth(), j * this.getSquareHeight() + this.getSquareHeight(), this.getSquareWidth() , this.getSquareHeight());
-            //StdDraw.picture(i * squareWidth + squareWidth / 2, j * squareHeight + squareHeight / 2, "images/grass.jpg", squareWidth, squareHeight);
-          }
-        }*/
-        for (Map.Entry<Position, Tile> tileEntry : this.positionTileMap.entrySet()) {
+        for (Map.Entry<Position, Tile> tileEntry : this.getPositionTileMap().entrySet()) {
             tileEntry.getValue().drawStaticPart();
         }
     }
 
+    /**
+     * Méthode générant les tuiles de jeux
+     */
     public void generatePath() {
-        this.positionTileMap = new TreeMap<>();
+        this.setPositionTileMap(new TreeMap<>());
 
         for (int i = 0; i < this.getNbSquareX(); i++) {
             for (int j = 0; j < this.getNbSquareY(); j++) {
@@ -121,41 +117,21 @@ public class WorldEditor extends World{
                 if (this.getPaths().contains(position)) {
 
                     final Pathway pathway = new Pathway(position, this.getSquareHeight(), this.getSquareWidth());
-                    this.positionTileMap.put(position, pathway);
+                    this.getPositionTileMap().put(position, pathway);
                 } else {
                     final Grass grass = new Grass(position, this.getSquareHeight(), this.getSquareWidth());
-                    this.positionTileMap.put(position, grass);
+                    this.getPositionTileMap().put(position, grass);
                 }
             }
         }
 
-        /*Position spawnPath = this.getPaths().get(0);
-        Position finishPath = this.getPaths().get(this.getPaths().size() - 1);
-        this.positionTileMap.get(spawnPath).replaceContains(new IndestructibleEntity("images/tiles/rock.png", 0.1));
-        this.positionTileMap.get(finishPath).replaceContains(new IndestructibleEntity("images/tiles/house.png", 0.15));*/
-
-
-        this.positionTileMap.forEach((position, tile) -> tile.updateDirectionValue(this.positionTileMap, false));
-
+        this.getPositionTileMap().forEach((position, tile) -> tile.updateDirectionValue(this.getPositionTileMap(), false));
     }
 
     /**
-     * Initialise le chemin sur la position du point de départ des monstres. Cette fonction permet d'afficher une route qui sera différente du décors.
+     * Méthode responsable d'afficher le chemin
      */
     public void drawPath() {
-        StdDraw.setPenColor(StdDraw.YELLOW);
-		 /*Iterator<Position> i = getPaths().iterator();
-		 Position p;
-		 while (i.hasNext()) {
-		 	p = i.next();
-			 double coorX = p.getX() / this.getNbSquareX() + (this.getSquareWidth()/2);
-			 double coorY = p.getY() / this.getNbSquareY() + (this.getSquareHeight()/2);
-             StdDraw.setPenColor(StdDraw.YELLOW);
-			 StdDraw.filledRectangle(coorX, coorY, this.getSquareWidth() / 2, this.getSquareHeight() / 2);
-			 StdDraw.setPenColor(StdDraw.PRINCETON_ORANGE);
-             StdDraw.rectangle(coorX, coorY, this.getSquareWidth()/2 , this.getSquareHeight()/2);
-			 //StdDraw.picture(coorX, coorY, "images/sand.jpg", squareWidth, squareHeight);
-		 }*/
 		 if(this.getPaths().size()>0){
              StdDraw.setPenColor(StdDraw.BLACK);
              StdDraw.setFont(new Font("Arial", Font.BOLD, 30));
@@ -163,23 +139,96 @@ public class WorldEditor extends World{
          }
     }
 
+    /**
+     * Supprimes toutes les tuiles de chemins du niveau
+     */
     public void clearPath(){
         for(Position p : this.getPaths()){
-            this.positionTileMap.put(p,new Grass(p, this.getSquareHeight(),this.getSquareWidth()));
+            this.getPositionTileMap().put(p,new Grass(p, this.getSquareHeight(),this.getSquareWidth()));
         }
         this.getPaths().clear();
     }
 
-    public int update() {
+    /**
+     * Actualise la logique du monde et affiche son apparence et ses éléments
+     * @throws UnsupportedAudioFileException
+     * @throws IOException
+     * @throws LineUnavailableException
+     */
+    public void update() {
         this.drawBackground();
         this.drawPath();
         this.drawMouse();
         this.drawInfos();
-        return 0;
     }
 
+    /**
+     * Ajoute un nouveau chemin sur le niveau si possible
+     * @param tilePosition la position du chemin
+     */
+    public void addPathAtLocation(Position tilePosition){
+        if(!this.getPaths().contains(tilePosition)){
+            int putPossibility = canPutNewPathAtLocation(tilePosition);
+            if(putPossibility==0) return;
+            if(putPossibility==1) this.getPaths().add(tilePosition);
+            else this.getPaths().add(0, tilePosition);
+
+            this.getPositionTileMap().put(tilePosition,new Pathway(tilePosition, this.getSquareHeight(),this.getSquareWidth()));
+            this.getPositionTileMap().get(tilePosition).updateDirectionValue(this.getPositionTileMap(), true);
+        }
+    }
+
+    /**
+     * Retire un chemin sur le niveau si possible
+     * @param tilePosition la position du chemin
+     */
+    public void removePathAtLocation(Position tilePosition){
+        if(getPaths().size()==0) return;
+        if(this.getPaths().get(0).equals(tilePosition)){
+            this.getPaths().remove(tilePosition);
+            this.getPositionTileMap().put(tilePosition,new Grass(tilePosition, this.getSquareHeight(),this.getSquareWidth()));
+            if(getPaths().size()==0) this.HUD.getPathButton().setEnabled(false);
+            else this.getPositionTileMap().get(this.getPaths().get(0)).updateDirectionValue(this.getPositionTileMap(), true);
+        } else if(this.getPaths().get(this.getPaths().size()-1).equals(tilePosition)){
+            this.getPaths().remove(tilePosition);
+            this.getPositionTileMap().put(tilePosition,new Grass(tilePosition, this.getSquareHeight(),this.getSquareWidth()));
+            if(getPaths().size()==0) this.HUD.getPathButton().setEnabled(false);
+            else this.getPositionTileMap().get(this.getPaths().get(this.getPaths().size()-1)).updateDirectionValue(this.getPositionTileMap(), true);
+        }
+    }
+
+    /**
+     * Change la position de la tuile de spawn des monstres
+     * @param tilePosition la position du spawn
+     */
+    public void changeSpawnLocation(Position tilePosition){
+        if(!this.getPaths().contains(tilePosition)){
+            if(this.getPaths().size()==0){
+                this.getPaths().add(tilePosition);
+                this.getPositionTileMap().put(tilePosition,new Pathway(tilePosition, this.getSquareHeight(),this.getSquareWidth()));
+                this.getPositionTileMap().get(tilePosition).updateDirectionValue(this.getPositionTileMap(), true);
+            } else {
+                this.getPositionTileMap().put(this.getPaths().get(0), new Grass(this.getPaths().get(0), this.getSquareHeight(),this.getSquareWidth()));
+                this.setPaths(new ArrayList<Position>());
+                this.getPaths().add(tilePosition);
+                this.getPositionTileMap().put(tilePosition,new Pathway(tilePosition, this.getSquareHeight(),this.getSquareWidth()));
+                this.getPositionTileMap().get(tilePosition).updateDirectionValue(this.getPositionTileMap(), true);
+            }
+            this.HUD.getPathButton().setEnabled(true);
+        }
+    }
+
+    /**
+     * Méthode appelé lorsque l'utilisateur presse la souris
+     * @param x la position horizontale de la souris
+     * @param y la position verticale de la souris
+     * @param mouseButton le bouton de la souris utilisé
+     * @throws UnsupportedAudioFileException
+     * @throws IOException
+     * @throws LineUnavailableException
+     */
     public void mouseClick(double x, double y, int mouseButton) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-        Position tilePosition = new Position((int) Math.floor(StdDraw.mouseX() * this.getNbSquareX()), (int) Math.floor(StdDraw.mouseY() * this.getNbSquareY()));
+        Position tilePosition = this.getTilePositionUnderMouse();
 
         if(this.HUD.onClick(x,y,mouseButton)) return;
 
@@ -187,61 +236,31 @@ public class WorldEditor extends World{
             case None:
                 break;
             case Path:
-                if(!this.getPaths().contains(tilePosition)){
-                    if(((this.getPaths().get(this.getPaths().size()-1).equals(new Position(tilePosition.getX()+1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().get(this.getPaths().size()-1).equals(new Position(tilePosition.getX()-1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().get(this.getPaths().size()-1).equals(new Position(tilePosition.getX(), tilePosition.getY()+1)) ? 1 : 0) + (this.getPaths().get(this.getPaths().size()-1).equals(new Position(tilePosition.getX(), tilePosition.getY()-1)) ? 1 : 0) == 1)){
-                        if(((this.getPaths().contains(new Position(tilePosition.getX()+1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().contains(new Position(tilePosition.getX()-1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().contains(new Position(tilePosition.getX(), tilePosition.getY()+1)) ? 1 : 0) + (this.getPaths().contains(new Position(tilePosition.getX(), tilePosition.getY()-1)) ? 1 : 0) == 1)) {
-                            this.getPaths().add(tilePosition);
-
-                            this.positionTileMap.put(tilePosition,new Pathway(tilePosition, this.getSquareHeight(),this.getSquareWidth()));
-                            this.positionTileMap.get(tilePosition).updateDirectionValue(this.positionTileMap, true);
-                            break;
-                        }
-                    }
-                    if(((this.getPaths().get(0).equals(new Position(tilePosition.getX()+1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().get(0).equals(new Position(tilePosition.getX()-1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().get(0).equals(new Position(tilePosition.getX(), tilePosition.getY()+1)) ? 1 : 0) + (this.getPaths().get(0).equals(new Position(tilePosition.getX(), tilePosition.getY()-1)) ? 1 : 0) == 1)){
-                        if(((this.getPaths().contains(new Position(tilePosition.getX()+1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().contains(new Position(tilePosition.getX()-1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().contains(new Position(tilePosition.getX(), tilePosition.getY()+1)) ? 1 : 0) + (this.getPaths().contains(new Position(tilePosition.getX(), tilePosition.getY()-1)) ? 1 : 0) == 1)) {
-                            this.getPaths().add(0, tilePosition);
-
-                            this.positionTileMap.put(tilePosition,new Pathway(tilePosition, this.getSquareHeight(),this.getSquareWidth()));
-                            this.positionTileMap.get(tilePosition).updateDirectionValue(this.positionTileMap, true);
-                            break;
-                        }
-                    }
-                }
+                this.addPathAtLocation(tilePosition);
                 break;
             case RemovePath:
-                if(getPaths().size()==0) break;
-                if(this.getPaths().get(0).equals(tilePosition)){
-                    this.getPaths().remove(tilePosition);
-                    this.positionTileMap.put(tilePosition,new Grass(tilePosition, this.getSquareHeight(),this.getSquareWidth()));
-                    if(getPaths().size()==0) this.HUD.getPathButton().setEnabled(false);
-                    else this.positionTileMap.get(this.getPaths().get(0)).updateDirectionValue(this.positionTileMap, true);
-                } else if(this.getPaths().get(this.getPaths().size()-1).equals(tilePosition)){
-                    this.getPaths().remove(tilePosition);
-                    this.positionTileMap.put(tilePosition,new Grass(tilePosition, this.getSquareHeight(),this.getSquareWidth()));
-                    if(getPaths().size()==0) this.HUD.getPathButton().setEnabled(false);
-                    else this.positionTileMap.get(this.getPaths().get(this.getPaths().size()-1)).updateDirectionValue(this.positionTileMap, true);
-                }
+                this.removePathAtLocation(tilePosition);
                 break;
             case Spawn:
-                if(!this.getPaths().contains(tilePosition)){
-                    if(this.getPaths().size()==0){
-                        this.getPaths().add(tilePosition);
-                        this.positionTileMap.put(tilePosition,new Pathway(tilePosition, this.getSquareHeight(),this.getSquareWidth()));
-                        this.positionTileMap.get(tilePosition).updateDirectionValue(this.positionTileMap, true);
-                    } else {
-                        this.positionTileMap.put(this.getPaths().get(0), new Grass(this.getPaths().get(0), this.getSquareHeight(),this.getSquareWidth()));
-                        this.setPaths(new ArrayList<Position>());
-                        this.getPaths().add(tilePosition);
-                        this.positionTileMap.put(tilePosition,new Pathway(tilePosition, this.getSquareHeight(),this.getSquareWidth()));
-                        this.positionTileMap.get(tilePosition).updateDirectionValue(this.positionTileMap, true);
-                    }
-                    this.HUD.getPathButton().setEnabled(true);
-                }
+                this.changeSpawnLocation(tilePosition);
                 break;
         }
     }
 
-    public void singleMouseClick(double x, double y, int mouseButton) {
-
+    /**
+     * Spécifie si on peut poser un nouveau chemin a la position donnée
+     * @param tilePosition la position
+     * @return 0 si on ne peut pas, 1 si on peut à la fin du chemin, 2 si on peut et que ça remplace le spawn
+     */
+    public int canPutNewPathAtLocation(Position tilePosition){
+        if(((this.getPaths().contains(new Position(tilePosition.getX()+1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().contains(new Position(tilePosition.getX()-1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().contains(new Position(tilePosition.getX(), tilePosition.getY()+1)) ? 1 : 0) + (this.getPaths().contains(new Position(tilePosition.getX(), tilePosition.getY()-1)) ? 1 : 0) == 1)) {
+            if(((this.getPaths().get(this.getPaths().size()-1).equals(new Position(tilePosition.getX()+1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().get(this.getPaths().size()-1).equals(new Position(tilePosition.getX()-1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().get(this.getPaths().size()-1).equals(new Position(tilePosition.getX(), tilePosition.getY()+1)) ? 1 : 0) + (this.getPaths().get(this.getPaths().size()-1).equals(new Position(tilePosition.getX(), tilePosition.getY()-1)) ? 1 : 0) == 1)){
+                return 1;
+            }
+            if(((this.getPaths().get(0).equals(new Position(tilePosition.getX()+1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().get(0).equals(new Position(tilePosition.getX()-1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().get(0).equals(new Position(tilePosition.getX(), tilePosition.getY()+1)) ? 1 : 0) + (this.getPaths().get(0).equals(new Position(tilePosition.getX(), tilePosition.getY()-1)) ? 1 : 0) == 1)){
+                return 2;
+            }
+        }
+        return 0;
     }
 }
