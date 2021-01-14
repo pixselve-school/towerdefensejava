@@ -34,7 +34,7 @@ public class ButtonQueueEditor extends Button{
      */
     public void setTime(double time) {
         this.time = time;
-        this.text.setText(time+" s");
+        this.text.setText(((time+"").length()>4 ? (time+"").substring(0,3) : (time+""))+" s");
     }
 
     /**
@@ -64,9 +64,9 @@ public class ButtonQueueEditor extends Button{
     public ButtonQueueEditor(Position pos, double width, double height, String sprite, String spriteHover, String action, Interface parent, String imagePath, double time) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         super(pos, width, height, sprite, spriteHover, action, parent);
         this.imagePath  = imagePath;
-        this.time = time;
         this.image = new Image(new Position(0.0,0.0),0.04,0.05,this.getParent(),this.imagePath);
-        this.text = new Text(new Position(0.0,0.0),0.0,0.0,new Font("Arial", Font.BOLD, 30),this.getParent(),time+" s");
+        this.text = new Text(new Position(0.0,0.0),0.0,0.0,new Font("Arial", Font.BOLD, 30),this.getParent(),"");
+        this.setTime(time);
     }
 
     /**

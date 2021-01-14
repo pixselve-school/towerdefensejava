@@ -382,7 +382,7 @@ public class InterfaceEditor extends Interface{
             int j = this.listQueue.get(this.listWaveButton.indexOf(this.selectedWave)).get(i).getMonster();
             double time = this.listQueue.get(this.listWaveButton.indexOf(this.selectedWave)).get(i).getTimeBeforeSpawning();
             this.setSelectedMonster(this.monstersButton.get(j-1));
-            this.timeQueueMonster.setText(time+"");
+            this.timeQueueMonster.setText((time+"").length()>4 ? (time+"").substring(0,3) : (time+""));
         } else {
             for(Button btn : this.monstersButton){
                 btn.setEnabled(false);
@@ -838,11 +838,12 @@ public class InterfaceEditor extends Interface{
                 if(this.selectedQueueInstance!=null){
                     int j = this.listWaveButton.indexOf(this.selectedWave);
                     int i = this.listQueueButton.indexOf(this.selectedQueueInstance);
-                    double time = this.listQueue.get(j).get(i).getTimeBeforeSpawning() + 0.5;
+                    double currenttime = this.listQueue.get(j).get(i).getTimeBeforeSpawning();
+                    double time = currenttime + (currenttime<1.0 ? 0.1 : 0.5);
                     if(!(time>60.0)){
                         this.listQueue.get(j).get(i).setTimeBeforeSpawning(time);
                         ((ButtonQueueEditor)this.selectedQueueInstance).setTime(time);
-                        this.timeQueueMonster.setText(time+"");
+                        this.timeQueueMonster.setText((time+"").length()>4 ? (time+"").substring(0,3) : (time+""));
                     }
                 }
                 this.world.setNeedReleaseMouse(true);
@@ -851,11 +852,12 @@ public class InterfaceEditor extends Interface{
                 if(this.selectedQueueInstance!=null){
                     int j = this.listWaveButton.indexOf(this.selectedWave);
                     int i = this.listQueueButton.indexOf(this.selectedQueueInstance);
-                    double time = this.listQueue.get(j).get(i).getTimeBeforeSpawning() - 0.5;
-                    if(!(time<0.5)){
+                    double currenttime = this.listQueue.get(j).get(i).getTimeBeforeSpawning();
+                    double time = currenttime - (currenttime<=1.0 ? 0.1 : 0.5);
+                    if(!(time<0.1)){
                         this.listQueue.get(j).get(i).setTimeBeforeSpawning(time);
                         ((ButtonQueueEditor)this.selectedQueueInstance).setTime(time);
-                        this.timeQueueMonster.setText(time+"");
+                        this.timeQueueMonster.setText((time+"").length()>4 ? (time+"").substring(0,3) : (time+""));
                     }
                 }
                 this.world.setNeedReleaseMouse(true);
