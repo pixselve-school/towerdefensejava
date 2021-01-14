@@ -57,15 +57,22 @@ public class WorldEditor extends World{
     public void drawMouse() {
         double normalizedX = (int) (StdDraw.mouseX() / this.getSquareWidth()) * this.getSquareWidth() + this.getSquareWidth() / 2;
         double normalizedY = (int) (StdDraw.mouseY() / this.getSquareHeight()) * this.getSquareHeight() + this.getSquareHeight() / 2;
-        Position mousep = new Position((int) ((normalizedX * this.getNbSquareX())), (int) ((normalizedY * this.getNbSquareY())));
+        //Position mousep = new Position((int) ((normalizedX * this.getNbSquareX())), (int) ((normalizedY * this.getNbSquareY())));
+        Position tilePosition = new Position((int) Math.floor(StdDraw.mouseX() * this.getNbSquareX()), (int) Math.floor(StdDraw.mouseY() * this.getNbSquareY()));
 
         switch (this.HUD.getBuildingType()){
             case None:
                 break;
             case Path:
-                if(!this.getPaths().contains(mousep)){
-                    if(((this.getPaths().get(this.getPaths().size()-1).equals(new Position(mousep.getX()+1, mousep.getY())) ? 1 : 0) + (this.getPaths().get(this.getPaths().size()-1).equals(new Position(mousep.getX()-1, mousep.getY())) ? 1 : 0) + (this.getPaths().get(this.getPaths().size()-1).equals(new Position(mousep.getX(), mousep.getY()+1)) ? 1 : 0) + (this.getPaths().get(this.getPaths().size()-1).equals(new Position(mousep.getX(), mousep.getY()-1)) ? 1 : 0) == 1)){
-                        if(((this.getPaths().contains(new Position(mousep.getX()+1, mousep.getY())) ? 1 : 0) + (this.getPaths().contains(new Position(mousep.getX()-1, mousep.getY())) ? 1 : 0) + (this.getPaths().contains(new Position(mousep.getX(), mousep.getY()+1)) ? 1 : 0) + (this.getPaths().contains(new Position(mousep.getX(), mousep.getY()-1)) ? 1 : 0) == 1)) {
+                if(!this.getPaths().contains(tilePosition)){
+                    if(((this.getPaths().get(this.getPaths().size()-1).equals(new Position(tilePosition.getX()+1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().get(this.getPaths().size()-1).equals(new Position(tilePosition.getX()-1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().get(this.getPaths().size()-1).equals(new Position(tilePosition.getX(), tilePosition.getY()+1)) ? 1 : 0) + (this.getPaths().get(this.getPaths().size()-1).equals(new Position(tilePosition.getX(), tilePosition.getY()-1)) ? 1 : 0) == 1)){
+                        if(((this.getPaths().contains(new Position(tilePosition.getX()+1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().contains(new Position(tilePosition.getX()-1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().contains(new Position(tilePosition.getX(), tilePosition.getY()+1)) ? 1 : 0) + (this.getPaths().contains(new Position(tilePosition.getX(), tilePosition.getY()-1)) ? 1 : 0) == 1)) {
+                            StdDraw.picture(normalizedX, normalizedY, "images/Select_tile.png", this.getSquareWidth(), this.getSquareHeight());
+                            return;
+                        }
+                    }
+                    if(((this.getPaths().get(0).equals(new Position(tilePosition.getX()+1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().get(0).equals(new Position(tilePosition.getX()-1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().get(0).equals(new Position(tilePosition.getX(), tilePosition.getY()+1)) ? 1 : 0) + (this.getPaths().get(0).equals(new Position(tilePosition.getX(), tilePosition.getY()-1)) ? 1 : 0) == 1)){
+                        if(((this.getPaths().contains(new Position(tilePosition.getX()+1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().contains(new Position(tilePosition.getX()-1, tilePosition.getY())) ? 1 : 0) + (this.getPaths().contains(new Position(tilePosition.getX(), tilePosition.getY()+1)) ? 1 : 0) + (this.getPaths().contains(new Position(tilePosition.getX(), tilePosition.getY()-1)) ? 1 : 0) == 1)) {
                             StdDraw.picture(normalizedX, normalizedY, "images/Select_tile.png", this.getSquareWidth(), this.getSquareHeight());
                             return;
                         }
@@ -76,12 +83,12 @@ public class WorldEditor extends World{
                 }
                 break;
             case RemovePath:
-                if(getPaths().size()>0 && (this.getPaths().get(0).equals(mousep) || this.getPaths().get(this.getPaths().size()-1).equals(mousep))){
+                if(getPaths().size()>0 && (this.getPaths().get(0).equals(tilePosition) || this.getPaths().get(this.getPaths().size()-1).equals(tilePosition))){
                     StdDraw.picture(normalizedX, normalizedY, "images/Select_tile_unavailable.png", this.getSquareWidth(), this.getSquareHeight());
                 }
                 break;
             case Spawn:
-                if(!this.getPaths().contains(mousep)){
+                if(!this.getPaths().contains(tilePosition)){
                     StdDraw.picture(normalizedX, normalizedY, "images/Select_tile.png", this.getSquareWidth(), this.getSquareHeight());
                 }
                 break;
