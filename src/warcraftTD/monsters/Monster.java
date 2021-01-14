@@ -8,47 +8,62 @@ import warcraftTD.utils.DrawableEntity;
 import warcraftTD.utils.Position;
 import warcraftTD.utils.Vector;
 
+
 import java.awt.*;
 import java.util.List;
 import java.util.*;
-import java.util.stream.Collectors;
 
+/**
+ * Monster class
+ */
 public abstract class Monster extends DrawableEntity {
-  // Position du monstre à l'instant t
-  private Position position;
-  // Vitesse du monstre: point / s
-  private double speed;
 
-  // Compteur de déplacement pour savoir si le monstre à atteint le chateau du joueur
-  private Vector vector;
-  private double previousLength;
-  private List<Position> path;
-  private int health;
+  /**
+   * The monster speed
+   */
+  private final double speed;
+  /**
+   * The path the monster will follow
+   */
+  private final List<Position> path;
+  /**
+   * The effects the monster is subjected to
+   */
   private final Map<String, Effect> undergoingEffects;
-  public boolean isReadyToBeRemoved() {
-    return this.isReadyToBeRemoved;
-  }
-  public void setReadyToBeRemoved(boolean readyToBeRemoved) {
-    this.isReadyToBeRemoved = readyToBeRemoved;
-  }
-  private boolean isReadyToBeRemoved;
+  /**
+   * The amount of gold the monster will drop when killed
+   */
   private final int goldWhenDead;
+  /**
+   * The particules the monster is generating
+   */
   private final EntityParticules entityParticules;
-
-  public Monster(Position p, WorldGame world, int health, int goldWhenDead, double speed) {
-    this.position = p;
-    this.path = new LinkedList<>(world.getPaths());
-    this.path = this.path.stream().map(position -> new Position(position.getX() / world.getNbSquareX() + (world.getSquareWidth() / 2), position.getY() / world.getNbSquareY() + (world.getSquareHeight() / 2))).collect(Collectors.toList());
-    this.vector = new Vector(this.position, this.path.get(0));
-    this.previousLength = this.vector.length();
-    this.health = health;
-    this.speed = speed;
-    this.undergoingEffects = new HashMap<>();
-    this.isReadyToBeRemoved = false;
-    this.goldWhenDead = goldWhenDead;
-    this.entityParticules = new EntityParticules();
-  }
-
+  /**
+   * The monster position
+   */
+  private Position position;
+  /**
+   * A vector container
+   */
+  private Vector vector;
+  /**
+   * Previous vector length
+   */
+  private double previousLength;
+  /**
+   * The monster health
+   */
+  private int health;
+  /**
+   * The current remove status of the monster
+   */
+  private boolean isReadyToBeRemoved;
+  /**
+   * @param health       The monster base health
+   * @param goldWhenDead The amount of gold the monster will drop when killed
+   * @param speed        The monster base speed
+   * @param path         The path the monster will follow
+   */
   public Monster(int health, int goldWhenDead, double speed, List<Position> path) {
     this.path = new LinkedList<>(path);
     this.position = this.path.get(0);
@@ -63,9 +78,29 @@ public abstract class Monster extends DrawableEntity {
   }
 
   /**
-   * Déplace le monstre en fonction de sa vitesse sur l'axe des x et des y et de sa prochaine position.
+   * Get the current remove status of the monster
+   *
+   * @return true if the monster is ready to be removed
    */
-  public void move(double delta_time) {
+  public boolean isReadyToBeRemoved() {
+    return this.isReadyToBeRemoved;
+  }
+
+  /**
+   * Set the current remove status of the monster
+   *
+   * @param readyToBeRemoved The new remove status of the monster
+   */
+  public void setReadyToBeRemoved(boolean readyToBeRemoved) {
+    this.isReadyToBeRemoved = readyToBeRemoved;
+  }
+
+  /**
+   * Move the monster
+   *
+   * @param deltaTime The game deltaTime
+   */
+  public void move(double deltaTime) {
     if (this.isDead()) {
       return;
     }
@@ -85,7 +120,7 @@ public abstract class Monster extends DrawableEntity {
       }
     }
 
-    Position newPosition = new Position(this.position.getX() + this.speed * speedModifier * delta_time * this.vector.normal().getX(), this.position.getY() + this.speed * speedModifier * delta_time * this.vector.normal().getY());
+    Position newPosition = new Position(this.position.getX() + this.speed * speedModifier * deltaTime * this.vector.normal().getX(), this.position.getY() + this.speed * speedModifier * deltaTime * this.vector.normal().getY());
 
     if (this.path.size() > 0) {
       if (this.previousLength > new Vector(newPosition, this.path.get(0)).length()) {
@@ -102,11 +137,21 @@ public abstract class Monster extends DrawableEntity {
     }
   }
 
+  /**
+   * Check if the monster finished its path
+   *
+   * @return true if the monster finished its path
+   */
   public boolean hasFinishedPath() {
     return this.path.size() == 0;
   }
 
 
+  /**
+   * Update the monster effects, figure out its next position and draw it
+   *
+   * @param deltaTime The game delta time
+   */
   public void update(double deltaTime) {
     this.updateEffectsDuration(deltaTime);
     this.move(deltaTime);
@@ -133,65 +178,84 @@ public abstract class Monster extends DrawableEntity {
 
   }
 
-  public void takeDamage(int damage, WorldGame world, Color colordamage) {
-    world.getHud().addNotifText(this.position, new Font("Arial", Font.BOLD, 20), -0.1, "" + damage, colordamage);
+  /**
+   * Inflict damage to the monster
+   *
+   * @param damage            The amount of health the monster will loose
+   * @param world             The current world
+   * @param notificationColor The color of the damage notification
+   */
+  public void takeDamage(int damage, WorldGame world, Color notificationColor) {
+    world.getHud().addNotifText(this.position, new Font("Arial", Font.BOLD, 20), -0.1, "" + damage, notificationColor);
     this.health -= damage;
   }
 
+  /**
+   * Check if the monster is alive or not
+   *
+   * @return true if the monster is alive
+   */
   public boolean isDead() {
     return this.health <= 0;
   }
 
+  /**
+   * Apply poison effect to the monster
+   *
+   * @param duration The effect duration
+   * @param damage   The amount of health the effect with inflict every seconds
+   */
   public void applyPoisonEffect(int duration, int damage) {
     this.undergoingEffects.computeIfAbsent("poison", (s) -> new Effect(duration, 1.0, -damage, 1.0)).setDurationIfGreater(duration);
   }
 
+  /**
+   * Apply slow effect to the monster
+   *
+   * @param duration    The effect duration
+   * @param slowPercent The percentage the speed of the monster will be multiplied to
+   */
   public void applySlowEffect(int duration, int slowPercent) {
     this.undergoingEffects.computeIfAbsent("slow", (s) -> new Effect(duration, 1.0, 0, slowPercent / 100.0)).setDurationIfGreater(duration);
   }
 
+  /**
+   * Check if the monster is flying
+   *
+   * @return True if the monster is flying
+   */
   public abstract boolean isFlying();
 
   /**
-   * Fonction abstraite qui sera instanciée dans les classes filles pour afficher le monstre sur le plateau de jeu.
+   * Draw the monster
+   *
+   * @param deltaTime The game delta time
    */
   public abstract void draw(double deltaTime);
 
+  /**
+   * Get the monster position
+   *
+   * @return The monster position
+   */
   public Position getPosition() {
     return this.position;
   }
 
+  /**
+   * Set the monster position
+   *
+   * @param position The new position
+   */
   public void setPosition(Position position) {
     this.position = position;
   }
 
-  public double getSpeed() {
-    return this.speed;
-  }
-
-  public void setSpeed(double speed) {
-    this.speed = speed;
-  }
-
-
-  public Vector getVector() {
-    return this.vector;
-  }
-
-  public void setVector(Vector vector) {
-    this.vector = vector;
-  }
-
-
-  public List<Position> getPath() {
-    return this.path;
-  }
-
-  public void setPath(List<Position> path) {
-    this.path = path;
-  }
-
-
+  /**
+   * Get the amount of gold the monster drop when killed
+   *
+   * @return The amount of gold the monster drop when killed
+   */
   public int getGoldWhenDead() {
     return this.goldWhenDead;
   }
