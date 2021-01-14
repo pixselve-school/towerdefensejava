@@ -118,6 +118,7 @@ public class WorldGame extends World {
 
     this.positionTileMap = new TreeMap<>();
 
+
     this.initTerrain();
     this.currentStateGame = StateGame.Game;
     this.buildingCursor = new warcraftTD.utils.Cursor(this.getSquareWidth() / 2, this.getSquareHeight() / 2);

@@ -630,6 +630,7 @@ public class InterfaceEditor extends Interface{
                 if(this.world.getNbSquareX()<50){
                     this.world.setNbSquareX(this.world.getNbSquareX()+1);
                     this.world.refreshSquareSize();
+                    this.world.generatePath();
                     this.widthText.setText(this.world.getNbSquareX()+"");
                 }
                 this.world.setNeedReleaseMouse(true);
@@ -643,6 +644,7 @@ public class InterfaceEditor extends Interface{
                     if(this.world.getNbSquareX()>maxWidth+1) {
                         this.world.setNbSquareX(this.world.getNbSquareX() - 1);
                         this.world.refreshSquareSize();
+                        this.world.generatePath();
                         this.widthText.setText(this.world.getNbSquareX() + "");
                     }
                 }
@@ -652,6 +654,7 @@ public class InterfaceEditor extends Interface{
                 if(this.world.getNbSquareY()<50){
                     this.world.setNbSquareY(this.world.getNbSquareY()+1);
                     this.world.refreshSquareSize();
+                    this.world.generatePath();
                     this.heightText.setText(this.world.getNbSquareY()+"");
                 }
                 this.world.setNeedReleaseMouse(true);
@@ -665,6 +668,7 @@ public class InterfaceEditor extends Interface{
                     if(this.world.getNbSquareY()>maxHeight+1){
                         this.world.setNbSquareY(this.world.getNbSquareY()-1);
                         this.world.refreshSquareSize();
+                        this.world.generatePath();
                         this.heightText.setText(this.world.getNbSquareY()+"");
                     }
 
@@ -700,7 +704,7 @@ public class InterfaceEditor extends Interface{
                 this.world.setNeedReleaseMouse(true);
                 break;
             case "ClearPath":
-                this.world.setPaths(new ArrayList<Position>());
+                this.world.clearPath();
                 this.world.setNeedReleaseMouse(true);
                 this.pathButton.setEnabled(false);
                 break;
