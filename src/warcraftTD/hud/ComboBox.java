@@ -7,6 +7,9 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.awt.*;
 import java.io.IOException;
 
+/**
+ * Une comboBox
+ */
 public class ComboBox extends ClickableElement{
     /** Listes des choix de la comboBox */
     String[] listPropositions;
@@ -54,6 +57,9 @@ public class ComboBox extends ClickableElement{
         }
     }
 
+    /**
+     * Actualise la position et la police d'écritures des textes
+     */
     public void refreshPositionFontText(){
         for(int i = 0;i<this.listPropositions.length;i++){
             int sizeText = this.listPropositions[i].length();
@@ -66,10 +72,18 @@ public class ComboBox extends ClickableElement{
         }
     }
 
+    /**
+     * Récupère le texte séléctionné dans la comboBox
+     * @return le texte séléctionné dans la comboBox
+     */
     public String getSelectedChoice(){
         return this.listPropositions[0];
     }
 
+    /**
+     * Modifie la position de l'élément
+     * @param position la nouvelle position
+     */
     @Override
     public void setPosition(Position position) {
         super.setPosition(position);
@@ -80,6 +94,12 @@ public class ComboBox extends ClickableElement{
         refreshPositionFontText();
     }
 
+    /**
+     * Actualise la logique de l'élément et affiche son apparence
+     * @param mouseX la position horizontale de la souris
+     * @param mouseY la position verticale de la souris
+     * @param deltaTime le temps d'un tick en seconde
+     */
     @Override
     public void update(double mouseX, double mouseY, double deltaTime) {
         if(this.selected){
@@ -92,6 +112,15 @@ public class ComboBox extends ClickableElement{
         this.listTextHUD[0].update(mouseX, mouseY, deltaTime);
     }
 
+    /**
+     * Méthode appelé par le world quand la souris est préssée
+     * @param mouseX la position horizontale de la souris
+     * @param mouseY la position verticale de la souris
+     * @return un ActionElement spécifiant si l'élément à consumer le clique et l'action à réaliser
+     * @throws UnsupportedAudioFileException
+     * @throws IOException
+     * @throws LineUnavailableException
+     */
     @Override
     public ActionElement onClick(double mouseX, double mouseY) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         if(this.selected){

@@ -140,6 +140,11 @@ public class GroupBox extends ClickableElement {
     }
   }
 
+  /**
+   * Spécifie si la groupBox est en mouvement
+   * @param deltaTime le temps d'éxecution d'un tick en seconde
+   * @return la groupBox est en mouvement
+   */
   public boolean isMoving(double deltaTime){
     return this.destinationAnimation.dist(this.getPosition())>this.speed*deltaTime;
   }
