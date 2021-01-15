@@ -21,7 +21,7 @@ public class InterfaceGame extends Interface{
   /** Spécifie si le joueur est en train de construire des tours ou non */
   private boolean building;
   /** Spécifie si on est en mode developpement */
-  private final boolean devMode = true;
+  private final boolean devMode = false;
   /** Tour actuellement séléctionné à améliorer */
   private Tower upgradingTower;
 

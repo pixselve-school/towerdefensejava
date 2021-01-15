@@ -14,9 +14,9 @@ public class ScienceKnight extends BaseMonster {
 
   public ScienceKnight(List<Position> path) {
     super(path,
-        10,
-        10,
-        0.2,
+        12,
+        8,
+        0.25,
         new Animation(new String[]{
             "images/enemies/4/walk-0.png",
             "images/enemies/4/walk-1.png",

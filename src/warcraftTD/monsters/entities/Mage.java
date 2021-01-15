@@ -13,7 +13,7 @@ public class Mage extends BaseMonster {
 
   public Mage(List<Position> path) {
     super(path,
-        10,
+        25,
         10,
         0.2,
         new Animation(new String[]{

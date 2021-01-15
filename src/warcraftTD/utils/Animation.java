@@ -60,7 +60,7 @@ public class Animation {
       }
     }
 //    StdDraw.picture(this.position.getX(), this.position.getY(), this.imagesPaths[this.currentFrame], this.scaledWidth, this.scaledHeight);
-    StdDraw.pictureHeight(this.position.getX(), this.position.getY(), this.imagesPaths[this.currentFrame], this.scaledHeight);
+    if(this.position!=null) StdDraw.pictureHeight(this.position.getX(), this.position.getY(), this.imagesPaths[this.currentFrame], this.scaledHeight);
   }
 
   public void setPosition(Position position) {

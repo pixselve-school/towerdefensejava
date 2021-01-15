@@ -13,7 +13,7 @@ public class FlyingNinja extends BaseMonster {
 
   public FlyingNinja(List<Position> path) {
     super(path,
-        10,
+        15,
         10,
         0.2,
         true,
