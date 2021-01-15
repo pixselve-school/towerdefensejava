@@ -191,7 +191,7 @@ abstract public class Tile extends DrawableEntity {
    * @return The tile height
    */
   public double getHeight() {
-    return this.height;
+    return this.height + 0.004;
   }
 
   /**
@@ -200,7 +200,7 @@ abstract public class Tile extends DrawableEntity {
    * @return The tile width
    */
   public double getWidth() {
-    return this.width;
+    return this.width + 0.004;
   }
 
   public boolean isSelected() {
