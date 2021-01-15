@@ -13,9 +13,9 @@ public class OgreWithMallet extends BaseMonster {
 
   public OgreWithMallet(List<Position> path) {
     super(path,
-        10,
-        10,
-        0.2,
+        50,
+        15,
+        0.15,
         new Animation(new String[]{
             "images/enemies/3/walk-0.png",
             "images/enemies/3/walk-1.png",

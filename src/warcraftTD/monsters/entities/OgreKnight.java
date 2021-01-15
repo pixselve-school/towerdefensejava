@@ -13,9 +13,9 @@ public class OgreKnight extends BaseMonster {
 
   public OgreKnight(List<Position> path) {
     super(path,
-        10,
-        10,
-        0.2,
+        40,
+        15,
+        0.15,
         new Animation(new String[]{
             "images/enemies/5/walk-0.png",
             "images/enemies/5/walk-1.png",

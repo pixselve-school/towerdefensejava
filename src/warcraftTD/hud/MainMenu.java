@@ -5,6 +5,7 @@ import warcraftTD.WorldEditor;
 import warcraftTD.libs.StdDraw;
 import warcraftTD.utils.Animation;
 import warcraftTD.utils.Level;
+import warcraftTD.utils.MonsterDieCallback;
 import warcraftTD.utils.Position;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -40,6 +41,10 @@ public class MainMenu extends Interface {
    * Animation de fond du menu
    */
   private Animation background;
+  /**
+   * Numéro de partie de vidéo de fond du menu
+   */
+  private int index_background;
   /**
    * Monde à lancer quand on quitte le menu
    */
@@ -107,7 +112,8 @@ public class MainMenu extends Interface {
 
     this.nextWorld = null;
 
-    loadBackground("images/mainMenuBackground/capybara/capybara_");
+    index_background = 0;
+    loadBackground("images/mainMenuBackground/game0/videMenu_", true);
     this.groupBox = new GroupBox(new Position(0.5, 0.5), 0.4, 0.6, this, "");
     this.getListElements().add(this.groupBox);
 
@@ -139,7 +145,6 @@ public class MainMenu extends Interface {
           logoFrames.add("images/logo/animation/logo" + (i >= 10 ? i : "0" + i) + ".png");
       }
 
-
     this.logoAnimation = new Animation(logoFrames.toArray(String[]::new), 0.25, 0.25, new Position(0.5,0.85), 60, true);
   }
 
@@ -148,12 +153,17 @@ public class MainMenu extends Interface {
    *
    * @param path chemin d'accès des images
    */
-  public void loadBackground(String path) {
+  public void loadBackground(String path, boolean menuOfficial) {
     String[] backgroundImages = new String[300];
     for (int i = 0; i < 300; i++) {
       backgroundImages[i] = path + (i < 100 ? "0" : "") + (i < 10 ? "0" : "") + i + ".jpg";
     }
-    this.background = new Animation(backgroundImages, 1, 1, new Position(0.5, 0.5), 24, true);
+    this.background = new Animation(backgroundImages, 1, 1, new Position(0.5, 0.5), 24, false);
+    if(menuOfficial) {
+      this.index_background++;
+      if(this.index_background==2) this.index_background = 0;
+    }
+    this.background.setCallback(() -> this.loadBackground("images/mainMenuBackground/game"+this.index_background+"/videMenu_", true));
   }
 
   /**
@@ -210,7 +220,7 @@ public class MainMenu extends Interface {
         break;
       case "lvl1":
         this.needReleaseMouse = true;
-        File lvl1 = new File("levels/level1.tdl");
+        File lvl1 = new File("levels/level1_official.tdl");
         Level level = new Level(lvl1);
         nextWorld = level.getWorld(this);
         this.quit = true;
@@ -224,11 +234,11 @@ public class MainMenu extends Interface {
         break;
       case "switchCapybara":
         this.needReleaseMouse = true;
-        loadBackground("images/mainMenuBackground/capybara/capybara_");
+        loadBackground("images/mainMenuBackground/capybara/capybara_",false);
         break;
       case "switchCat":
         this.needReleaseMouse = true;
-        loadBackground("images/mainMenuBackground/kitten/The most dangerous kitten in the world_");
+        loadBackground("images/mainMenuBackground/kitten/The most dangerous kitten in the world_",false);
         break;
       case "leveleditor":
         nextWorld = new WorldEditor(1200, 800, this);

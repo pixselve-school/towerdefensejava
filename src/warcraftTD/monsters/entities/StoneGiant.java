@@ -12,9 +12,9 @@ public class StoneGiant extends BaseMonster {
 
   public StoneGiant(List<Position> path) {
     super(path,
+        300,
         100,
-        100,
-        0.05,
+        0.08,
         new Animation(new String[]{
             "images/enemies/10/walk-0.png",
             "images/enemies/10/walk-1.png",

@@ -8,7 +8,7 @@
 
 Health | Speed | Gold when killed
 :---: | :---: | :---:
-0 | 0 | 0
+5 | 0.1 | 5
 
 ## Mage
 
@@ -18,7 +18,7 @@ Health | Speed | Gold when killed
 
 Health | Speed | Gold when killed
 :---: | :---: | :---:
-0 | 0 | 0
+25 | 0.2 | 10
 
 ## Ogre With Mallet
 
@@ -28,7 +28,7 @@ Health | Speed | Gold when killed
 
 Health | Speed | Gold when killed
 :---: | :---: | :---:
-0 | 0 | 0
+50 | 0.15 | 15
 
 ## Science Knight
 
@@ -38,7 +38,7 @@ Health | Speed | Gold when killed
 
 Health | Speed | Gold when killed
 :---: | :---: | :---:
-0 | 0 | 0
+12 | 0.25 | 8
 
 ## Ogre Knight
 
@@ -48,7 +48,7 @@ Health | Speed | Gold when killed
 
 Health | Speed | Gold when killed
 :---: | :---: | :---:
-0 | 0 | 0
+40 | 0.15 | 15
 
 ## Fool Knight
 
@@ -88,7 +88,7 @@ Health | Speed | Gold when killed
 
 Health | Speed | Gold when killed
 :---: | :---: | :---:
-0 | 0 | 0
+15 | 0.2 | 10
 
 ## Stone Giant
 
@@ -98,6 +98,6 @@ Health | Speed | Gold when killed
 
 Health | Speed | Gold when killed
 :---: | :---: | :---:
-0 | 0 | 0
+300 | 0.08 | 100
 
 
