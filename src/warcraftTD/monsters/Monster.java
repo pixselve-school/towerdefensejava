@@ -8,7 +8,6 @@ import warcraftTD.utils.DrawableEntity;
 import warcraftTD.utils.Position;
 import warcraftTD.utils.Vector;
 
-
 import java.awt.*;
 import java.util.List;
 import java.util.*;
@@ -57,7 +56,14 @@ public abstract class Monster extends DrawableEntity {
   /**
    * The current remove status of the monster
    */
+
+  /**
+   * Le rayon de la hit box du monstre
+   */
+  private double hitBoxRadius;
+
   private boolean isReadyToBeRemoved;
+
   /**
    * @param health       The monster base health
    * @param goldWhenDead The amount of gold the monster will drop when killed
@@ -258,6 +264,14 @@ public abstract class Monster extends DrawableEntity {
    */
   public int getGoldWhenDead() {
     return this.goldWhenDead;
+  }
+
+  /**
+   * Récupère le rayon de la hit box du monstre
+   * @return Le rayon de la hit box du monstre
+   */
+  public double getHitBoxRadius() {
+    return this.hitBoxRadius;
   }
 
 }
