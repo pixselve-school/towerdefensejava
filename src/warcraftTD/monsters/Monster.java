@@ -54,13 +54,13 @@ public abstract class Monster extends DrawableEntity {
    */
   private int health;
   /**
-   * The current remove status of the monster
-   */
-
-  /**
    * Le rayon de la hit box du monstre
    */
-  private double hitBoxRadius;
+  private final double hitBoxRadius;
+
+  /**
+   * The current remove status of the monster
+   */
 
   private boolean isReadyToBeRemoved;
 
@@ -69,8 +69,9 @@ public abstract class Monster extends DrawableEntity {
    * @param goldWhenDead The amount of gold the monster will drop when killed
    * @param speed        The monster base speed
    * @param path         The path the monster will follow
+   * @param hitBoxRadius Le rayon de la hit box du monstre
    */
-  public Monster(int health, int goldWhenDead, double speed, List<Position> path) {
+  public Monster(int health, int goldWhenDead, double speed, double hitBoxRadius, List<Position> path) {
     this.path = new LinkedList<>(path);
     this.position = this.path.get(0);
     this.vector = new Vector(this.position, this.path.get(0));
@@ -81,6 +82,7 @@ public abstract class Monster extends DrawableEntity {
     this.isReadyToBeRemoved = false;
     this.goldWhenDead = goldWhenDead;
     this.entityParticules = new EntityParticules();
+    this.hitBoxRadius = hitBoxRadius;
   }
 
   /**
@@ -268,6 +270,7 @@ public abstract class Monster extends DrawableEntity {
 
   /**
    * Récupère le rayon de la hit box du monstre
+   *
    * @return Le rayon de la hit box du monstre
    */
   public double getHitBoxRadius() {
