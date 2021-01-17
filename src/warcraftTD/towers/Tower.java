@@ -320,7 +320,7 @@ abstract public class Tower extends Entity {
   public void AttackManagement(double delta_time) {
     if (this.canAttack) {
       if (this.targetMonster != null) {
-        if (!this.targetMonster.isDead() && this.targetMonster.getPosition().dist(this.getParentTile().getPosition()) <= this.range) {
+        if (!this.targetMonster.isDead() && this.targetMonster.getPosition().dist(this.getParentTile().getPosition()) <= this.range && !this.targetMonster.hasFinishedPath()) {
           this.shootTargetMonster();
           return;
         }
