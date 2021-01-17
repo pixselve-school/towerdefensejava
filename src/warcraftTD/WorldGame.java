@@ -230,8 +230,8 @@ public class WorldGame extends World {
 
     Position spawnPath = this.getPaths().get(0);
     Position finishPath = this.getPaths().get(this.getPaths().size() - 1);
-    this.getPositionTileMap().get(spawnPath).replaceContains(new IndestructibleEntity("images/tiles/rock.png", 0.1));
-    this.getPositionTileMap().get(finishPath).replaceContains(new IndestructibleEntity("images/tiles/house.png", 0.15));
+    this.getPositionTileMap().get(spawnPath).replaceContains(new IndestructibleEntity("images/tiles/rock.png", 1));
+    this.getPositionTileMap().get(finishPath).replaceContains(new IndestructibleEntity("images/tiles/house.png", 1.5));
 
 
     this.getPositionTileMap().forEach((position, tile) -> tile.updateDirectionValue(this.getPositionTileMap(), false));

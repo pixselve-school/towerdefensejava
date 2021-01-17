@@ -5,12 +5,12 @@ import warcraftTD.libs.StdDraw;
 
 public class IndestructibleEntity extends Entity {
   String assetPath;
-  double assetHeight;
+  double heightScaleFactor;
 
-  public IndestructibleEntity(String assetPath, double assetHeight) {
+  public IndestructibleEntity(String assetPath, double heightScaleFactor) {
     super(EntityBuildable.NOTBUILDABLE);
     this.assetPath = assetPath;
-    this.assetHeight = assetHeight;
+    this.heightScaleFactor = heightScaleFactor;
 
   }
 
@@ -22,6 +22,6 @@ public class IndestructibleEntity extends Entity {
    * @param tile      The tile the entity is attached to
    */
   public void update(double deltaTime, Tile tile) {
-    StdDraw.pictureHeight(tile.getPosition().getX(), tile.getPosition().getY(), this.assetPath, this.assetHeight, Align.BOTTOM);
+    StdDraw.pictureHeight(tile.getPosition().getX(), tile.getPosition().getY(), this.assetPath, this.getParentTile().getHeight() * this.heightScaleFactor, Align.BOTTOM);
   }
 }
