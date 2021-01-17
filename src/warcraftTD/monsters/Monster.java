@@ -1,6 +1,7 @@
 package warcraftTD.monsters;
 
 import warcraftTD.WorldGame;
+import warcraftTD.libs.StdDraw;
 import warcraftTD.particules.EntityParticules;
 import warcraftTD.particules.ImageParticule;
 import warcraftTD.particules.RandomParticuleGenerator;
@@ -154,6 +155,13 @@ public abstract class Monster extends DrawableEntity {
     return this.path.size() == 0;
   }
 
+
+  public void drawHitBox() {
+    StdDraw.setPenColor(new Color(0, 255, 217, 35));
+    StdDraw.filledCircle(this.position.getX(), this.position.getY(), this.hitBoxRadius);
+    StdDraw.setPenColor(new Color(0, 255, 217));
+    StdDraw.circle(this.position.getX(), this.position.getY(), this.hitBoxRadius);
+  }
 
   /**
    * Update the monster effects, figure out its next position and draw it
