@@ -16,6 +16,7 @@ public class FlyingNinja extends BaseMonster {
         15,
         10,
         0.2,
+        0.02,
         true,
         new Animation(new String[]{
             "images/enemies/9/jump-0.png",

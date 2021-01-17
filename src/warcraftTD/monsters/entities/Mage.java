@@ -16,6 +16,7 @@ public class Mage extends BaseMonster {
         25,
         10,
         0.2,
+        0.02,
         new Animation(new String[]{
             "images/enemies/2/walk-0.png",
             "images/enemies/2/walk-1.png",

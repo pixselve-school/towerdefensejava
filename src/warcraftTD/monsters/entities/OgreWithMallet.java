@@ -16,6 +16,7 @@ public class OgreWithMallet extends BaseMonster {
         50,
         15,
         0.15,
+        0.02,
         new Animation(new String[]{
             "images/enemies/3/walk-0.png",
             "images/enemies/3/walk-1.png",

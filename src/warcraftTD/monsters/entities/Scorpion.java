@@ -15,6 +15,7 @@ public class Scorpion extends BaseMonster {
         5,
         5,
         0.1,
+        0.015,
         new Animation(new String[]{
             "images/enemies/1/walk-0.png",
             "images/enemies/1/walk-1.png",

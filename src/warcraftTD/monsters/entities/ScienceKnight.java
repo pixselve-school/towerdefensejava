@@ -17,6 +17,7 @@ public class ScienceKnight extends BaseMonster {
         12,
         8,
         0.25,
+        0.02,
         new Animation(new String[]{
             "images/enemies/4/walk-0.png",
             "images/enemies/4/walk-1.png",

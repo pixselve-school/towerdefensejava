@@ -15,6 +15,7 @@ public class BlueOgre extends BaseMonster {
         100,
         50,
         0.2,
+        0.02,
         new Animation(new String[]{
             "images/enemies/1/walk-0.png",
             "images/enemies/1/walk-1.png",
