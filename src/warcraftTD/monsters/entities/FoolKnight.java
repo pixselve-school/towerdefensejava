@@ -13,9 +13,9 @@ public class FoolKnight extends BaseMonster {
 
   public FoolKnight(List<Position> path) {
     super(path,
-        10,
-        10,
-        0.2,
+        60,
+        17,
+        0.12,
         new Animation(new String[]{
             "images/enemies/6/walk-0.png",
             "images/enemies/6/walk-1.png",
