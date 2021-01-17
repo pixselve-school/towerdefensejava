@@ -31,11 +31,12 @@ public abstract class BaseMonster extends Monster {
    * @param health           The monster base health
    * @param goldWhenDead     The amount of gold the monster will drop when killed
    * @param speed            The monster base speed
+   * @param hitBoxRadius     Le rayon de la hit box du monstre
    * @param walkingAnimation The monster walking animation
    * @param dieAnimation     The monster dying animation
    */
-  public BaseMonster(List<Position> path, int health, int goldWhenDead, double speed, Animation walkingAnimation, Animation dieAnimation) {
-    super(health, goldWhenDead, speed, path);
+  public BaseMonster(List<Position> path, int health, int goldWhenDead, double speed, double hitBoxRadius, Animation walkingAnimation, Animation dieAnimation) {
+    super(health, goldWhenDead, speed, hitBoxRadius, path);
     this.walkingAnimation = walkingAnimation;
     this.dieAnimation = dieAnimation;
     this.dieAnimation.setCallback(() -> this.setReadyToBeRemoved(true));
@@ -51,10 +52,11 @@ public abstract class BaseMonster extends Monster {
    * @param speed            The monster base speed
    * @param walkingAnimation The monster walking animation
    * @param dieAnimation     The monster dying animation
+   * @param hitBoxRadius     Le rayon de la hit box du monstre
    * @param isFlying         If the monster if flying or not
    */
-  public BaseMonster(List<Position> path, int health, int goldWhenDead, double speed, boolean isFlying, Animation walkingAnimation, Animation dieAnimation) {
-    super(health, goldWhenDead, speed, path);
+  public BaseMonster(List<Position> path, int health, int goldWhenDead, double speed, double hitBoxRadius, boolean isFlying, Animation walkingAnimation, Animation dieAnimation) {
+    super(health, goldWhenDead, speed, hitBoxRadius, path);
     this.walkingAnimation = walkingAnimation;
     this.dieAnimation = dieAnimation;
     this.dieAnimation.setCallback(() -> this.setReadyToBeRemoved(true));

@@ -1,13 +1,13 @@
 package warcraftTD.monsters;
 
 import warcraftTD.WorldGame;
+import warcraftTD.libs.StdDraw;
 import warcraftTD.particules.EntityParticules;
 import warcraftTD.particules.ImageParticule;
 import warcraftTD.particules.RandomParticuleGenerator;
 import warcraftTD.utils.DrawableEntity;
 import warcraftTD.utils.Position;
 import warcraftTD.utils.Vector;
-
 
 import java.awt.*;
 import java.util.List;
@@ -55,16 +55,24 @@ public abstract class Monster extends DrawableEntity {
    */
   private int health;
   /**
+   * Le rayon de la hit box du monstre
+   */
+  private final double hitBoxRadius;
+
+  /**
    * The current remove status of the monster
    */
+
   private boolean isReadyToBeRemoved;
+
   /**
    * @param health       The monster base health
    * @param goldWhenDead The amount of gold the monster will drop when killed
    * @param speed        The monster base speed
    * @param path         The path the monster will follow
+   * @param hitBoxRadius Le rayon de la hit box du monstre
    */
-  public Monster(int health, int goldWhenDead, double speed, List<Position> path) {
+  public Monster(int health, int goldWhenDead, double speed, double hitBoxRadius, List<Position> path) {
     this.path = new LinkedList<>(path);
     this.position = this.path.get(0);
     this.vector = new Vector(this.position, this.path.get(0));
@@ -75,6 +83,7 @@ public abstract class Monster extends DrawableEntity {
     this.isReadyToBeRemoved = false;
     this.goldWhenDead = goldWhenDead;
     this.entityParticules = new EntityParticules();
+    this.hitBoxRadius = hitBoxRadius;
   }
 
   /**
@@ -146,6 +155,13 @@ public abstract class Monster extends DrawableEntity {
     return this.path.size() == 0;
   }
 
+
+  public void drawHitBox() {
+    StdDraw.setPenColor(new Color(0, 255, 217, 35));
+    StdDraw.filledCircle(this.position.getX(), this.position.getY(), this.hitBoxRadius);
+    StdDraw.setPenColor(new Color(0, 255, 217));
+    StdDraw.circle(this.position.getX(), this.position.getY(), this.hitBoxRadius);
+  }
 
   /**
    * Update the monster effects, figure out its next position and draw it
@@ -258,6 +274,15 @@ public abstract class Monster extends DrawableEntity {
    */
   public int getGoldWhenDead() {
     return this.goldWhenDead;
+  }
+
+  /**
+   * Récupère le rayon de la hit box du monstre
+   *
+   * @return Le rayon de la hit box du monstre
+   */
+  public double getHitBoxRadius() {
+    return this.hitBoxRadius;
   }
 
 }

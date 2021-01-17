@@ -16,6 +16,7 @@ public class FoolKnight extends BaseMonster {
         60,
         17,
         0.12,
+        0.02,
         new Animation(new String[]{
             "images/enemies/6/walk-0.png",
             "images/enemies/6/walk-1.png",

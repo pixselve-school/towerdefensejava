@@ -16,6 +16,7 @@ public class OgreKnight extends BaseMonster {
         40,
         15,
         0.15,
+        0.02,
         new Animation(new String[]{
             "images/enemies/5/walk-0.png",
             "images/enemies/5/walk-1.png",

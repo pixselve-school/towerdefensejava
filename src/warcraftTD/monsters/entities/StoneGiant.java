@@ -15,6 +15,7 @@ public class StoneGiant extends BaseMonster {
         300,
         100,
         0.08,
+        0.04,
         new Animation(new String[]{
             "images/enemies/10/walk-0.png",
             "images/enemies/10/walk-1.png",
