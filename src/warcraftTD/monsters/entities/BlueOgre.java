@@ -12,9 +12,9 @@ public class BlueOgre extends BaseMonster {
 
   public BlueOgre(List<Position> path) {
     super(path,
-        5,
-        5,
-        0.1,
+        100,
+        50,
+        0.2,
         new Animation(new String[]{
             "images/enemies/1/walk-0.png",
             "images/enemies/1/walk-1.png",

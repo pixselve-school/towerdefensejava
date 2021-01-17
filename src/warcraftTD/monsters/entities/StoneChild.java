@@ -16,7 +16,7 @@ public class StoneChild extends BaseMonster {
     super(path,
         15,
         15,
-        0.09,
+        0.1,
         new Animation(new String[]{
             "images/enemies/8/walk-0.png",
             "images/enemies/8/walk-1.png",

@@ -58,7 +58,7 @@ Health | Speed | Gold when killed
 
 Health | Speed | Gold when killed
 :---: | :---: | :---:
-0 | 0 | 0
+60 | 0.12 | 17
 
 ## Blue Ogre
 
@@ -68,7 +68,7 @@ Health | Speed | Gold when killed
 
 Health | Speed | Gold when killed
 :---: | :---: | :---:
-0 | 0 | 0
+100 | 0.2 | 50
 
 ## Stone Child
 
@@ -78,7 +78,7 @@ Health | Speed | Gold when killed
 
 Health | Speed | Gold when killed
 :---: | :---: | :---:
-0 | 0 | 0
+150 | 0.1 | 50
 
 ## Flying Ninja
 

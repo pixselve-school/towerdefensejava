@@ -879,7 +879,7 @@ public class InterfaceEditor extends Interface{
                     }
                     fileToSave.createNewFile();
                     FileWriter myWriter = new FileWriter(fileToSave.getAbsoluteFile());
-                    myWriter.write("MUSIC_PATH=music\\glorious.wav\n");
+                    myWriter.write("MUSIC_PATH=music\\glorious2.wav\n");
                     myWriter.write("LIFE="+this.lifeInitial+"\n");
                     myWriter.write("MONEY="+this.moneyInitial+"\n");
                     myWriter.write(this.getPathTextSave()+"\n");

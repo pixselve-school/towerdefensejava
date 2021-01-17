@@ -227,7 +227,7 @@ public class MainMenu extends Interface {
         break;
       case "lvl2":
         this.needReleaseMouse = true;
-        File lvl2 = new File("levels/level2.tdl");
+        File lvl2 = new File("levels/level2_official.tdl");
         Level level2 = new Level(lvl2);
         nextWorld = level2.getWorld(this);
         this.quit = true;
