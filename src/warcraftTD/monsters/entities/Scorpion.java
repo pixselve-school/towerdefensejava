@@ -7,8 +7,6 @@ import warcraftTD.utils.Position;
 import java.util.List;
 
 public class Scorpion extends BaseMonster {
-  public static double scaledHeight = 0.07;
-  public static double scaledWidth = 0.09;
 
   public Scorpion(List<Position> path) {
     super(path,
@@ -37,7 +35,7 @@ public class Scorpion extends BaseMonster {
             "images/enemies/1/walk-17.png",
             "images/enemies/1/walk-18.png",
             "images/enemies/1/walk-19.png",
-        }, scaledHeight, scaledWidth, null, 60, true),
+        }, 1.0, 1.0, null, 60, true),
         new Animation(new String[]{
             "images/enemies/1/die-0.png",
             "images/enemies/1/die-1.png",
@@ -59,14 +57,10 @@ public class Scorpion extends BaseMonster {
             "images/enemies/1/die-17.png",
             "images/enemies/1/die-18.png",
             "images/enemies/1/die-19.png",
-        }, scaledHeight, scaledWidth, null, 20, false));
-  }
-
-  public double getScaledHeight() {
-    return scaledHeight;
-  }
-
-  public double getScaledWidth() {
-    return scaledWidth;
+        }, 1.0, 1.0, null, 20, false));
+    this.setScaleHeight(0.07);
+    this.setScaleWidth(0.09);
+    this.setShiftX(-0.05);
+    this.setShiftY(-0.25);
   }
 }

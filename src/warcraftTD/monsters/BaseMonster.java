@@ -14,11 +14,11 @@ public abstract class BaseMonster extends Monster {
   /**
    * The walking animation of the monster
    */
-  private final Animation walkingAnimation;
+  private Animation walkingAnimation;
   /**
    * The dying animation of the monster
    */
-  private final Animation dieAnimation;
+  private Animation dieAnimation;
   /**
    * The monster is flying or not
    */
@@ -71,36 +71,23 @@ public abstract class BaseMonster extends Monster {
    */
   public void draw(double deltaTime) {
     if (this.isDead()) {
-      this.dieAnimation.draw(deltaTime);
+      this.dieAnimation.draw(deltaTime, this.getShiftX(), this.getShiftY());
     } else {
       double ratio = StdDraw.getPictureRatio(this.walkingAnimation.getCurrentFrame());
-      Position positionAnimation = new Position(this.getPosition().getX() + (this.getScaledHeight() * ratio) / 5, this.getPosition().getY() + this.getScaledHeight() / 3);
+      //Position positionAnimation = new Position(this.getPosition().getX() + (this.getScaledHeight() * ratio) / 5, this.getPosition().getY() + this.getScaledHeight() / 3);
+      Position positionAnimation = new Position(this.getPosition().getX(), this.getPosition().getY());
 
       if (this.isFlying) {
         StdDraw.setPenColor(Color.gray);
-        StdDraw.filledEllipse(this.getPosition().getX() - 0.01, this.getPosition().getY(), 0.015, 0.005);
+        StdDraw.filledEllipse(this.getPosition().getX(), this.getPosition().getY(), 0.15*this.getScaleWidth(), 0.05*this.getScaleHeight());
       }
 
       this.walkingAnimation.setPosition(positionAnimation);
       this.dieAnimation.setPosition(positionAnimation);
-      this.walkingAnimation.draw(deltaTime);
+      this.walkingAnimation.draw(deltaTime, this.getShiftX(), this.getShiftY());
 
     }
   }
-
-  /**
-   * Get the scaled height of the monster
-   *
-   * @return The scaled height of the monster
-   */
-  public abstract double getScaledHeight();
-
-  /**
-   * Get the scaled width of the monster
-   *
-   * @return The scaled width of the monster
-   */
-  public abstract double getScaledWidth();
 
   /**
    * Check if the monster is flying
@@ -109,5 +96,21 @@ public abstract class BaseMonster extends Monster {
    */
   public boolean isFlying() {
     return this.isFlying;
+  }
+
+
+  public Animation getWalkingAnimation() {
+    return this.walkingAnimation;
+  }
+
+  public Animation getDieAnimation() {
+    return this.dieAnimation;
+  }
+
+  @Override
+  public void resizeMonster(int nbSquareX, int nbSquareY) {
+    super.resizeMonster(nbSquareX, nbSquareY);
+    this.getDieAnimation().setScaledHeight(this.getScaleHeight());
+    this.getWalkingAnimation().setScaledHeight(this.getScaleHeight());
   }
 }

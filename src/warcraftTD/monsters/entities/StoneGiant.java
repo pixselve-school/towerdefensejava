@@ -7,8 +7,6 @@ import warcraftTD.utils.Position;
 import java.util.List;
 
 public class StoneGiant extends BaseMonster {
-  public static double scaledHeight = 0.2;
-  public static double scaledWidth = 0.25;
 
   public StoneGiant(List<Position> path) {
     super(path,
@@ -37,7 +35,7 @@ public class StoneGiant extends BaseMonster {
             "images/enemies/10/walk-17.png",
             "images/enemies/10/walk-18.png",
             "images/enemies/10/walk-19.png",
-        }, scaledHeight, scaledWidth, null, 10, true),
+        }, 1.0, 1.0, null, 10, true),
         new Animation(new String[]{
             "images/enemies/10/die-0.png",
             "images/enemies/10/die-1.png",
@@ -59,15 +57,11 @@ public class StoneGiant extends BaseMonster {
             "images/enemies/10/die-17.png",
             "images/enemies/10/die-18.png",
             "images/enemies/10/die-19.png",
-        }, scaledHeight, scaledWidth, null, 10, false)
+        }, 1.0, 1.0, null, 10, false)
     );
-  }
-
-  public double getScaledHeight() {
-    return scaledHeight;
-  }
-
-  public double getScaledWidth() {
-    return scaledWidth;
+    this.setScaleHeight(0.2);
+    this.setScaleWidth(0.25);
+    this.setShiftX(-0.15);
+    this.setShiftY(-0.35);
   }
 }

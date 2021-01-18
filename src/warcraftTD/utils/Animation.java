@@ -2,10 +2,13 @@ package warcraftTD.utils;
 
 import warcraftTD.libs.StdDraw;
 
+import javax.swing.*;
+import java.awt.*;
+
 
 public class Animation {
   private final String[] imagesPaths;
-  private final double scaledHeight;
+  private double scaledHeight;
   private final double scaledWidth;
 
   private Position position;
@@ -63,11 +66,33 @@ public class Animation {
     if(this.position!=null) StdDraw.pictureHeight(this.position.getX(), this.position.getY(), this.imagesPaths[this.currentFrame], this.scaledHeight);
   }
 
+  public void draw(double deltaTime, double shiftX, double shiftY) {
+    this.timeTracking += deltaTime;
+    if (this.timeTracking >= 1.0 / this.fps) {
+      this.currentFrame++;
+      this.timeTracking = 0;
+      if (this.currentFrame >= this.imagesPaths.length) {
+        if (this.isLoop) {
+          this.currentFrame = 0;
+        } else {
+          assert this.callback != null;
+          this.callback.die();
+          return;
+        }
+      }
+    }
+    if(this.position!=null) StdDraw.pictureHeight(this.position.getX() - shiftX, this.position.getY() - shiftY, this.imagesPaths[this.currentFrame], this.scaledHeight);
+  }
+
   public void setPosition(Position position) {
     this.position = position;
   }
 
   public String getCurrentFrame() {
     return this.imagesPaths[this.currentFrame];
+  }
+
+  public void setScaledHeight(double scaledHeight) {
+    this.scaledHeight = scaledHeight;
   }
 }

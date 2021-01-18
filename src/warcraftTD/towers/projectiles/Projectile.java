@@ -70,7 +70,7 @@ public abstract class Projectile {
     }
 
     for (Monster m : this.world.getMonsters()) {
-      if (m.getPosition().dist(this.position) < this.hitrange) return this.onCollideMonster(m);
+      if (m.getPosition().dist(this.position) < this.hitrange+m.getHitBoxRadius()) return this.onCollideMonster(m);
     }
 
     return true;
