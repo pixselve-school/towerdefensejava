@@ -30,7 +30,7 @@ public class Grass extends Tile {
    * Draw the static part of the tile
    */
   public void drawStaticPart() {
-    StdDraw.picture(this.getPosition().getX(), this.getPosition().getY(), "images/tiles/grass.png", this.getWidth(), this.getHeight());
+    StdDraw.picture(this.getPosition().getX(), this.getPosition().getY(), "images/tiles/grass.png", this.getWidth() + 0.001, this.getHeight() + 0.001);
   }
 
 

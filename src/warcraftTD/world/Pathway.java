@@ -35,8 +35,8 @@ public class Pathway extends Tile {
     Position bottomLeft = new Position(this.getPosition().getX() - this.getWidth() / 4, this.getPosition().getY() - this.getHeight() / 4);
     Position bottomRight = new Position(this.getPosition().getX() + this.getWidth() / 4, this.getPosition().getY() - this.getHeight() / 4);
 
-    final double HALF_WIDTH = this.getWidth() / 2;
-    final double HALF_HEIGHT = this.getHeight() / 2;
+    final double HALF_WIDTH = this.getWidth() / 2 + 0.001;
+    final double HALF_HEIGHT = this.getHeight() / 2 + 0.001;
 
     switch (this.getDirectionValue()) {
       case 0:
