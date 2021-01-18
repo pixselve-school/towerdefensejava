@@ -1,4 +1,4 @@
-# Age of Tower
+# ![Age of Tower](https://i.imgur.com/U0nfmuM.gif)
 
 A project by Mael KERICHARD and Romain BRIEND realized for the final project of Object Programming class of the
 University of Rennes 1
