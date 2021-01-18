@@ -58,12 +58,69 @@ public abstract class Monster extends DrawableEntity {
    * Le rayon de la hit box du monstre
    */
   private final double hitBoxRadius;
-
   /**
    * The current remove status of the monster
    */
-
   private boolean isReadyToBeRemoved;
+  /**
+   * Décalage horizontal pour l'affichage du monstre
+   */
+  private double shiftX;
+  /**
+   * Décalage vertical pour l'affichage du monstre
+   */
+  private double shiftY;
+
+  private double scaleWidth;
+  private double scaleHeight;
+
+  public double getScaleWidth() {
+    return this.scaleWidth;
+  }
+
+  public void setScaleWidth(double scaleWidth) {
+    this.scaleWidth = scaleWidth;
+  }
+
+  public double getScaleHeight() {
+    return this.scaleHeight;
+  }
+
+  public void setScaleHeight(double scaleHeight) {
+    this.scaleHeight = scaleHeight;
+  }
+
+  /**
+   * Récupère le décalage horizontal d'affichage du monstre
+   * @return le décalage horizontal pour l'affichage du monstre
+   */
+  public double getShiftX() {
+    return this.shiftX;
+  }
+
+  /**
+   * Modifie décalage horizontal d'affichage du monstre
+   * @param shiftX le décalage horizontal pour l'affichage du monstre
+   */
+  public void setShiftX(double shiftX) {
+    this.shiftX = shiftX;
+  }
+
+  /**
+   * Récupère le décalage vertical d'affichage du monstre
+   * @return le décalage vertical pour l'affichage du monstre
+   */
+  public double getShiftY() {
+    return this.shiftY;
+  }
+
+  /**
+   * Modifie décalage vertical d'affichage du monstre
+   * @param shiftY le décalage vertical pour l'affichage du monstre
+   */
+  public void setShiftY(double shiftY) {
+    this.shiftY = shiftY;
+  }
 
   /**
    * @param health       The monster base health
@@ -283,6 +340,20 @@ public abstract class Monster extends DrawableEntity {
    */
   public double getHitBoxRadius() {
     return this.hitBoxRadius;
+  }
+
+  /**
+   * Redimensionne l'apparence du monstre en fonction de la taille de la carte
+   * @param nbSquareX nombre de tuiles horizontales
+   * @param nbSquareY nombre de tuiles verticales
+   */
+  public void resizeMonster(int nbSquareX, int nbSquareY){
+    System.out.println(this.scaleHeight);
+    this.scaleHeight = this.scaleHeight / nbSquareY * 11;
+    System.out.println(this.scaleHeight);
+    this.scaleWidth = this.scaleWidth / nbSquareX * 11;
+    this.setShiftX(this.shiftX*this.scaleWidth);
+    this.setShiftY(this.shiftY*this.scaleHeight);
   }
 
 }

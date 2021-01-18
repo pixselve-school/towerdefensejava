@@ -8,10 +8,6 @@ import warcraftTD.utils.Position;
 import java.util.List;
 
 public class ScienceKnight extends BaseMonster {
-  public static double scaledHeight = 0.1;
-  public static double scaledWidth = 0.1;
-
-
   public ScienceKnight(List<Position> path) {
     super(path,
         12,
@@ -39,7 +35,7 @@ public class ScienceKnight extends BaseMonster {
             "images/enemies/4/walk-17.png",
             "images/enemies/4/walk-18.png",
             "images/enemies/4/walk-19.png",
-        }, scaledHeight, scaledWidth, null, 60, true),
+        }, 1.0, 1.0, null, 60, true),
         new Animation(new String[]{
             "images/enemies/4/die-0.png",
             "images/enemies/4/die-1.png",
@@ -61,15 +57,11 @@ public class ScienceKnight extends BaseMonster {
             "images/enemies/4/die-17.png",
             "images/enemies/4/die-18.png",
             "images/enemies/4/die-19.png",
-        }, scaledHeight, scaledWidth, null, 20, false)
+        }, 1.0, 1.0, null, 20, false)
     );
-  }
-
-  public double getScaledHeight() {
-    return scaledHeight;
-  }
-
-  public double getScaledWidth() {
-    return scaledWidth;
+    this.setScaleHeight(0.1);
+    this.setScaleWidth(0.1);
+    this.setShiftX(-0.15);
+    this.setShiftY(-0.28);
   }
 }

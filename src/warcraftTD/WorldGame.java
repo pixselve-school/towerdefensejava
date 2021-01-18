@@ -7,6 +7,7 @@ import warcraftTD.hud.MainMenu;
 import warcraftTD.libs.StdDraw;
 import warcraftTD.monsters.Monster;
 import warcraftTD.monsters.Wave;
+import warcraftTD.monsters.entities.Scorpion;
 import warcraftTD.towers.*;
 import warcraftTD.utils.*;
 import warcraftTD.world.*;
@@ -118,6 +119,7 @@ public class WorldGame extends World {
    * @param monster le monstre à ajouter
    */
   public void addMonster(Monster monster) {
+    monster.resizeMonster(this.getNbSquareX(), this.getNbSquareY());
     this.monsters.add(monster);
   }
 
