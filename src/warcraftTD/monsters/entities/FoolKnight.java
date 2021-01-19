@@ -6,9 +6,17 @@ import warcraftTD.utils.Position;
 
 import java.util.List;
 
+/**
+ * Chevalier fou
+ */
 public class FoolKnight extends BaseMonster {
 
 
+  /**
+   * Création d'un chevalier fou
+   *
+   * @param path Le chemin que le montre va emprunter
+   */
   public FoolKnight(List<Position> path) {
     super(path,
         60,

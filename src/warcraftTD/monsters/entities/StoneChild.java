@@ -1,14 +1,21 @@
 package warcraftTD.monsters.entities;
 
-import warcraftTD.WorldGame;
 import warcraftTD.monsters.BaseMonster;
 import warcraftTD.utils.Animation;
 import warcraftTD.utils.Position;
 
 import java.util.List;
 
+/**
+ * Enfant de pierre
+ */
 public class StoneChild extends BaseMonster {
 
+  /**
+   * Création d'un enfant de pierre
+   *
+   * @param path Le chemin que le montre va emprunter
+   */
   public StoneChild(List<Position> path) {
     super(path,
         15,

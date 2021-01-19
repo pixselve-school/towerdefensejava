@@ -6,8 +6,16 @@ import warcraftTD.utils.Position;
 
 import java.util.List;
 
+/**
+ * Géant de pierre
+ */
 public class StoneGiant extends BaseMonster {
 
+  /**
+   * Création d'un géant de pierre
+   *
+   * @param path Le chemin que le montre va emprunter
+   */
   public StoneGiant(List<Position> path) {
     super(path,
         300,

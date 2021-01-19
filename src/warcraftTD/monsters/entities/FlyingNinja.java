@@ -6,8 +6,16 @@ import warcraftTD.utils.Position;
 
 import java.util.List;
 
+/**
+ * Ninja volant
+ */
 public class FlyingNinja extends BaseMonster {
 
+  /**
+   * Creation d'un ninja volant
+   *
+   * @param path Le chemin que le montre va emprunter
+   */
   public FlyingNinja(List<Position> path) {
     super(path,
         15,

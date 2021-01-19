@@ -6,8 +6,16 @@ import warcraftTD.utils.Position;
 
 import java.util.List;
 
+/**
+ * Mage
+ */
 public class Mage extends BaseMonster {
 
+  /**
+   * Mage
+   *
+   * @param path Le chemin que le montre va emprunter
+   */
   public Mage(List<Position> path) {
     super(path,
         25,

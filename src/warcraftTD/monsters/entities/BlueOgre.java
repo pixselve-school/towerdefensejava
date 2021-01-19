@@ -6,8 +6,16 @@ import warcraftTD.utils.Position;
 
 import java.util.List;
 
+/**
+ * Ogre bleu
+ */
 public class BlueOgre extends BaseMonster {
 
+  /**
+   * Creation d'un ogre bleu
+   *
+   * @param path Le chemin que le montre va emprunter
+   */
   public BlueOgre(List<Position> path) {
     super(path,
         100,

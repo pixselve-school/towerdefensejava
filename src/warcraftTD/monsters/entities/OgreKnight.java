@@ -6,8 +6,16 @@ import warcraftTD.utils.Position;
 
 import java.util.List;
 
+/**
+ * Ogre chevalier
+ */
 public class OgreKnight extends BaseMonster {
 
+  /**
+   * Création d'un ogre chevalier
+   *
+   * @param path Le chemin que le montre va emprunter
+   */
   public OgreKnight(List<Position> path) {
     super(path,
         40,

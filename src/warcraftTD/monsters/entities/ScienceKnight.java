@@ -1,13 +1,20 @@
 package warcraftTD.monsters.entities;
 
-import warcraftTD.WorldGame;
 import warcraftTD.monsters.BaseMonster;
 import warcraftTD.utils.Animation;
 import warcraftTD.utils.Position;
 
 import java.util.List;
 
+/**
+ * Chevalier de science fiction
+ */
 public class ScienceKnight extends BaseMonster {
+  /**
+   * Création d'un chevalier de science fiction
+   *
+   * @param path Le chemin que le montre va emprunter
+   */
   public ScienceKnight(List<Position> path) {
     super(path,
         12,

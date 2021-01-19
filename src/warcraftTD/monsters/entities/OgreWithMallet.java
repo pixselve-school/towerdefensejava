@@ -6,8 +6,16 @@ import warcraftTD.utils.Position;
 
 import java.util.List;
 
+/**
+ * Ogre avec une masse
+ */
 public class OgreWithMallet extends BaseMonster {
 
+  /**
+   * Création d'un ogre avec une masse
+   *
+   * @param path Le chemin que le montre va emprunter
+   */
   public OgreWithMallet(List<Position> path) {
     super(path,
         50,

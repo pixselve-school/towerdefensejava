@@ -6,8 +6,16 @@ import warcraftTD.utils.Position;
 
 import java.util.List;
 
+/**
+ * Scorpion
+ */
 public class Scorpion extends BaseMonster {
 
+  /**
+   * Création d'un scorpion
+   *
+   * @param path Le chemin que le montre va emprunter
+   */
   public Scorpion(List<Position> path) {
     super(path,
         5,
