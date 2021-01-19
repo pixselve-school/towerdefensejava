@@ -1,37 +1,37 @@
 package warcraftTD.monsters;
 
 /**
- * The Effect class
+ * Un effet
  */
 public class Effect {
   /**
-   * The amount the health will be multiplied to
+   * Le montant auquel la santé sera multipliée
    */
   private double healthMultiplier;
   /**
-   * The amount the health that will be added
+   * Le montant de la santé qui sera ajouté
    */
   private double healthAdd;
   /**
-   * The amount the speed will be multiplied to
+   * Le montant auquel la vitesse sera multipliée
    */
   private double speedMultiplier;
   /**
-   * The effect duration
+   * La durée de l'effet
    */
   private double duration;
   /**
-   * The time tracking if the effect
+   * Le suivi du temps de l'effet
    */
   private double timeTracking;
 
   /**
-   * Create a new effect
+   * Créer un nouvel effet
    *
-   * @param duration         The effect duration
-   * @param healthMultiplier The amount the health will be multiplied to
-   * @param healthAdd        The amount the health that will be added
-   * @param speedMultiplier  The amount the speed will be multiplied to
+   * @param duration         La durée de l'effet
+   * @param healthMultiplier Le montant auquel la santé sera multipliée
+   * @param healthAdd        Le montant de la santé qui sera ajouté
+   * @param speedMultiplier  Le montant auquel la vitesse sera multipliée
    */
   public Effect(double duration, double healthMultiplier, double healthAdd, double speedMultiplier) {
     this.healthMultiplier = healthMultiplier;
@@ -42,34 +42,34 @@ public class Effect {
   }
 
   /**
-   * Get the the time tracking if the effect
+   * Récupère le suivi du temps de l'effet
    *
-   * @return The time tracking if the effect
+   * @return Le suivi du temps de l'effet
    */
   public double getTimeTracking() {
     return this.timeTracking;
   }
 
   /**
-   * Reset the the time tracking if the effect
+   * Réinitialise le suivi du temps de l'effet
    */
   public void resetTimeTracking() {
     this.timeTracking = 0.0;
   }
 
   /**
-   * Add time to the the time tracking if the effect
+   * Ajoute du temps au suivi du temps de l'effet
    *
-   * @param value The value that will be added
+   * @param value le temps à ajouter
    */
   public void addTimeToTimeTracking(double value) {
     this.timeTracking += value;
   }
 
   /**
-   * Get the Effect as a String
+   * Récupère l'effet sous forme d'une chaine de caractère
    *
-   * @return The Effect as a String
+   * @return l'effet sous forme d'une chaine de caractère
    */
   public String toString() {
     return "Effect{" +
@@ -81,81 +81,81 @@ public class Effect {
   }
 
   /**
-   * Get the amount the health will be multiplied to
+   * Récupère le montant auquel la santé sera multipliée
    *
-   * @return The amount the health will be multiplied to
+   * @return Le montant auquel la santé sera multipliée
    */
   public double getHealthMultiplier() {
     return this.healthMultiplier;
   }
 
   /**
-   * Set the amount the health will be multiplied to
+   * Change le montant auquel la santé sera multipliée
    *
-   * @param healthMultiplier The new amount the health will be multiplied to
+   * @param healthMultiplier Le nouveau montant auquel la santé sera multipliée
    */
   public void setHealthMultiplier(double healthMultiplier) {
     this.healthMultiplier = healthMultiplier;
   }
 
   /**
-   * Get the amount the health that will be added
+   * Récupère le montant de la santé qui sera ajouté
    *
-   * @return The amount the health that will be added
+   * @return Le montant de la santé qui sera ajouté
    */
   public double getHealthAdd() {
     return this.healthAdd;
   }
 
   /**
-   * Set the amount the health that will be added
+   * Change le montant de la santé qui sera ajouté
    *
-   * @param healthAdd The new amount the health that will be added
+   * @param healthAdd Le nouveau montant de la santé qui sera ajouté
    */
   public void setHealthAdd(double healthAdd) {
     this.healthAdd = healthAdd;
   }
 
   /**
-   * Get the amount the speed will be multiplied to
+   * Récupère le montant auquel la vitesse sera multipliée
    *
-   * @return The amount the speed will be multiplied to
+   * @return Le montant auquel la vitesse sera multipliée
    */
   public double getSpeedMultiplier() {
     return this.speedMultiplier;
   }
 
   /**
-   * Set the amount the speed will be multiplied to
+   * Change le montant auquel la vitesse sera multipliée
    *
-   * @param speedMultiplier The new amount the speed will be multiplied to
+   * @param speedMultiplier Le nouveau montant auquel la vitesse sera multipliée
    */
   public void setSpeedMultiplier(double speedMultiplier) {
     this.speedMultiplier = speedMultiplier;
   }
 
   /**
-   * Get the effect duration
+   * Récupère la durée de l'effet
    *
-   * @return The effect duration
+   * @return La durée de l'effet
    */
   public double getDuration() {
     return this.duration;
   }
 
   /**
-   * Set the effect duration
+   * Change la durée de l'effet
    *
-   * @param duration The new effect duration
+   * @param duration La nouvelle durée de l'effet
    */
   public void setDuration(double duration) {
     this.duration = duration;
   }
 
   /**
-   * Set the effect duration if the new duration is greater than the current one
+   * Change la durée de l'effet si la nouvelle valeur est supérieur à l'ancienne
    *
-   * @param duration The new duration
+   * @param duration La nouvelle durée de l'effet
    */
   public void setDurationIfGreater(int duration) {
     this.duration = Math.max(this.duration, duration);
