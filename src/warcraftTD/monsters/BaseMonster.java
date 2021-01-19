@@ -71,20 +71,16 @@ public abstract class BaseMonster extends Monster {
    */
   public void draw(double deltaTime) {
     if (this.isDead()) {
-      this.dieAnimation.draw(deltaTime, this.getShiftX(), this.getShiftY());
+      this.dieAnimation.draw(deltaTime);
     } else {
-      double ratio = StdDraw.getPictureRatio(this.walkingAnimation.getCurrentFrame());
-      //Position positionAnimation = new Position(this.getPosition().getX() + (this.getScaledHeight() * ratio) / 5, this.getPosition().getY() + this.getScaledHeight() / 3);
-      Position positionAnimation = new Position(this.getPosition().getX(), this.getPosition().getY());
-
+      Position positionAnimation = new Position(this.getPosition().getX() - this.getShiftX(), this.getPosition().getY() - this.getShiftY());
       if (this.isFlying) {
         StdDraw.setPenColor(Color.gray);
         StdDraw.filledEllipse(this.getPosition().getX(), this.getPosition().getY(), 0.15 * this.getScaleWidth(), 0.05 * this.getScaleHeight());
       }
-
       this.walkingAnimation.setPosition(positionAnimation);
       this.dieAnimation.setPosition(positionAnimation);
-      this.walkingAnimation.draw(deltaTime, this.getShiftX(), this.getShiftY());
+      this.walkingAnimation.draw(deltaTime);
 
     }
   }
