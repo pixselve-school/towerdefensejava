@@ -21,6 +21,10 @@ import java.util.stream.Collectors;
  */
 public class Level {
   /**
+   * Vagues
+   */
+  private final List<Wave> waves;
+  /**
    * Chemin vers la musique du niveau
    */
   private String musicPath;
@@ -44,10 +48,6 @@ public class Level {
    * Nombre de tuiles sur l'axe Y
    */
   private int nbSquareY;
-  /**
-   * Vagues
-   */
-  private final List<Wave> waves;
   /**
    * Donnée des vagues
    */

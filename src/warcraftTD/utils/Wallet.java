@@ -5,8 +5,8 @@ import warcraftTD.WorldGame;
 import java.awt.*;
 
 public class Wallet {
-  private int money;
   private final WorldGame world;
+  private int money;
 
   public Wallet(WorldGame world) {
     this.world = world;

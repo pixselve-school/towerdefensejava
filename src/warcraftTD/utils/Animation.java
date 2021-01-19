@@ -12,6 +12,14 @@ public class Animation {
    */
   private final String[] imagesPaths;
   /**
+   * Images par seconde
+   */
+  private final int fps;
+  /**
+   * Indique si l'animation doit se répéter indéfiniment
+   */
+  private final boolean isLoop;
+  /**
    * Hauteur de l'animation
    */
   private double scaledHeight;
@@ -20,10 +28,6 @@ public class Animation {
    */
   private Position position;
   /**
-   * Images par seconde
-   */
-  private final int fps;
-  /**
    * Suivi du temps
    */
   private double timeTracking;
@@ -31,20 +35,6 @@ public class Animation {
    * Image actuelle de l'animation
    */
   private int currentFrame;
-  /**
-   * Indique si l'animation doit se répéter indéfiniment
-   */
-  private final boolean isLoop;
-
-  /**
-   * Modifie la fonction qui s'exécutera une fois l'animation terminée
-   *
-   * @param callback La fonction qui s'exécutera une fois l'animation terminée
-   */
-  public void setCallback(MonsterDieCallback callback) {
-    this.callback = callback;
-  }
-
   /**
    * La fonction qui s'exécutera une fois l'animation terminée
    */
@@ -91,6 +81,15 @@ public class Animation {
   }
 
   /**
+   * Modifie la fonction qui s'exécutera une fois l'animation terminée
+   *
+   * @param callback La fonction qui s'exécutera une fois l'animation terminée
+   */
+  public void setCallback(MonsterDieCallback callback) {
+    this.callback = callback;
+  }
+
+  /**
    * Dessine l'animation
    *
    * @param deltaTime Le temps
@@ -113,6 +112,7 @@ public class Animation {
     if (this.position != null)
       StdDraw.pictureHeight(this.position.getX(), this.position.getY(), this.getCurrentFrame(), this.scaledHeight);
   }
+
   /**
    * Modifie la position de l'animation
    *
