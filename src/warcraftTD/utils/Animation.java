@@ -55,12 +55,11 @@ public class Animation {
    *
    * @param imagesPaths  Chemins d'accès vers les images de l'animation
    * @param scaledHeight Hauteur de l'animation
-   * @param scaledWidth  Largeur de l'animation (NON APPLICABLE)
    * @param position     Position de l'animation
    * @param fps          Images par seconde
    * @param isLoop       Indique si l'animation doit se répéter indéfiniment
    */
-  public Animation(String[] imagesPaths, double scaledHeight, double scaledWidth, Position position, int fps, boolean isLoop) {
+  public Animation(String[] imagesPaths, double scaledHeight, Position position, int fps, boolean isLoop) {
     this.imagesPaths = imagesPaths;
     this.scaledHeight = scaledHeight;
     this.position = position;
@@ -76,12 +75,11 @@ public class Animation {
    *
    * @param imagesPaths  Chemins d'accès vers les images de l'animation
    * @param scaledHeight Hauteur de l'animation
-   * @param scaledWidth  Largeur de l'animation (NON APPLICABLE)
    * @param position     Position de l'animation
    * @param fps          Images par seconde
    * @param callback     La fonction qui s'exécutera une fois l'animation terminée
    */
-  public Animation(String[] imagesPaths, double scaledHeight, double scaledWidth, Position position, int fps, MonsterDieCallback callback) {
+  public Animation(String[] imagesPaths, double scaledHeight, Position position, int fps, MonsterDieCallback callback) {
     this.imagesPaths = imagesPaths;
     this.scaledHeight = scaledHeight;
     this.position = position;
