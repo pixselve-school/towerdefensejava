@@ -243,14 +243,6 @@ public abstract class Monster extends DrawableEntity {
     return this.path.size() == 0;
   }
 
-
-  public void drawHitBox() {
-    StdDraw.setPenColor(new Color(0, 255, 217, 35));
-    StdDraw.filledCircle(this.position.getX(), this.position.getY(), this.hitBoxRadius);
-    StdDraw.setPenColor(new Color(0, 255, 217));
-    StdDraw.circle(this.position.getX(), this.position.getY(), this.hitBoxRadius);
-  }
-
   /**
    * Actualisez les effets du monstre, déterminez sa prochaine position et dessine le monstre
    *
