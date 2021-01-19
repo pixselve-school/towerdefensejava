@@ -1,6 +1,27 @@
 package warcraftTD.world;
 
+/**
+ * Types des fleurs
+ */
 public enum FlowerType {
-  BLUE, RED, WHITE, YELLOW, BUSH
-
+  /**
+   * Fleur bleue
+   */
+  BLUE,
+  /**
+   * Buisson
+   */
+  BUSH,
+  /**
+   * Fleur rouge
+   */
+  RED,
+  /**
+   * Fleur blanche
+   */
+  WHITE,
+  /**
+   * Fleur jaune
+   */
+  YELLOW
 }
