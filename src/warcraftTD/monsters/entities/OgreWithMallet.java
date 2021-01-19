@@ -6,8 +6,16 @@ import warcraftTD.utils.Position;
 
 import java.util.List;
 
+/**
+ * Ogre avec une masse
+ */
 public class OgreWithMallet extends BaseMonster {
 
+  /**
+   * Création d'un ogre avec une masse
+   *
+   * @param path Le chemin que le montre va emprunter
+   */
   public OgreWithMallet(List<Position> path) {
     super(path,
         50,
@@ -35,7 +43,7 @@ public class OgreWithMallet extends BaseMonster {
             "images/enemies/3/walk-17.png",
             "images/enemies/3/walk-18.png",
             "images/enemies/3/walk-19.png",
-        }, 1.0, 1.0, null, 60, true),
+        }, 1.0, null, 60, true),
         new Animation(new String[]{
             "images/enemies/3/die-0.png",
             "images/enemies/3/die-1.png",
@@ -57,7 +65,7 @@ public class OgreWithMallet extends BaseMonster {
             "images/enemies/3/die-17.png",
             "images/enemies/3/die-18.png",
             "images/enemies/3/die-19.png",
-        }, 1.0, 1.0, null, 20, false)
+        }, 1.0, null, 20, false)
     );
     this.setScaleHeight(0.1);
     this.setScaleWidth(0.1);

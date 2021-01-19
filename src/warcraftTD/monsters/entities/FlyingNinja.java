@@ -6,8 +6,16 @@ import warcraftTD.utils.Position;
 
 import java.util.List;
 
+/**
+ * Ninja volant
+ */
 public class FlyingNinja extends BaseMonster {
 
+  /**
+   * Creation d'un ninja volant
+   *
+   * @param path Le chemin que le montre va emprunter
+   */
   public FlyingNinja(List<Position> path) {
     super(path,
         15,
@@ -36,7 +44,7 @@ public class FlyingNinja extends BaseMonster {
             "images/enemies/9/jump-17.png",
             "images/enemies/9/jump-18.png",
             "images/enemies/9/jump-19.png",
-        }, 1.0, 1.0, null, 30, true),
+        }, 1.0, null, 30, true),
         new Animation(new String[]{
             "images/enemies/9/die-0.png",
             "images/enemies/9/die-1.png",
@@ -58,7 +66,7 @@ public class FlyingNinja extends BaseMonster {
             "images/enemies/9/die-17.png",
             "images/enemies/9/die-18.png",
             "images/enemies/9/die-19.png",
-        }, 1.0, 1.0, null, 20, false)
+        }, 1.0, null, 20, false)
     );
     this.setScaleHeight(0.1);
     this.setScaleWidth(0.1);

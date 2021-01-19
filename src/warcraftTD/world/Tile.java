@@ -11,23 +11,54 @@ import java.awt.*;
 import java.util.Map;
 import java.util.Random;
 
+/**
+ * Tuile
+ */
 abstract public class Tile extends DrawableEntity {
+  /**
+   * La position de la tuile avec x et y entre 0 et 1
+   */
   private final Position position;
+  /**
+   * La position de la tuile (non normalisée)
+   */
   private final Position plainPosition;
+  /**
+   * La hauteur de la tuile entre 0 et 1
+   */
   private final double height;
+  /**
+   * La largeur de la tuile entre 0 et 1
+   */
   private final double width;
-  private boolean selected;
-  private boolean debug;
-  private int directionValue;
-  private Entity contains;
+  /**
+   * Particules de la tuile
+   */
   private final EntityParticules tileParticules;
+  /**
+   * Indique si la tuile est sélectionnée
+   */
+  private boolean selected;
+  /**
+   * Indique si la tuile est en mode debug
+   */
+  private final boolean debug;
+  /**
+   * Valeur de direction
+   */
+  private int directionValue;
+  /**
+   * Entité de la tuile
+   */
+  private Entity contains;
 
   /**
-   * Create a tile
+   * Créer une tuile
    *
-   * @param position The tile position with x and y between 0 and 1
-   * @param height   The tile height between 0 and 1
-   * @param width    The tile width between 0 and 1
+   * @param position      La position de la tuile avec x et y entre 0 et 1
+   * @param plainPosition La position de la tuile (non normalisée)
+   * @param height        La hauteur de la tuile entre 0 et 1
+   * @param width         La largeur de la tuile entre 0 et 1
    */
   public Tile(Position position, Position plainPosition, double height, double width) {
     if (position.getX() > 1 || position.getX() < 0)
@@ -46,37 +77,52 @@ abstract public class Tile extends DrawableEntity {
     this.plainPosition = plainPosition;
   }
 
+  /**
+   * Vérifie si une position est visible
+   *
+   * @param position Une position
+   * @return true si la position est visible
+   */
+  public static boolean isPositionInView(Position position) {
+    return position.getX() >= 0 && position.getY() >= 0 && position.getX() < 1 && position.getY() < 1;
+  }
+
+  /**
+   * Récupère les particules de la tuile
+   *
+   * @return Les particules de la tuile
+   */
   public EntityParticules getTileParticules() {
     return this.tileParticules;
   }
 
   /**
-   * Update the tile
+   * Actualiser la tuile
    *
-   * @param deltaTime Game delta time
+   * @param deltaTime Le delta temps du jeu
    */
   public abstract void update(double deltaTime);
 
-
   /**
-   * Draw the static part of the tile
+   * Dessiner la partie statique de la tuile
    */
   public abstract void drawStaticPart();
 
   /**
-   * Draw the animated part of the tile
+   * Dessine la partie animée de la tuile
    *
-   * @param deltaTime The game delta time
+   * @param deltaTime Le delta temps du jeu
    */
   public void drawAnimatedPart(double deltaTime) {
     this.tileParticules.updateGenerators(deltaTime);
   }
 
-
-  public static boolean isPositionInView(Position position) {
-    return position.getX() >= 0 && position.getY() >= 0 && position.getX() < 1 && position.getY() < 1;
-  }
-
+  /**
+   * Actualise la valeur de direction
+   *
+   * @param globalTiles Les tuiles du monde
+   * @param cascade     Si la vérification doit s'effectuer sur les tuiles adjacentes
+   */
   public void updateDirectionValue(Map<Position, Tile> globalTiles, boolean cascade) {
     final Position topPosition = new Position(this.plainPosition.getX(), this.plainPosition.getY() + 1);
     Tile topTile = globalTiles.get(topPosition);
@@ -115,14 +161,20 @@ abstract public class Tile extends DrawableEntity {
     }
   }
 
+  /**
+   * Dessine les paramètres de la tuile
+   */
   public void drawSettings() {
     this.drawDebug();
     if (this.selected) {
-      //this.drawSelected();
+      this.drawSelected();
     }
 
   }
 
+  /**
+   * Dessine l'affichage debug de la tuile
+   */
   public void drawDebug() {
     if (this.debug) {
       this.drawOverlay(new Color(0, 0, 0, (float) 0.5));
@@ -132,10 +184,19 @@ abstract public class Tile extends DrawableEntity {
     }
   }
 
+  /**
+   * Dessine l'affichage selection de la tuile
+   */
   public void drawSelected() {
-    this.drawSelected(Color.darkGray, 0.003);
+//    this.drawSelected(Color.darkGray, 0.003);
   }
 
+  /**
+   * Sélectionne la tuile
+   *
+   * @param color  La couleur de la sélection
+   * @param radius L'épaisseur du trait de sélection
+   */
   public void drawSelected(Color color, double radius) {
 
     StdDraw.setPenColor(color);
@@ -144,11 +205,19 @@ abstract public class Tile extends DrawableEntity {
 
   }
 
+  /**
+   * Dessine un overlay sur la tuile
+   *
+   * @param color La couleur de l'overlay
+   */
   public void drawOverlay(Color color) {
     StdDraw.setPenColor(color);
     StdDraw.filledRectangle(this.getPosition().getX(), this.getPosition().getY(), this.getWidth() / 2, this.getHeight() / 2);
   }
 
+  /**
+   * Génère de la petite végétation de manière aléatoire
+   */
   public void putRandomSmallVegetation() {
     FlowerType[] flowerTypes = new FlowerType[]{FlowerType.RED, FlowerType.BLUE, FlowerType.BUSH, FlowerType.WHITE};
     int rnd = new Random().nextInt(flowerTypes.length);
@@ -157,6 +226,9 @@ abstract public class Tile extends DrawableEntity {
     }
   }
 
+  /**
+   * Ajoute un arbre
+   */
   public void putRandomTree() {
     if (this.isBuildable()) {
       this.replaceContains(new Tree());
@@ -164,9 +236,9 @@ abstract public class Tile extends DrawableEntity {
   }
 
   /**
-   * Update the tile contains entity if exists
+   * Met à jour l'entité de la tuile
    *
-   * @param deltaTime The game delta time
+   * @param deltaTime Le delta temps du jeu
    */
   public void updateContainsEntity(double deltaTime) {
     if (this.contains != null) {
@@ -177,84 +249,108 @@ abstract public class Tile extends DrawableEntity {
 
 
   /**
-   * Get the tile position
+   * Récupère la position de la tuile
    *
-   * @return The tile position
+   * @return La position de la tuile
    */
   public Position getPosition() {
     return this.position;
   }
 
   /**
-   * Get the tile height
+   * Récupère la hauteur de la tuile
    *
-   * @return The tile height
+   * @return La hauteur de la tuile
    */
   public double getHeight() {
     return this.height;
   }
 
   /**
-   * Get the tile width
+   * Récupère la largeur de la tuile
    *
-   * @return The tile width
+   * @return La largeur de la tuile
    */
   public double getWidth() {
     return this.width;
   }
 
+  /**
+   * Récupère le statut de sélection de la tuile
+   *
+   * @return true si la tuile est sélectionnée
+   */
   public boolean isSelected() {
     return this.selected;
   }
 
-  public void setSelected(boolean selected) {
-    this.selected = selected;
-  }
-
-  public boolean isDebug() {
-    return this.debug;
-  }
-
-  public void setDebug(boolean debug) {
-    this.debug = debug;
-  }
-
+  /**
+   * Récupère la valeur de la direction de la tuile
+   *
+   * @return La valeur de la direction de la tuile
+   */
   public int getDirectionValue() {
     return this.directionValue;
   }
 
-  public void setDirectionValue(int directionValue) {
-    this.directionValue = directionValue;
-  }
 
   /**
-   * Executed when a tile is clicked
+   * Exécuté lorsque la tuile est cliquée
+   *
+   * @param x la position x de la souris
+   * @param y la position y de la souris
    */
   public abstract void onClick(double x, double y);
 
+  /**
+   * Exécuté lorsque la tuile est survolée
+   *
+   * @param x la position x de la souris
+   * @param y la position y de la souris
+   */
   public void onHover(double x, double y) {
     this.selected = true;
   }
 
+  /**
+   * Exécuté lorsque la tuile n'est plus survolée
+   */
   public void onHoverLeave() {
     this.selected = false;
   }
 
   /**
-   * Check if a tile can be build on
+   * Vérifie si l'on peut construire sur la tuile
    *
-   * @return True if the tile can be build on
+   * @return true si on peut construire sur la tuile
    */
   public abstract boolean isBuildable();
 
+  /**
+   * Récupère l'entité de la tuile
+   *
+   * @return L'entité de la tuile
+   */
   public Entity getContains() {
     return this.contains;
   }
 
+  /**
+   * Remplace l'entité de la tuile
+   *
+   * @param entity la nouvelle entité
+   */
   public void replaceContains(Entity entity) {
     this.replaceContains(entity, false, null);
   }
 
+  /**
+   * Remplace l'entité de la tuile
+   *
+   * @param entity        la nouvelle entité
+   * @param particules    indique si des particules vont être produite lors de la construction
+   * @param colorParticle la couleur des particules
+   */
   public void replaceContains(Entity entity, boolean particules, Color colorParticle) {
     if (particules && colorParticle != null) {
       this.tileParticules.addGenerator(new RandomParticuleGenerator(this.getPosition(), 1, 0.01, this.getHeight() / 2, new SquareParticule(1, 0.01, 0.1, colorParticle)));

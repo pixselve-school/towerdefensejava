@@ -6,8 +6,16 @@ import warcraftTD.utils.Position;
 
 import java.util.List;
 
+/**
+ * Géant de pierre
+ */
 public class StoneGiant extends BaseMonster {
 
+  /**
+   * Création d'un géant de pierre
+   *
+   * @param path Le chemin que le montre va emprunter
+   */
   public StoneGiant(List<Position> path) {
     super(path,
         300,
@@ -35,7 +43,7 @@ public class StoneGiant extends BaseMonster {
             "images/enemies/10/walk-17.png",
             "images/enemies/10/walk-18.png",
             "images/enemies/10/walk-19.png",
-        }, 1.0, 1.0, null, 10, true),
+        }, 1.0, null, 10, true),
         new Animation(new String[]{
             "images/enemies/10/die-0.png",
             "images/enemies/10/die-1.png",
@@ -57,7 +65,7 @@ public class StoneGiant extends BaseMonster {
             "images/enemies/10/die-17.png",
             "images/enemies/10/die-18.png",
             "images/enemies/10/die-19.png",
-        }, 1.0, 1.0, null, 10, false)
+        }, 1.0, null, 10, false)
     );
     this.setScaleHeight(0.2);
     this.setScaleWidth(0.25);

@@ -12,16 +12,22 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.awt.*;
 import java.io.IOException;
 
+/**
+ * Tuile d'eau
+ */
 public class Water extends Tile {
+  /**
+   * Son produit un fois cliqué
+   */
   Sound clickSound;
 
 
   /**
-   * Create a water tile
+   * Créer une tuile d'eau
    *
-   * @param position The tile position
-   * @param height   The tile height
-   * @param width    The tile width
+   * @param position La position de la tuile
+   * @param height   La hauteur de la tuile
+   * @param width    La largeur de la tuile
    */
   public Water(Position position, double height, double width) {
     super(new Position(position.getX() * width + width / 2, position.getY() * height + height / 2), position, height, width);
@@ -34,16 +40,16 @@ public class Water extends Tile {
   }
 
   /**
-   * Update the tile
+   * Actualiser la tuile
    *
-   * @param deltaTime Game delta time
+   * @param deltaTime Le delta temps du jeu
    */
   public void update(double deltaTime) {
 
   }
 
   /**
-   * Draw the static part of the tile
+   * Dessiner la partie statique de la tuile
    */
   public void drawStaticPart() {
     Position topLeft = new Position(this.getPosition().getX() - this.getWidth() / 4, this.getPosition().getY() + this.getHeight() / 4);
@@ -156,7 +162,9 @@ public class Water extends Tile {
 
 
   /**
-   * Executed when a tile is clicked
+   * Exécuté lorsque la tuile est cliquée
+   * @param x la position x de la souris
+   * @param y la position y de la souris
    */
   public void onClick(double x, double y) {
     try {
@@ -168,9 +176,9 @@ public class Water extends Tile {
   }
 
   /**
-   * Check if a tile can be build on
+   * Vérifie si l'on peut construire sur la tuile
    *
-   * @return True if the tile can be build on
+   * @return true si on peut construire sur la tuile
    */
   public boolean isBuildable() {
     return false;

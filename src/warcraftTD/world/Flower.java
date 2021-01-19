@@ -6,9 +6,21 @@ import warcraftTD.particules.RandomParticuleGenerator;
 
 import java.awt.*;
 
+/**
+ * Entité de type fleur
+ */
 public class Flower extends Entity {
+  /**
+   * Chemin vers le fichier image de la fleur
+   */
   private final String path;
 
+  /**
+   * Création d'une nouvelle fleur
+   *
+   * @param type Type de la fleur
+   * @param tile Tuile parent
+   */
   public Flower(FlowerType type, Tile tile) {
     super(EntityBuildable.BUILDABLE);
     switch (type) {

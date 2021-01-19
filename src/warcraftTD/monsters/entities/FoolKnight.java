@@ -6,9 +6,17 @@ import warcraftTD.utils.Position;
 
 import java.util.List;
 
+/**
+ * Chevalier fou
+ */
 public class FoolKnight extends BaseMonster {
 
 
+  /**
+   * Création d'un chevalier fou
+   *
+   * @param path Le chemin que le montre va emprunter
+   */
   public FoolKnight(List<Position> path) {
     super(path,
         60,
@@ -36,7 +44,7 @@ public class FoolKnight extends BaseMonster {
             "images/enemies/6/walk-17.png",
             "images/enemies/6/walk-18.png",
             "images/enemies/6/walk-19.png",
-        }, 1.0, 1.0, null, 60, true),
+        }, 1.0, null, 60, true),
         new Animation(new String[]{
             "images/enemies/6/die-0.png",
             "images/enemies/6/die-1.png",
@@ -58,7 +66,7 @@ public class FoolKnight extends BaseMonster {
             "images/enemies/6/die-17.png",
             "images/enemies/6/die-18.png",
             "images/enemies/6/die-19.png",
-        }, 1.0, 1.0, null, 20, false)
+        }, 1.0, null, 20, false)
     );
     this.setScaleHeight(0.1);
     this.setScaleWidth(0.1);

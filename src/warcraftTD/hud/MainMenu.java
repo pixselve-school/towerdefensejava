@@ -145,7 +145,7 @@ public class MainMenu extends Interface {
           logoFrames.add("images/logo/animation/logo" + (i >= 10 ? i : "0" + i) + ".png");
       }
 
-    this.logoAnimation = new Animation(logoFrames.toArray(String[]::new), 0.25, 0.25, new Position(0.5,0.85), 60, true);
+    this.logoAnimation = new Animation(logoFrames.toArray(String[]::new), 0.25, new Position(0.5,0.85), 60, true);
   }
 
   /**
@@ -158,7 +158,7 @@ public class MainMenu extends Interface {
     for (int i = 0; i < 300; i++) {
       backgroundImages[i] = path + (i < 100 ? "0" : "") + (i < 10 ? "0" : "") + i + ".jpg";
     }
-    this.background = new Animation(backgroundImages, 1, 1, new Position(0.5, 0.5), 24, false);
+    this.background = new Animation(backgroundImages, 1, new Position(0.5, 0.5), 24, false);
     if(menuOfficial) {
       this.index_background++;
       if(this.index_background==2) this.index_background = 0;

@@ -5,29 +5,34 @@ import warcraftTD.utils.Position;
 
 import java.awt.*;
 
+/**
+ * Tuile de type herbe
+ */
 public class Grass extends Tile {
 
   /**
-   * Create a grass tile
+   * Créer une tuile d'herbe
    *
-   * @param position The tile position
-   * @param height   The tile height
-   * @param width    The tile width
+   * @param position La position de la tuile
+   * @param height   La hauteur de la tuile
+   * @param width    La largeur de la tuile
    */
   public Grass(Position position, double height, double width) {
     super(new Position(position.getX() * width + width / 2, position.getY() * height + height / 2), position, height, width);
   }
 
+
   /**
-   * Update the tile
+   * Actualiser la tuile
    *
-   * @param deltaTime Game delta time
+   * @param deltaTime Le delta temps du jeu
    */
   public void update(double deltaTime) {
   }
 
+
   /**
-   * Draw the static part of the tile
+   * Dessiner la partie statique de la tuile
    */
   public void drawStaticPart() {
     StdDraw.picture(this.getPosition().getX(), this.getPosition().getY(), "images/tiles/grass.png", this.getWidth() + 0.001, this.getHeight() + 0.001);
@@ -35,16 +40,18 @@ public class Grass extends Tile {
 
 
   /**
-   * Executed when a tile is clicked
+   * Exécuté lorsque la tuile est cliquée
+   * @param x la position x de la souris
+   * @param y la position y de la souris
    */
   public void onClick(double x, double y) {
 
   }
 
   /**
-   * Check if a tile can be build on
+   * Vérifie si l'on peut construire sur la tuile
    *
-   * @return True if the tile can be build on
+   * @return true si on peut construire sur la tuile
    */
   public boolean isBuildable() {
     return this.getContains() == null || !this.getContains().getBuildable().equals(EntityBuildable.NOTBUILDABLE);

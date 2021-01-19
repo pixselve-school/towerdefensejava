@@ -14,52 +14,52 @@ import java.util.List;
 import java.util.*;
 
 /**
- * Monster class
+ * Un monstre
  */
 public abstract class Monster extends DrawableEntity {
 
   /**
-   * The monster speed
+   * La vitesse du monstre
    */
   private final double speed;
   /**
-   * The path the monster will follow
+   * Le chemin que suivra le monstre
    */
   private final List<Position> path;
   /**
-   * The effects the monster is subjected to
+   * Les effets auxquels le monstre est soumis
    */
   private final Map<String, Effect> undergoingEffects;
   /**
-   * The amount of gold the monster will drop when killed
+   * La quantité d'or que le monstre va rapporter au joueur lorsqu'il sera tué
    */
   private final int goldWhenDead;
   /**
-   * The particules the monster is generating
+   * Les particules que le monstre génère
    */
   private final EntityParticules entityParticules;
-  /**
-   * The monster position
-   */
-  private Position position;
-  /**
-   * A vector container
-   */
-  private Vector vector;
-  /**
-   * Previous vector length
-   */
-  private double previousLength;
-  /**
-   * The monster health
-   */
-  private int health;
   /**
    * Le rayon de la hit box du monstre
    */
   private final double hitBoxRadius;
   /**
-   * The current remove status of the monster
+   * La position du monstre
+   */
+  private Position position;
+  /**
+   * Un conteneur à vecteur
+   */
+  private Vector vector;
+  /**
+   * Longueur du vecteur précédent
+   */
+  private double previousLength;
+  /**
+   * La santé du monstre
+   */
+  private int health;
+  /**
+   * Indique si le monstre peut être supprimer
    */
   private boolean isReadyToBeRemoved;
   /**
@@ -71,62 +71,21 @@ public abstract class Monster extends DrawableEntity {
    */
   private double shiftY;
 
+  /**
+   * Largeur du monstre
+   */
   private double scaleWidth;
+
+  /**
+   * Hauteur du monstre
+   */
   private double scaleHeight;
 
-  public double getScaleWidth() {
-    return this.scaleWidth;
-  }
-
-  public void setScaleWidth(double scaleWidth) {
-    this.scaleWidth = scaleWidth;
-  }
-
-  public double getScaleHeight() {
-    return this.scaleHeight;
-  }
-
-  public void setScaleHeight(double scaleHeight) {
-    this.scaleHeight = scaleHeight;
-  }
-
   /**
-   * Récupère le décalage horizontal d'affichage du monstre
-   * @return le décalage horizontal pour l'affichage du monstre
-   */
-  public double getShiftX() {
-    return this.shiftX;
-  }
-
-  /**
-   * Modifie décalage horizontal d'affichage du monstre
-   * @param shiftX le décalage horizontal pour l'affichage du monstre
-   */
-  public void setShiftX(double shiftX) {
-    this.shiftX = shiftX;
-  }
-
-  /**
-   * Récupère le décalage vertical d'affichage du monstre
-   * @return le décalage vertical pour l'affichage du monstre
-   */
-  public double getShiftY() {
-    return this.shiftY;
-  }
-
-  /**
-   * Modifie décalage vertical d'affichage du monstre
-   * @param shiftY le décalage vertical pour l'affichage du monstre
-   */
-  public void setShiftY(double shiftY) {
-    this.shiftY = shiftY;
-  }
-
-  /**
-   * @param health       The monster base health
-   * @param goldWhenDead The amount of gold the monster will drop when killed
-   * @param speed        The monster base speed
-   * @param path         The path the monster will follow
+   * @param health       La vie de base du monstre
+   * @param goldWhenDead La quantité d'or que le monstre va rapporter au joueur lorsqu'il sera tué
+   * @param speed        La vitesse de base du monstre
+   * @param path         Le chemin que suivra le monstre
    * @param hitBoxRadius Le rayon de la hit box du monstre
    */
   public Monster(int health, int goldWhenDead, double speed, double hitBoxRadius, List<Position> path) {
@@ -144,27 +103,99 @@ public abstract class Monster extends DrawableEntity {
   }
 
   /**
-   * Get the current remove status of the monster
+   * Récupère la largeur du monstre
    *
-   * @return true if the monster is ready to be removed
+   * @return Largeur du monstre
+   */
+  public double getScaleWidth() {
+    return this.scaleWidth;
+  }
+
+  /**
+   * Modifie la largeur du monstre
+   *
+   * @param scaleWidth La nouvelle largeur
+   */
+  public void setScaleWidth(double scaleWidth) {
+    this.scaleWidth = scaleWidth;
+  }
+
+  /**
+   * Modifie la hauteur du monstre
+   *
+   * @return La hauteur du monstre
+   */
+  public double getScaleHeight() {
+    return this.scaleHeight;
+  }
+
+  /**
+   * Modifie la hauteur du monstre
+   *
+   * @param scaleHeight La nouvelle hauteur du monstre
+   */
+  public void setScaleHeight(double scaleHeight) {
+    this.scaleHeight = scaleHeight;
+  }
+
+  /**
+   * Récupère le décalage horizontal d'affichage du monstre
+   *
+   * @return le décalage horizontal pour l'affichage du monstre
+   */
+  public double getShiftX() {
+    return this.shiftX;
+  }
+
+  /**
+   * Modifie décalage horizontal d'affichage du monstre
+   *
+   * @param shiftX le décalage horizontal pour l'affichage du monstre
+   */
+  public void setShiftX(double shiftX) {
+    this.shiftX = shiftX;
+  }
+
+  /**
+   * Récupère le décalage vertical d'affichage du monstre
+   *
+   * @return le décalage vertical pour l'affichage du monstre
+   */
+  public double getShiftY() {
+    return this.shiftY;
+  }
+
+  /**
+   * Modifie décalage vertical d'affichage du monstre
+   *
+   * @param shiftY le décalage vertical pour l'affichage du monstre
+   */
+  public void setShiftY(double shiftY) {
+    this.shiftY = shiftY;
+  }
+
+  /**
+   * Récupère l'indication sur la suppression du monstre
+   *
+   * @return true si le monstre peut être supprimer
    */
   public boolean isReadyToBeRemoved() {
     return this.isReadyToBeRemoved;
   }
 
   /**
-   * Set the current remove status of the monster
+   * Modifie l'indication sur la suppression du monstre
    *
-   * @param readyToBeRemoved The new remove status of the monster
+   * @param readyToBeRemoved La nouvelle indication sur la suppression du monstre
    */
   public void setReadyToBeRemoved(boolean readyToBeRemoved) {
     this.isReadyToBeRemoved = readyToBeRemoved;
   }
 
   /**
-   * Move the monster
+   * Déplace le monstre
    *
-   * @param deltaTime The game deltaTime
+   * @param deltaTime La delta temps du jeu
    */
   public void move(double deltaTime) {
     if (this.isDead()) {
@@ -204,26 +235,18 @@ public abstract class Monster extends DrawableEntity {
   }
 
   /**
-   * Check if the monster finished its path
+   * Vérifie si le monstre a terminé son parcours
    *
-   * @return true if the monster finished its path
+   * @return true si le monstre a terminé son parcours
    */
   public boolean hasFinishedPath() {
     return this.path.size() == 0;
   }
 
-
-  public void drawHitBox() {
-    StdDraw.setPenColor(new Color(0, 255, 217, 35));
-    StdDraw.filledCircle(this.position.getX(), this.position.getY(), this.hitBoxRadius);
-    StdDraw.setPenColor(new Color(0, 255, 217));
-    StdDraw.circle(this.position.getX(), this.position.getY(), this.hitBoxRadius);
-  }
-
   /**
-   * Update the monster effects, figure out its next position and draw it
+   * Actualisez les effets du monstre, déterminez sa prochaine position et dessine le monstre
    *
-   * @param deltaTime The game delta time
+   * @param deltaTime Le delta temps du jeu
    */
   public void update(double deltaTime) {
     this.updateEffectsDuration(deltaTime);
@@ -234,9 +257,9 @@ public abstract class Monster extends DrawableEntity {
 
 
   /**
-   * Update all the undergoing effects durations
+   * Mise à jour de toutes les durées d'effets en cours
    *
-   * @param deltaTime World delta time
+   * @param deltaTime Le delta temps du jeu
    */
   private void updateEffectsDuration(double deltaTime) {
     Iterator<Map.Entry<String, Effect>> entryIterator = this.undergoingEffects.entrySet().iterator();
@@ -252,11 +275,11 @@ public abstract class Monster extends DrawableEntity {
   }
 
   /**
-   * Inflict damage to the monster
+   * Inflige des dommages au monstre
    *
-   * @param damage            The amount of health the monster will loose
-   * @param world             The current world
-   * @param notificationColor The color of the damage notification
+   * @param damage            La quantité de santé que le monstre va perdre
+   * @param world             Le monde actuel
+   * @param notificationColor La couleur de la notification des dégâts
    */
   public void takeDamage(int damage, WorldGame world, Color notificationColor) {
     world.getHud().addNotifText(this.position, new Font("Arial", Font.BOLD, 20), -0.1, "" + damage, notificationColor);
@@ -264,70 +287,70 @@ public abstract class Monster extends DrawableEntity {
   }
 
   /**
-   * Check if the monster is alive or not
+   * Vérifier si le monstre est vivant ou non
    *
-   * @return true if the monster is alive
+   * @return true si le monstre est vivant
    */
   public boolean isDead() {
     return this.health <= 0;
   }
 
   /**
-   * Apply poison effect to the monster
+   * Appliquer l'effet de poison au monstre
    *
-   * @param duration The effect duration
-   * @param damage   The amount of health the effect with inflict every seconds
+   * @param duration La durée de l'effet
+   * @param damage   La quantité de dégâts que l'effet inflige chaque seconde
    */
   public void applyPoisonEffect(int duration, int damage) {
     this.undergoingEffects.computeIfAbsent("poison", (s) -> new Effect(duration, 1.0, -damage, 1.0)).setDurationIfGreater(duration);
   }
 
   /**
-   * Apply slow effect to the monster
+   * Appliquer un effet lent au monstre
    *
-   * @param duration    The effect duration
-   * @param slowPercent The percentage the speed of the monster will be multiplied to
+   * @param duration    La durée de l'effet
+   * @param slowPercent Le facteur de lenteur appliqué à la vitesse
    */
   public void applySlowEffect(int duration, int slowPercent) {
     this.undergoingEffects.computeIfAbsent("slow", (s) -> new Effect(duration, 1.0, 0, slowPercent / 100.0)).setDurationIfGreater(duration);
   }
 
   /**
-   * Check if the monster is flying
+   * Vérifiez si le monstre vole
    *
-   * @return True if the monster is flying
+   * @return true si le monstre vole
    */
   public abstract boolean isFlying();
 
   /**
-   * Draw the monster
+   * Dessine le monstre
    *
-   * @param deltaTime The game delta time
+   * @param deltaTime Le delta temps du jeu
    */
   public abstract void draw(double deltaTime);
 
   /**
-   * Get the monster position
+   * Récupère la position du monstre
    *
-   * @return The monster position
+   * @return la position du monstre
    */
   public Position getPosition() {
     return this.position;
   }
 
   /**
-   * Set the monster position
+   * Modifie la position du monstre
    *
-   * @param position The new position
+   * @param position la nouvelle position du monstre
    */
   public void setPosition(Position position) {
     this.position = position;
   }
 
   /**
-   * Get the amount of gold the monster drop when killed
+   * Récupère la quantité d'or que le monstre va rapporter au joueur lorsqu'il sera tué
    *
-   * @return The amount of gold the monster drop when killed
+   * @return la quantité d'or que le monstre va rapporter au joueur lorsqu'il sera tué
    */
   public int getGoldWhenDead() {
     return this.goldWhenDead;
@@ -344,16 +367,15 @@ public abstract class Monster extends DrawableEntity {
 
   /**
    * Redimensionne l'apparence du monstre en fonction de la taille de la carte
+   *
    * @param nbSquareX nombre de tuiles horizontales
    * @param nbSquareY nombre de tuiles verticales
    */
-  public void resizeMonster(int nbSquareX, int nbSquareY){
-    System.out.println(this.scaleHeight);
+  public void resizeMonster(int nbSquareX, int nbSquareY) {
     this.scaleHeight = this.scaleHeight / nbSquareY * 11;
-    System.out.println(this.scaleHeight);
     this.scaleWidth = this.scaleWidth / nbSquareX * 11;
-    this.setShiftX(this.shiftX*this.scaleWidth);
-    this.setShiftY(this.shiftY*this.scaleHeight);
+    this.setShiftX(this.shiftX * this.scaleWidth);
+    this.setShiftY(this.shiftY * this.scaleHeight);
   }
 
 }

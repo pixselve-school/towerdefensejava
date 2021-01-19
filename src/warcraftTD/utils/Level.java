@@ -16,19 +16,61 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Outil pour la création d'un niveau
+ */
 public class Level {
+  /**
+   * Vagues
+   */
+  private final List<Wave> waves;
+  /**
+   * Chemin vers la musique du niveau
+   */
   private String musicPath;
+  /**
+   * Nombre de points de vie du joueur
+   */
   private int life;
+  /**
+   * Quantité d'argent du joueur
+   */
   private int money;
+  /**
+   * Positions du chemin
+   */
   private LinkedList<Position> pathPositions;
+  /**
+   * Nombre de tuiles sur l'axe X
+   */
   private int nbSquareX;
+  /**
+   * Nombre de tuiles sur l'axe Y
+   */
   private int nbSquareY;
-  private List<Wave> waves;
+  /**
+   * Donnée des vagues
+   */
   private List<WaveData> waveData;
+  /**
+   * Décalage de la carte
+   */
   private Padding padding;
+  /**
+   * Indique si de l'eau doit être générée
+   */
   private boolean waterActivated;
+  /**
+   * Indique la présence de végétation
+   */
   private PlantPresence plants;
 
+  /**
+   * Création d'un niveau
+   *
+   * @param fileToParse Fichier .tld à charcger
+   * @throws IOException Le fichier n'éxiste pas
+   */
   public Level(File fileToParse) throws IOException {
     BufferedReader br = new BufferedReader(new FileReader(fileToParse));
     String st;
@@ -136,18 +178,40 @@ public class Level {
 
   }
 
+  /**
+   * Récupère la largeur d'une tuile
+   *
+   * @return La largeur d'une tuile
+   */
   public double getSquareWidth() {
     return 1.0 / this.nbSquareX;
   }
 
+  /**
+   * Récupère la hauteur d'une tuile
+   *
+   * @return La hauteur d'une tuile
+   */
   public double getSquareHeight() {
     return 1.0 / this.nbSquareY;
   }
 
+  /**
+   * Extrait le paramètre d'une chaine de caractère de configuration
+   *
+   * @param stringToParse La chaine de caractère à traiter
+   * @return Le paramètre de la chaine de caractère
+   */
   private String parseConfig(String stringToParse) {
     return stringToParse.split("=")[1];
   }
 
+  /**
+   * Récupère la quantité d'argent du joueur depuis une chaine de caractère
+   *
+   * @param stringToParse La chaine de caractère à traiter
+   * @return La quantité d'argent du joueur
+   */
   private int parseMoney(String stringToParse) {
     int moneyParsed = Integer.parseInt(stringToParse);
     if (moneyParsed < 50 || moneyParsed > 999999) {
@@ -156,6 +220,12 @@ public class Level {
     return moneyParsed;
   }
 
+  /**
+   * Récupère le chemin vers la musique du niveau depuis une chaine de caractère
+   *
+   * @param stringToParse La chaine de caractère à traiter
+   * @return Le chemin vers la musique du niveau
+   */
   private String parseMusic(String stringToParse) {
     File tempFile = new File(stringToParse);
     if (!tempFile.exists()) {
@@ -164,6 +234,12 @@ public class Level {
     return stringToParse;
   }
 
+  /**
+   * Récupère le nombre de points de vie du joueur depuis une chaine de caractère
+   *
+   * @param stringToParse La chaine de caractère à traiter
+   * @return Le nombre de points de vie du joueur
+   */
   private int parseLife(String stringToParse) {
     int lifeParsed = Integer.parseInt(stringToParse);
     if (lifeParsed <= 0 || lifeParsed > 9999) {
@@ -172,40 +248,12 @@ public class Level {
     return lifeParsed;
   }
 
-
-  private static class PathData {
-    public LinkedList<Position> pathPositions;
-    public double minX;
-    public double minY;
-    public double maxX;
-    public double maxY;
-
-    public int getNbSquareX() {
-      return (int) (this.maxX + 1);
-    }
-
-    public int getNbSquareY() {
-      return (int) (this.maxY + 1);
-    }
-
-    public double getSquareWidth() {
-      return 1.0 / this.getNbSquareX();
-    }
-
-    public double getSquareHeight() {
-      return 1.0 / this.getNbSquareY();
-    }
-
-    public PathData() {
-      this.pathPositions = new LinkedList<>();
-      this.pathPositions.add(new Position(0, 0));
-      this.minX = 0.0;
-      this.minY = 0.0;
-      this.maxX = 0.0;
-      this.maxY = 0.0;
-    }
-  }
-
+  /**
+   * Récupère les données du chemin depuis une chaine de caractère
+   *
+   * @param stringToParse La chaine de caractère à traiter
+   * @return Les données du chemin
+   */
   private PathData parsePath(String stringToParse) {
     PathData pathData = new PathData();
 
@@ -244,15 +292,33 @@ public class Level {
     return pathData;
   }
 
+  /**
+   * Récupère le décalage de la carte depuis une chaine de caractère
+   *
+   * @param stringToParse La chaine de caractère à traiter
+   * @return Le décalage de la carte
+   */
   private Padding parsePadding(String stringToParse) {
     int[] paddingValues = Arrays.stream(stringToParse.split(",")).mapToInt(Integer::parseInt).toArray();
     return new Padding(paddingValues[0], paddingValues[1], paddingValues[2], paddingValues[3]);
   }
 
+  /**
+   * Récupère l'indication sur la présence d'eau depuis une chaine de caractère
+   *
+   * @param stringToParse La chaine de caractère à traiter
+   * @return L'indication sur la présence d'eau
+   */
   private boolean parseWaterActivation(String stringToParse) {
     return stringToParse.equals("1");
   }
 
+  /**
+   * Récupère l'indication sur la présence de végétation depuis une chaine de caractère
+   *
+   * @param stringToParse La chaine de caractère à traiter
+   * @return L'indication sur la présence de végétation
+   */
   private PlantPresence parsePlantPresence(String stringToParse) {
     switch (stringToParse) {
       case "0":
@@ -264,25 +330,12 @@ public class Level {
     }
   }
 
-
-  private static class WaveData {
-    public WaveData() {
-      this.monsters = new LinkedList<>();
-    }
-
-    private static class MonsterData {
-      public int id;
-      public double timeBeforeSpawning;
-
-      public MonsterData(int id, double timeBeforeSpawning) {
-        this.id = id;
-        this.timeBeforeSpawning = timeBeforeSpawning;
-      }
-    }
-
-    public List<MonsterData> monsters;
-  }
-
+  /**
+   * Récupère les données des vagues depuis une chaine de caractère
+   *
+   * @param stringToParse La chaine de caractère à traiter
+   * @return Les données des vagues
+   */
   private List<WaveData> parseWaves(String stringToParse) {
     List<WaveData> wavesResult = new LinkedList<>();
     String stringToParseWithoutDistractions = stringToParse.replaceAll("[\\[()\\]]", "");
@@ -302,12 +355,116 @@ public class Level {
     return wavesResult;
   }
 
+  /**
+   * Génère un monde depuis le niveau
+   *
+   * @param menu Le menu du monde
+   * @return Le monde fraichement généré
+   * @throws UnsupportedAudioFileException Erreur lié à l'audio
+   * @throws IOException                   Erreur lié à l'audio
+   * @throws LineUnavailableException      Erreur lié à l'audio
+   */
   public WorldGame getWorld(MainMenu menu) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
     return new WorldGame(menu.getWidth(), menu.getHeight(), this.nbSquareX, this.nbSquareY, this.money, this.life, this.waterActivated, this.musicPath, this.pathPositions, this.waves, menu, this.plants);
   }
 
-  public static void main(String[] args) throws IOException {
-    Level level = new Level(new File("levels/level.tdl"));
+  /**
+   * Données des chemins
+   */
+  private static class PathData {
+    /**
+     * Positions des chemins
+     */
+    public LinkedList<Position> pathPositions;
+    /**
+     * Position X minimum
+     */
+    public double minX;
+    /**
+     * Position Y minimum
+     */
+    public double minY;
+
+    /**
+     * Position X maximum
+     */
+    public double maxX;
+    /**
+     * Position Y maximum
+     */
+    public double maxY;
+
+    /**
+     * Création d'une nouvelle donnée de chemin
+     */
+    public PathData() {
+      this.pathPositions = new LinkedList<>();
+      this.pathPositions.add(new Position(0, 0));
+      this.minX = 0.0;
+      this.minY = 0.0;
+      this.maxX = 0.0;
+      this.maxY = 0.0;
+    }
+
+    /**
+     * Récupère le nombre de tuiles sur l'axe X
+     *
+     * @return Le nombre de tuiles sur l'axe X
+     */
+    public int getNbSquareX() {
+      return (int) (this.maxX + 1);
+    }
+
+    /**
+     * Récupère le nombre de tuiles sur l'axe Y
+     *
+     * @return Le nombre de tuiles sur l'axe Y
+     */
+    public int getNbSquareY() {
+      return (int) (this.maxY + 1);
+    }
+  }
+
+  /**
+   * Donnée de vague
+   */
+  private static class WaveData {
+    /**
+     * Les monstres
+     */
+    public List<MonsterData> monsters;
+
+    /**
+     * Création d'une nouvelle donnée de vague
+     */
+    public WaveData() {
+      this.monsters = new LinkedList<>();
+    }
+
+    /**
+     * Donnée de monstre
+     */
+    private static class MonsterData {
+      /**
+       * ID du monstre
+       */
+      public int id;
+      /**
+       * Temps avant apparition du monstre
+       */
+      public double timeBeforeSpawning;
+
+      /**
+       * Création d'une nouvelle donnée de monstre
+       *
+       * @param id                 ID du monstre
+       * @param timeBeforeSpawning Temps avant apparition du monstre
+       */
+      public MonsterData(int id, double timeBeforeSpawning) {
+        this.id = id;
+        this.timeBeforeSpawning = timeBeforeSpawning;
+      }
+    }
   }
 }
 
