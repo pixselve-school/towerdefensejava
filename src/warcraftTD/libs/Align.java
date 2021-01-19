@@ -1,5 +1,15 @@
 package warcraftTD.libs;
 
+/**
+ * Décrit un alignement
+ */
 public enum Align {
-  BOTTOM, CENTER
+  /**
+   * Aligné en bas
+   */
+  BOTTOM,
+  /**
+   * Aligné au centre
+   */
+  CENTER
 }
