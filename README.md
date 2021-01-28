@@ -33,3 +33,11 @@ The game introduces 10 monsters to you. Check them out on the [monsters details 
 * Level editor
 * Level loader (from the main menu)
 * Optimization principles 
+
+## 📃 Copyrights
+
+The game is only made for personal usage. We do not have all the rights of assets we used.
+
+* We have all the rights to use all the pictures in the game except for : the towers and the video background of the main menu.
+* All the rights for the musics belong to Waterflame.
+* The sounds are royalty-free.
